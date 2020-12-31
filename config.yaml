@@ -1,4 +1,4 @@
-baseurl: /
+baseurl: "https://maxstatdocumentation.netlify.app/"
 languageCode: en-us
 title: Hugo Ivy
 theme: hugo-ivy
