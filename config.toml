@@ -2,6 +2,7 @@ baseurl = "https://maxstatdocumentation.netlify.app/"
 languageCode = "en-us"
 title = "Max's StatPage"
 theme = "hugo-ivy"
+disablePathToLower = true
 googleAnalytics = ""
 disqusShortname = "https-maxstatdocumentation-netlify-app"
 ignoreFiles = [

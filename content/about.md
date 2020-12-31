@@ -4,12 +4,10 @@ date: "2021-01-01"
 title: about
 ---
 
-# My Story
-## Why Statistics? Asia was the reason.
+My Story
+Why Statistics? Asia was the reason.
 
-<img src="/./about_files/Me.png"
-    style="max-width:28%;min-width:50px; float:right;"
-    alt = "Me at Singapore"/>
+
     
 Since the winter semester 2020 I have been studying statistics at the LMU in Munich.
 I found interest in studying statistics and the related tasks during my stay in China. After graduating from high school in 2019, I spent almost 4 months in Shanghai and 5 months in Singapore to learn Chinese (Mandarin). Due to the corona pandemic, I had to leave China in advance at the end of January 2020. Hence, I flew to Singapore to continue my course.
