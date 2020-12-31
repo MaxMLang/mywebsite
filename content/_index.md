@@ -1,9 +1,15 @@
 ---
 title: Home
 ---
+# Welcome
+This website is a documentation of my statistics studies at LMU Munich. I would like to share interesting assignments, programs, mathematical proofs such as calculations here on this website.
 
-[<img src="https://simpleicons.org/icons/github.svg" style="max-width:15%;min-width:40px;float:right;" alt="Github repo" />](https://github.com/yihui/hugo-ivy)
+Furthermore I would like to improve my R Blogdown Skills by keeping this website up to date.
 
-This Hugo theme was ported from [Ivy](https://github.com/dmulholland/ivy), a minimalist website generator built in Python. I don't have time to document it. You have to read the source code to understand what it can do. Like Ivy, this theme is also released under [the Unlicense](https://en.wikipedia.org/wiki/Unlicense), which basically means you just do whatever you want.
+In addition to the technical posts, will I share some interesting thoughts on interesting current events under [notes](/note/).
 
-All pages not under the root directory of the website are listed below. You can also visit the list page of a single section, e.g., [posts](/post/), or [notes](/note/).
+I look forward to receiving feedback via Disqus or Github.
+
+[<img src="https://simpleicons.org/icons/github.svg" style="max-width:8%;min-width:40px;" alt="Github repo" />](https://github.com/MaxMLang)
+[<img src="https://simpleicons.org/icons/instagram.svg" style="max-width:8%;min-width:40px;" alt="Github repo" />](https://instagram.com/maxtheshort)
+

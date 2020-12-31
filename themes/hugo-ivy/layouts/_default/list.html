@@ -6,6 +6,7 @@
 {{ $.Scratch.Set "pages" .Site.RegularPages }}
 {{ else }}
 {{ $.Scratch.Set "pages" .Pages }}
+
 {{ end }}
 <ul>
   {{ range (where ($.Scratch.Get "pages") "Section" "!=" "") }}
