@@ -1,4 +1,10 @@
 ---
+title: "info"
+author: "Max Lang"
+date: "12/31/2020"
+output: html_document
+---
+---
 author: Max Lang
 title: about
 date: '2021-01-01'
