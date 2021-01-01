@@ -1,0 +1,73 @@
+---
+title: Wilson's Theorem (Proof)
+author: Max Lang
+date: '2021-01-01'
+slug: wilson-s-theorem-proof
+categories:
+  - Mathematics
+  - Proof
+tags: []
+---
+
+<link href="index_files/anchor-sections/anchor-sections.css" rel="stylesheet" />
+<script src="index_files/anchor-sections/anchor-sections.js"></script>
+
+
+<div id="proof" class="section level1">
+<h1>Proof</h1>
+<p>Wilson’s theorem states:</p>
+<p>Let <em>p</em> be a prime. Then</p>
+<p><code>$ (p - 1)! \equiv -1 \quad mod \;p $</code></p>
+<p><code>$ \text{Each a}  \{1 , 2, ..., p - 1 \} \text{has a inverse } a^{-1} \in \{ 1 , 2, ..., p - 1 \} \; mod \;p \text{ with } a \cdot a^{-1} = 1 \text{.} $</code></p>
+<p><code>$ \text{This inverse } a^{-1} \text{ is unique and via the power laws follows that } {a^{-1}}^{-1} = a \; (mod\;p)\text{. In addition If } a=a^{-1} \text{ then } 1 \equiv a\cdot a^{-1} = a^2. \text{ This necessitates } a \equiv \pm 1 \text{ and therefore } a= 1 \; ; (a=p-1 \; mod \; p) $</code></p>
+<p><code>$ \text{In the product} (p-1)!= 1\times2\times3\times4\times\ldots\times (p-2)\times (p-1) \text{each term except for 1 and } (p-1) \text{paired with its inverse modulo } p \text{ is equal to } 1 \text{. Because of the inverse property } a\cdot a^{-1}=1, \text{ we thus get} (p-1)! \equiv 1\times (p-1) \equiv -1 \; mod \;p \quad q.e.d $</code>
+<code>$ \text{This is possible because in the rest classes } [x]_p \text{ the only self inverse elements are } x=1=x^{-1} \text{ and } (p-1)$</code></p>
+<p><code>$ \text{As an illustration have a look at the table of operations of } \mathbb (Z_5, \times) $</code></p>
+<table>
+<thead>
+<tr class="header">
+<th><span class="math inline">\(\times\)</span></th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>1</td>
+<td>2</td>
+<td>3</td>
+<td>4</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>2</td>
+<td>4</td>
+<td>1</td>
+<td>3</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>3</td>
+<td>1</td>
+<td>4</td>
+<td>2</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>4</td>
+<td>3</td>
+<td>2</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+<p><code>$ \text{As you can see the only elements} \text{ for which } a^2=1  \text{ are } a = 1 \text{ and } b = 4.$</code></p>
+</div>
+<div id="thoughts" class="section level1">
+<h1>Thoughts</h1>
+<p>I had to proof this theorem in my Linear Algebra class and it took me a couple of hours to figure it out, especially baceause at first sight I did not believe that this could actually be true. I think the best way is to use an example like <span class="math inline">\(\mathbb Z_5\)</span>.</p>
+<p>After the work it was a pretty cool proof in my opinion. Even though the Theorem’s practical usage is limited, it is still useful to find out Remainders of super large numbers in a second.</p>
+</div>
