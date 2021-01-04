@@ -39,7 +39,7 @@ The Article on *The Economist*'s Website can be found [here](https://www.economi
 
 As you can see in the Graphic the main purpose is to tell, if a currency is over- or undervalued.
 
-## Big Max Prices over time
+## Big Mac Prices over time
 First I had a look at the Big Mac Prices over time in each country. We can already see some interesting developments. 
 ```{r}
 big_mac%>%
