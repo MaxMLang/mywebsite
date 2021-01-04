@@ -51,7 +51,8 @@ big_mac%>%
   expand_limits(y = 0)+
   facet_wrap(~ country, scales = "free_y")+
   theme(legend.position = "none")+
-  labs(x= "Time", y= "Price of Big Mac in local currency")
+  labs(x= "Time", y= "Price of Big Mac in local currency")+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
 ```
 
 Most of the countries have a relative steady inflation, which you can see by the almost straight line on most of the graphs. 
