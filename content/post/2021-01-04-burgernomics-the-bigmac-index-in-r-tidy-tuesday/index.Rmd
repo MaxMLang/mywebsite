@@ -41,6 +41,7 @@ As you can see in the Graphic the main purpose is to tell, if a currency is over
 
 ## Big Mac Prices over time
 First I had a look at the Big Mac Prices over time in each country. We can already see some interesting developments. 
+
 ```{r}
 big_mac%>%
   filter(country_total == max(country_total))%>%
