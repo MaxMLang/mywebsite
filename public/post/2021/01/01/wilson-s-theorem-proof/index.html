@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <title>Wilson&#39;s Theorem (Proof) - Max&#39;s StatPage</title>
+    <meta property="og:title" content="Wilson&#39;s Theorem (Proof) - Max&#39;s StatPage">
+    
+    <meta name="twitter:card" content="summary">
+
+    
+      
+    
+
+    
+      
+      <meta property="description" content="Wilson’s theorem states:
+Let p be a prime. Then
+$ (p - 1)! \equiv -1 \quad mod \;p $
+$ \text{Each a} \{1 , 2, ..., p - 1 \} \text{has a inverse } a^{-1} \in \{ 1 , 2, ..., p - 1 \} \; mod \;p \text{ &amp;hellip;">
+      <meta property="og:description" content="Wilson’s theorem states:
+Let p be a prime. Then
+$ (p - 1)! \equiv -1 \quad mod \;p $
+$ \text{Each a} \{1 , 2, ..., p - 1 \} \text{has a inverse } a^{-1} \in \{ 1 , 2, ..., p - 1 \} \; mod \;p \text{ &amp;hellip;">
+      
+    
+
+    
+    
+
+    
+
+    
+    
+
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/fonts.css" />
+    <link rel="stylesheet" href="/css/custom.css" />
+
+  </head>
+
+  
+  <body class="post">
+    <header class="masthead">
+      <h1><a href="/">Max&#39;s StatPage</a></h1>
+
+<p class="tagline">Stat Student, Data Analysis Nerd, Chinese Speaker</p>
+
+      <nav class="menu">
+  <input id="menu-check" type="checkbox" hidden/>
+  <label id="menu-label" for="menu-check" class="unselectable" hidden>
+    <span class="icon close-icon">✕</span>
+    <span class="icon open-icon">☰</span>
+    <span class="text">Menu</span>
+  </label>
+  <ul>
+  
+  
+  <li><a href="/">Home</a></li>
+  
+  <li><a href="/post/">Posts</a></li>
+  
+  <li><a href="/categories/">Categories</a></li>
+  
+  <li><a href="/tags/">Tags</a></li>
+  
+  <li><a href="/info">About</a></li>
+  
+  <li><a href="/note/">Notes</a></li>
+  
+  
+  </ul>
+</nav>
+
+    </header>
+
+    <article class="main">
+      <header class="title">
+      
+<h1>Wilson&#39;s Theorem (Proof)</h1>
+
+<h3>Max Lang
+  /  2021-01-01</h3>
+<hr>
+
+
+      </header>
+
+
+
+
+<link href="index_files/anchor-sections/anchor-sections.css" rel="stylesheet" />
+<script src="index_files/anchor-sections/anchor-sections.js"></script>
+
+
+<div id="proof" class="section level1">
+<h1>Proof</h1>
+<p>Wilson’s theorem states:</p>
+<p>Let <em>p</em> be a prime. Then</p>
+<p><code>$ (p - 1)! \equiv -1 \quad mod \;p $</code></p>
+<p><code>$ \text{Each a}  \{1 , 2, ..., p - 1 \} \text{has a inverse } a^{-1} \in \{ 1 , 2, ..., p - 1 \} \; mod \;p \text{ with } a \cdot a^{-1} = 1 \text{.} $</code></p>
+<p><code>$ \text{This inverse } a^{-1} \text{ is unique and via the power laws follows that } {a^{-1}}^{-1} = a \; (mod\;p)\text{. In addition If } a=a^{-1} \text{ then } 1 \equiv a\cdot a^{-1} = a^2. \text{ This necessitates } a \equiv \pm 1 \text{ and therefore } a= 1 \; ; (a=p-1 \; mod \; p) $</code></p>
+<p><code>$ \text{In the product} (p-1)!= 1\times2\times3\times4\times\ldots\times (p-2)\times (p-1) \text{each term except for 1 and } (p-1) \text{paired with its inverse modulo } p \text{ is equal to } 1 \text{. Because of the inverse property } a\cdot a^{-1}=1, \text{ we thus get} (p-1)! \equiv 1\times (p-1) \equiv -1 \; mod \;p \quad q.e.d $</code>
+<code>$ \text{This is possible because in the rest classes } [x]_p \text{ the only self inverse elements are } x=1=x^{-1} \text{ and } (p-1)$</code></p>
+<p><code>$ \text{As an illustration have a look at the table of operations of } \mathbb (Z_5, \times) $</code></p>
+<table>
+<thead>
+<tr class="header">
+<th><span class="math inline">\(\times\)</span></th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>1</td>
+<td>2</td>
+<td>3</td>
+<td>4</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>2</td>
+<td>4</td>
+<td>1</td>
+<td>3</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>3</td>
+<td>1</td>
+<td>4</td>
+<td>2</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>4</td>
+<td>3</td>
+<td>2</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+<p><code>$ \text{As you can see the only elements} \text{ for which } a^2=1  \text{ are } a = 1 \text{ and } b = 4.$</code></p>
+</div>
+<div id="thoughts" class="section level1">
+<h1>Thoughts</h1>
+<p>I had to proof this theorem in my Linear Algebra class and it took me a couple of hours to figure it out, especially baceause at first sight I did not believe that this could actually be true. I think the best way is to use an example like <span class="math inline">\(\mathbb Z_5\)</span>.</p>
+<p>After the work it was a pretty cool proof in my opinion. Even though the Theorem’s practical usage is limited, it is still useful to find out Remainders of super large numbers in a second.</p>
+</div>
+
+
+<div id="disqus_thread"></div>
+<script>
+(function() {
+var d = document, s = d.createElement('script');
+s.src = 'https://https://https-maxstatdocumentation-netlify-app.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+
+  <footer>
+    
+  
+<nav class="post-nav">
+  <span class="nav-prev"></span>
+  <span class="nav-next"><a href="/post/2021/01/04/burgernomics-the-bigmac-index-in-r-tidy-tuesday/">Burgernomics - The BigMac Index in R (Tidy Tuesday)</a> &rarr;</span>
+</nav>
+
+
+
+<section class="comments">
+  <div id="disqus_thread"></div>
+  <script>
+  var disqus_config = function () {
+  
+  };
+  (function() {
+    var inIFrame = function() {
+      var iframe = true;
+      try { iframe = window.self !== window.top; } catch (e) {}
+      return iframe;
+    };
+    if (inIFrame()) return;
+    var disqus_js = '//https-maxstatdocumentation-netlify-app.disqus.com/embed.js';
+    var d = document, s = d.createElement('script');
+    s.src = disqus_js; s.async = true;
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+  })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</section>
+
+
+
+<script src="//yihui.org/js/math-code.js"></script>
+<script async src="//mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+<script async src="//yihui.org/js/center-img.js"></script>
+
+  
+
+  
+  <hr>
+  <div class="copyright">© <a href="https://maxstatdocumentation.netlify.app/">Max Lang</a> 2020 | <a href="https://github.com/MaxMLang">Github</a></div>
+  
+  </footer>
+  </article>
+  
+  </body>
+</html>
+
