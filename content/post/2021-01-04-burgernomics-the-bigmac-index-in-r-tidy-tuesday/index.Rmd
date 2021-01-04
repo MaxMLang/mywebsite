@@ -34,7 +34,7 @@ add_count(country, name = "country_total")%>%
 # Introduction 
 I recently had some free time, so I analized the latest TidyTuesday Dataset in R. The Data is about the *Big Mac Index* published by *The Economist*, which is a informell Index to measure the purchasing [power parity](https://en.wikipedia.org/wiki/Purchasing_power_parity) between two countries. If your Economics Knowledge is a little rusty like mine, you should read the Wikipedia links before looking at the Graphs.
 The Article on *The Economist*'s Website can be found [here](https://www.economist.com/news/2020/07/15/the-big-mac-index).
-![Short Explanation](images/pic2.png){width=500px height=200px}
+![Short Explanation](images/pic2.png){width=650px height=300px}
 (Source: https://github.com/MaxMLang/tidytuesday/blob/master/data/2020/2020-12-22/pic2.png )
 
 As you can see in the Graphic the main purpose is to tell, if a currency is over- or undervalued.
