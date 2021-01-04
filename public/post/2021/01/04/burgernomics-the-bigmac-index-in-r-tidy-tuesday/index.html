@@ -98,11 +98,11 @@
 <h1>Introduction</h1>
 <p>I recently had some free time, so I analized the latest TidyTuesday Dataset in R. The Data is about the <em>Big Mac Index</em> published by <em>The Economist</em>, which is a informell Index to measure the purchasing <a href="https://en.wikipedia.org/wiki/Purchasing_power_parity">power parity</a> between two countries. If your Economics Knowledge is a little rusty like mine, you should read the Wikipedia links before looking at the Graphs.
 The Article on <em>The Economist</em>’s Website can be found <a href="https://www.economist.com/news/2020/07/15/the-big-mac-index">here</a>.
-<img src="images/pic2.png" width="500" height="200" alt="Short Explanation" />
+<img src="images/pic2.png" width="650" height="300" alt="Short Explanation" />
 (Source: <a href="https://github.com/MaxMLang/tidytuesday/blob/master/data/2020/2020-12-22/pic2.png" class="uri">https://github.com/MaxMLang/tidytuesday/blob/master/data/2020/2020-12-22/pic2.png</a> )</p>
 <p>As you can see in the Graphic the main purpose is to tell, if a currency is over- or undervalued.</p>
-<div id="big-max-prices-over-time" class="section level2">
-<h2>Big Max Prices over time</h2>
+<div id="big-mac-prices-in-different-countries" class="section level2">
+<h2>Big Mac Prices in different Countries</h2>
 <p>First I had a look at the Big Mac Prices over time in each country. We can already see some interesting developments.</p>
 <pre class="r"><code>big_mac%&gt;%
   filter(country_total == max(country_total))%&gt;%

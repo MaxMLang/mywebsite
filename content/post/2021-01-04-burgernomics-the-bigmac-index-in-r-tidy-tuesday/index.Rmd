@@ -183,7 +183,7 @@ I decided to animate the last two (adjusted) Big Mac Index plots in order to add
       transition_time(date)+
       labs(x = "GDP per capita (dollars)",
            y = "Adjusted Big Mac Index relative to USD",
-           title = "{frame_time}")
+           title = "{frame_time}") 
 ```
 
 ### Animated bar plot
