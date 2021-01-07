@@ -1,5 +1,5 @@
 ---
-title: Digital work and social life and the new roblems
+title: Digital work, social life and the new roblems
 author: Max Lang
 date: '2021-01-07'
 slug: digital-work-and-social-life-and-its-problems
