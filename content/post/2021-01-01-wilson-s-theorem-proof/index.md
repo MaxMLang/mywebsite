@@ -37,6 +37,6 @@ Let *p* be a prime. Then
 
 
 # Thoughts
-I had to proof this theorem in my Linear Algebra class and it took me a couple of hours to figure it out, especially baceause at first sight I did not believe that this could actually be true. I think the best way is to use an example like $\mathbb Z_5$. 
+I had to proof this theorem in my Linear Algebra class and it took me a couple of hours to figure it out, especially because at first sight I did not believe that this could actually be true. I think the best way is to use an example like $\mathbb Z_5$. 
 
 After the work it was a pretty cool proof in my opinion. Even though the Theorem's practical usage is limited, it is still useful to find out Remainders of super large numbers in a second.
