@@ -24,36 +24,36 @@ $$
 This basically just says that a small change on the X-Axis will result in a small change on the Y-Axis. To get a better visual perspective on this you can play a bit with this [GeoGebra illusstration]{https://www.geogebra.org/m/cxbjrvks}. 
 
 So our goal is to prove that the following function is continuous with an Epsilon Delta Argument.
-$$ f: \mathbb R^2 \rightarrow \mathbb R^2 \;  x\mapsto(x^2+2x+1)$$
+$$ f: \mathbb R^2 \rightarrow \mathbb R^2 \;  x\mapsto(x^2+ax+c) \; ; a≠0$$
 
 The first step is always to figure out the delta. Therefore we start to simplify $|f(z)-f(\zeta)|<\epsilon$.
 
 So I started with 
 
-(★) $$\left\lvert f(x)-f(y) \right\rvert= \left\lvert (x^2+2x+1) - (y^2+2y+1) \right\rvert = \left\lvert (x^2+2x)-(y^2+2y) \right\rvert$$
+(★) $$\left\lvert f(x)-f(y) \right\rvert= \left\lvert (x^2+ax+c) - (y^2+ay+c) \right\rvert = \left\lvert (x^2+2x)-(y^2+2y) \right\rvert$$
 
-$$\le 2\left\lvert \left\lvert \frac{x^2-y^2}{2} \right\rvert + \left\lvert x- y\right\rvert \right\rvert $$
-$$\le 2\left\lvert \left\lvert \frac{(x+y)(x-y)}{2} \right\rvert + \delta \right\rvert$$
-$$= 2\left\lvert \frac{\left\lvert(x+y)(x-y)\right\rvert}  {2} + \delta \right\rvert $$
-$$ \le 2\left\lvert \frac{\left\lvert(x+y)\delta\right\rvert}  {2} + \delta \right\rvert $$
-$$= 2\left\lvert \frac{[\left\lvert(x-y)\right\rvert+\left\lvert2y\right\rvert]\delta}  {2} + \delta \right\rvert $$
+$$\le a\left\lvert \left\lvert \frac{x^2-y^2}{a} \right\rvert + \left\lvert x- y\right\rvert \right\rvert $$
+$$\le a\left\lvert \left\lvert \frac{(x+y)(x-y)}{a} \right\rvert + \delta \right\rvert$$
+$$= a\left\lvert \frac{\left\lvert(x+y)(x-y)\right\rvert}  {a} + \delta \right\rvert $$
+$$ \le a\left\lvert \frac{\left\lvert(x+y)\delta\right\rvert}  {a} + \delta \right\rvert $$
+$$= a\left\lvert \frac{[\left\lvert(x-y)\right\rvert+\left\lvert ay\right\rvert]\delta}  {a} + \delta \right\rvert $$
 
 Because we can set any requirements for our Delta we let Delta be $\delta \le1.$ This means that our two points on the X-Axis can not be further apart than 1. Now we can substitute $(x-y)$ for 1.
 
-$$= 2\left\lvert \frac{(1+\left\lvert2y\right\rvert)\delta}  {2} + \delta \right\rvert $$
-$$= \left\lvert(1+\left\lvert2y\right\rvert)\delta + 2\delta \right\rvert $$
-$$= \delta \left\lvert(1+\left\lvert2y\right\rvert) + 2 \right\rvert $$
-$$= \delta \left\lvert\left\lvert2y\right\rvert + 3 \right\rvert = \epsilon $$
-$\delta = min\left(1, \frac{\epsilon}{\left\lvert\left\lvert2y\right\rvert + 3 \right\rvert} \right)$ 
+$$= a\left\lvert \frac{(1+\left\lvert ay \right\rvert)\delta}  {a} + \delta \right\rvert $$
+$$= \left\lvert(1+\left\lvert ay \right\rvert)\delta + a\delta \right\rvert $$
+$$= \delta \left\lvert(1+\left\lvert ay \right\rvert) + a \right\rvert $$
+$$= \delta \left\lvert \left\lvert ay \right\rvert + a \right\rvert = \epsilon $$
+$\delta = min\left(1, \frac{\epsilon}{\left\lvert\left\lvert ay\right\rvert + a+1 \right\rvert} \right)$ 
 
 So that was a lot of Algebra, but we made it. Now we can write our formal proof.
 
-Given $\epsilon>0,$ let $\delta= min\left(1, \frac{\epsilon}{\left\lvert\left\lvert2y\right\rvert + 3 \right\rvert} \right)$.  If $0<|x-y|<\delta$ then (★), so $|f(x)-L|<\epsilon$ and $f$ is therefore continuous. So we could insert it into the Definition and it would like this.
+Given $\epsilon>0,$ let $\delta= min\left(1, \frac{\epsilon}{\left\lvert\left\lvert ay \right\rvert +a+1 \right\rvert} \right)$.  If $0<|x-y|<\delta$ then (★), so $|f(x)-L|<\epsilon$ and $f$ is therefore continuous. So we could insert it into the Definition and it would like this.
 $$
 \begin{array}{ccc}
 \forall & \exists & \forall \\
 \epsilon>0 & \delta>0 & x \in \mathbb R
-\end{array}(|x-y|<min\left(1, \frac{\epsilon}{\left\lvert\left\lvert2y\right\rvert + 3 \right\rvert} \right) \Rightarrow|f(x)-f(y)|< \delta \left\lvert\left\lvert2y\right\rvert + 3 \right\rvert)
+\end{array}(|x-y|<min\left(1, \frac{\epsilon}{\left\lvert\left\lvert ay\right\rvert + a+1 \right\rvert} \right) \Rightarrow|f(x)-f(y)|< \delta \left\lvert\left\lvert ay \right\rvert + a+1 \right\rvert)
 $$
 
 # Thoughts
