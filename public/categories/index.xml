@@ -6,22 +6,58 @@
     <description>Recent content in Categories on Max&#39;s StatPage</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 07 Jan 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://maxstatdocumentation.netlify.app/categories/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 27 Jan 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://maxstatdocumentation.netlify.app/categories/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Discussion</title>
       <link>https://maxstatdocumentation.netlify.app/categories/Discussion/</link>
-      <pubDate>Thu, 07 Jan 2021 00:00:00 +0000</pubDate>
+      <pubDate>Wed, 27 Jan 2021 00:00:00 +0000</pubDate>
       
       <guid>https://maxstatdocumentation.netlify.app/categories/Discussion/</guid>
       <description></description>
     </item>
     
     <item>
+      <title>KAS</title>
+      <link>https://maxstatdocumentation.netlify.app/categories/KAS/</link>
+      <pubDate>Wed, 27 Jan 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://maxstatdocumentation.netlify.app/categories/KAS/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Other</title>
       <link>https://maxstatdocumentation.netlify.app/categories/Other/</link>
-      <pubDate>Thu, 07 Jan 2021 00:00:00 +0000</pubDate>
+      <pubDate>Wed, 27 Jan 2021 00:00:00 +0000</pubDate>
       
       <guid>https://maxstatdocumentation.netlify.app/categories/Other/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Opinion</title>
+      <link>https://maxstatdocumentation.netlify.app/categories/Opinion/</link>
+      <pubDate>Tue, 19 Jan 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://maxstatdocumentation.netlify.app/categories/Opinion/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Mathematics</title>
+      <link>https://maxstatdocumentation.netlify.app/categories/Mathematics/</link>
+      <pubDate>Thu, 14 Jan 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://maxstatdocumentation.netlify.app/categories/Mathematics/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Proof</title>
+      <link>https://maxstatdocumentation.netlify.app/categories/Proof/</link>
+      <pubDate>Thu, 14 Jan 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://maxstatdocumentation.netlify.app/categories/Proof/</guid>
       <description></description>
     </item>
     
@@ -49,24 +85,6 @@
       <pubDate>Mon, 04 Jan 2021 00:00:00 +0000</pubDate>
       
       <guid>https://maxstatdocumentation.netlify.app/categories/tidytuesdayinR/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Mathematics</title>
-      <link>https://maxstatdocumentation.netlify.app/categories/Mathematics/</link>
-      <pubDate>Fri, 01 Jan 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://maxstatdocumentation.netlify.app/categories/Mathematics/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Proof</title>
-      <link>https://maxstatdocumentation.netlify.app/categories/Proof/</link>
-      <pubDate>Fri, 01 Jan 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://maxstatdocumentation.netlify.app/categories/Proof/</guid>
       <description></description>
     </item>
     

@@ -28,7 +28,10 @@ The system should connect large metropolitan areas by sending pressurized vehicl
 Moreover, with fully-electric operations the system aims at being climate-neutral. 
 This is short video will give you nice and quick impression of the hyperloop:
 
-{{< youtube 6Ea8ly18uzs >}}
+<div align="center">
+  <a href="https://www.youtube.com/watch?v=6Ea8ly18uzs"><img src="https://img.youtube.com/vi/6Ea8ly18uzs/0.jpg" alt="IMAGE ALT TEXT"></a>
+</div
+
 
 For more detailed information you can checkout the website of TUM Hyperloop [here](https://tumhyperloop.de/about-hyperloop/#what-is-hyperloop). 
 
@@ -59,6 +62,9 @@ I have been a passenger of the MAGLEV in Shanghai myself and it was  awesome! Ha
 
 In addition to the pictures I took myself, here a nice Youtube video, which documents the whole ride:
 
+<div align="center">
+  <a href="https://www.youtube.com/watch?v=R_d4D5_4ovA"><img src="https://img.youtube.com/vi/R_d4D5_4ovA/0.jpg" alt="IMAGE ALT TEXT"></a>
+</div
 {{< youtube R_d4D5_4ovA >}}
 
 As you might have guessed I am a big fan of the MAGLEV and think it is more realistic than the Hyperloop. However, both options are great new ways to transport all of us.
