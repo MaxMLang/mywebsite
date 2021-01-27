@@ -47,11 +47,11 @@ I have been a passenger of the MAGLEV in Shanghai myself and it was  awesome! Ha
 
 <img src="images/Bildschirmfoto 2021-01-27 um 21.30.15.png" alt="" width="210px" height="350px"/>
 
-*Picture of the inside of the station at 龙阳路(Longyang Road)*
+*Picture inside of the station at 龙阳路(Longyang Road)*
 
 <img src="images/Bildschirmfoto 2021-01-27 um 21.29.57.png" alt="" width="210px" height="350px"/>
 
-*Picture of the speed screen inside the MAGLEV *
+*Picture of the speed screen inside the MAGLEV*
 
 <img src="images/Bildschirmfoto 2021-01-27 um 21.29.44.png" alt="" width="210px" height="350px"/>
 
