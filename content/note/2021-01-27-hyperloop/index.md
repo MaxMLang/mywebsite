@@ -55,7 +55,7 @@ I have been a passenger of the MAGLEV in Shanghai myself and it was  awesome! Ha
 
 <img src="images/Bildschirmfoto 2021-01-27 um 21.29.44.png" alt="" width="210px" height="350px"/>
 
-*Picture of the weird guy writing this blog lol *
+*Picture of the weird guy writing this blog lol*
 
 In addition to the pictures I took myself, here a nice Youtube video, which documents the whole ride:
 
