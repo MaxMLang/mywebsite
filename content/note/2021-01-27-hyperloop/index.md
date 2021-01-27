@@ -45,15 +45,15 @@ Gave Europe up to fast on this technology? -  In my opinion that's a clear "Yes!
 
 I have been a passenger of the MAGLEV in Shanghai myself and it was  awesome! Have a look yourself: 
 
-![](images/Bildschirmfoto 2021-01-27 um 21.30.15.png){width=210px height=350px}
+<img src="images/Bildschirmfoto 2021-01-27 um 21.30.15.png" alt="" width="210px" height="350px"/>
 
 *Picture of the inside of the station at 龙阳路(Longyang Road)*
 
-![](images/Bildschirmfoto 2021-01-27 um 21.29.57.png){width=210px height=350px}
+<img src="images/Bildschirmfoto 2021-01-27 um 21.29.57.png" alt="" width="210px" height="350px"/>
 
 *Picture of the speed screen inside the MAGLEV *
 
-![](images/Bildschirmfoto 2021-01-27 um 21.29.44.png){width=210px height=350px}
+<img src="images/Bildschirmfoto 2021-01-27 um 21.29.44.png" alt="" width="210px" height="350px"/>
 
 *Picture of the weird guy writing this blog lol *
 
