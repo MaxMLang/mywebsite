@@ -6,7 +6,7 @@ slug: more-transportation-methods-more-passengers-less-co2
 categories:
   - KAS
   - Discussion
-  - Other
+  - Others
 tags: []
 ---
 
@@ -24,14 +24,11 @@ Of course I can not portray every promising technology on my mini website, there
 ##  Hyperloop
 The Hyperloop is an ultra-high-speed ground transportation system for passengers which was brought up into the discussion by Elon Musk. He published a white paper on the first experiments which were performed under the name "Hyperloop Alpha". (Click [here](https://www.tesla.com/sites/default/files/blog_images/hyperloop-alpha.pdf) for the paper). 
 
-The system should connect large metropolitan areas by sending pressurized vehicles, so called pods, at very high speeds, through sealed and partially evacuated tubes. Thanks to the contactless levitation as well as to the low aerodynamic drag (because of the vacuum), many people believe that this system could be the transportation method of the future. Enthusiasts believe that the travel time of medium-range distances can be considerably reduced compared to current connections. 
+The system should connect large metropolitan areas by sending pressurized vehicles, so called pods, at very high speeds, through sealed and partially evacuated tubes. Thanks to the contactless levitation as well as to the low aerodynamic drag (because of the vacuum), many people believe that this system could be the transportation method of the future. Enthusiasts believe that the travel time of medium-range distances can be considerably reduced compared to current connections.
 Moreover, with fully-electric operations the system aims at being climate-neutral. 
 This is short video will give you nice and quick impression of the hyperloop:
 
-<div align="center">
-  <a href="https://www.youtube.com/watch?v=6Ea8ly18uzs"><img src="https://img.youtube.com/vi/6Ea8ly18uzs/0.jpg" alt="IMAGE ALT TEXT"></a>
-</div
-
+{{< youtube 6Ea8ly18uzs >}}
 
 For more detailed information you can checkout the website of TUM Hyperloop [here](https://tumhyperloop.de/about-hyperloop/#what-is-hyperloop). 
 
@@ -62,9 +59,6 @@ I have been a passenger of the MAGLEV in Shanghai myself and it was  awesome! Ha
 
 In addition to the pictures I took myself, here a nice Youtube video, which documents the whole ride:
 
-<div align="center">
-  <a href="https://www.youtube.com/watch?v=R_d4D5_4ovA"><img src="https://img.youtube.com/vi/R_d4D5_4ovA/0.jpg" alt="IMAGE ALT TEXT"></a>
-</div
 {{< youtube R_d4D5_4ovA >}}
 
 As you might have guessed I am a big fan of the MAGLEV and think it is more realistic than the Hyperloop. However, both options are great new ways to transport all of us.
@@ -85,7 +79,7 @@ This sounds pretty depressing, but it really is not. It is just important to rea
 In my opinion the goal must be to use economic finesse in order to globally decrease the prices of new technologies, but on the other hand make the old ways of transport less profitable. The rest will handle the market itself. (ideally of course) 
 
 Furthermore we need these new systems quickly. So the best way to implement a new system quickly is to use an already developed and established technology like the MAGLEV. Of course it might not be as fast as the Hyperloop, but it is still faster than normal trains. 
-
+  
 Japan is already building the new Chuo Shinkansen line, based on MAGLEV technology. The "trains" will speed up to 600 km/h, which is already a huge achievement. Even though this technology is already established and we know it works consistently, the project of the new line is planned to be finished in the year 2045 (!). 
 
 So how long would it take to  build a functional Hyperloop system, which can be used by the common public? In my opinion twice as long. Moreover, we do not even know if the Hyperloop will be more profitable than e.g. the MAGLEV. 
