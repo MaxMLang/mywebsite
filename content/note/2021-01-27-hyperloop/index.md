@@ -10,7 +10,7 @@ categories:
 tags: []
 ---
 
-After an interesting [presentation](https://www.youtube.com/watch?v=zUY9zkN7Ki4&feature=emb_title) by Prof. Dr.-Ing. Agnes Jocher of the TU Munich about the Hyperloop this interesting question just came to my mind: "Will more transportation mehtods actually lead to a decrease in CO2 emissions?" 
+After an interesting [presentation](https://www.youtube.com/watch?v=zUY9zkN7Ki4&feature=emb_title) by Prof. Dr.-Ing. Agnes Jocher of the TU Munich about the Hyperloop this interesting question just came to my mind: "Will more transportation methods actually lead to a decrease in CO2 emissions?" 
 
 The population of earth is still increasing exponentially, more and more people will have access to (public) transportation and third world countries keep developing (That is great of course!), which will lead to an increase in global energy usage. 
 
