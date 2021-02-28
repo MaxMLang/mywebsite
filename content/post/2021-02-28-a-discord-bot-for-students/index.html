@@ -1,0 +1,127 @@
+---
+title: UNIMUC - A Discord bot for LMU Students
+output:
+  blogdown::html_page:
+    toc: true
+author: Max Lang
+date: '2021-02-28'
+slug: a-discord-bot-for-students
+categories:
+  - Python
+  - Python Programming
+tags: []
+---
+
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
+
+<div id="TOC">
+<ul>
+<li><a href="#the-idea">The Idea</a></li>
+<li><a href="#preparations">Preparations</a></li>
+<li><a href="#main-functions">Main Functions</a>
+<ul>
+<li><a href="#sending-useful-links">Sending useful Links</a></li>
+<li><a href="#fun-facts">Fun Facts</a></li>
+<li><a href="#encouragements">Encouragements</a></li>
+<li><a href="#quotes">Quotes</a></li>
+</ul></li>
+<li><a href="#thoughts">Thoughts</a></li>
+</ul>
+</div>
+
+<div id="the-idea" class="section level1">
+<h1>The Idea</h1>
+<p>Now that my semester is over and I do not have a lot of lectures anymore, I decided to continue focusing on studying Python in addition to R. My first project however is not a Data Analysis one - it is a bot.
+Due to the Covid-19 Pandemic my friends and I were more or less forced to start our Bachelor studies online. Most of them I have not even met in real life yet. So our main tool to communicate, study together and meet up is our own Discord server. On that server are almost 200 students that use it to meet up and connect. It is kind of like an virtual campus. While we were chatting and preparing for our exams, we discussed how cool it would be to have a bot that makes our virtual college life a bit easier. We discussed over a couple of functions it should have and already had some pretty cool ideas. Those ideas were now transformed into a working bot!</p>
+</div>
+<div id="preparations" class="section level1">
+<h1>Preparations</h1>
+<p>Here we just link our code to our specific bot we created in the Github Developer Portal via the Discord Token. I have to omit this token because it is kind of the key to the whole bot. After that we create the bot itself and assign in to the bot variable. Pay attention to the <code>commands.Bot(command_prefix="uni$")</code> call. Here we specified the prefix of UNIMUC. So by using <code>uni$some_command</code> we can tell our bot what to do specifically.</p>
+<pre class="python"><code># INSERT THE SPECIFIC DISCORD TOKEN
+DISCORD_TOKEN = &quot;XXXXXXXXXXXXXXX&quot;
+
+# CREATES A NEW BOT OBJECT WITH A SPECIFIED PREFIX
+bot = commands.Bot(command_prefix=&quot;uni$&quot;)</code></pre>
+</div>
+<div id="main-functions" class="section level1">
+<h1>Main Functions</h1>
+<p>In the following I want to present a couple of functions I implemented into the UNIMUC (the bot) and how I believe this could make everyones online college life a bit more easy. I will only focus on the functions and not go into detail on the packages I used. If you’re interested in that check out the code on my <a href="https://github.com/MaxMLang/DiscordBot_Uni">Github</a></p>
+<div id="sending-useful-links" class="section level2">
+<h2>Sending useful Links</h2>
+<p>Many students struggle to keep an overview over all the websites. Lecture Periods, Moodle (Platform for courses in Statistics), Uni2Work (Platform for courses in Mathematics or Computer Science) and many more. This problem belongs now to the past. UNIMUC offers multiple functions to send them the links right into the channel. These functions are simple but really powerful.</p>
+<p>All those functions work exactly the same, so I will just take one or two examples out. If you are interested in the whole source-code you can find it on my <a href="https://github.com/MaxMLang/DiscordBot_Uni">Github</a> .</p>
+<pre class="python"><code>@bot.command(
+    help=&quot;Print out the link to the lecture periods&quot;,
+    brief=&quot;Prints link to lecture periods&quot;
+)
+async def vz(ctx):
+    await ctx.channel.send(&quot;https://www.lmu.de/de/workspace-fuer-studierende/1x1-des-studiums/vorlesungszeiten/index.html&quot;)
+
+@bot.command(
+    help=&quot;Print out the link to the university website&quot;,
+    brief=&quot;Prints link to university website&quot;
+)
+async def website(ctx):
+    await ctx.channel.send(&quot;https://www.lmu.de/de/index.html&quot;)</code></pre>
+<p>As you can see I extracted the two functions <code>vz</code> and <code>website</code>. If a student types now <code>uni$vz</code> or <code>uni$website</code> UNIMUC will send him the specific link.
+On Discord this looks then like this:
+<img src="images/Bildschirmfoto%202021-02-28%20um%2019.38.31.png" width="600" height="600" alt="Photo of the commands and bot reponse in Discord" /></p>
+</div>
+<div id="fun-facts" class="section level2">
+<h2>Fun Facts</h2>
+<p>Sometimes you might be in the mood for some quick fun facts. "Did you know…</p>
+<p>… that UNIMUC can help you with that?"</p>
+<p>What UNIMUC basically does is take random string out of the <code>all_fun_facts</code> string array by using the <code>random.choice()</code> function from the <code>random</code> package. This simply gets assigned to a variable <code>fact</code> which UNIMUC will send back to the author.</p>
+<pre class="python"><code># Creating the String array (could also be outsourced to another doc)
+all_fun_facts = [ &quot;53.091 students were enrolled @LMU in the WS 2019/2020&quot;, &quot;787 Professors performed research @LMU&quot;, &quot;LMU was Bavaria&#39;s first University&quot;, &quot;LMU was founded in 1472&quot;, &quot;1918 wurde der erste Studenten Ausschuss an der LMU gegründet&quot;, &quot;1919 Max Weber joins the LMU faculty&quot;, &quot;The Simpsons Paradox is not really a paradox&quot;]
+
+@bot.command(
+    help= &quot;Get a funfact&quot;,
+    brief= &quot;Get a funfact&quot;
+)
+async def funfact(ctx):
+    fact= random.choice(all_fun_facts)
+    await ctx.channel.send(fact)</code></pre>
+<p>The output on Discord looks like this:
+<img src="images/Bildschirmfoto%202021-02-28%20um%2019.48.59.png" width="600" height="300" alt="Screenshot Output" /></p>
+</div>
+<div id="encouragements" class="section level2">
+<h2>Encouragements</h2>
+<p>Life can be frustrating. Student life can be even more frustrating, sometimes. UNIMUC will cheer you up again! You can use <code>uni$enc</code> to get some encouragement. The function works exactly the same as <code>uni$funfact</code>. However, UNIMUC can encourage you just by reading what you write in the chat. So e.g. if you write “Ich geb auf” (“I give up” in German) UNIMUC will send you some encouragement. So how does this work?</p>
+<p>First we have two arrays. The first one <code>sad_words</code> contains all the phrases UNIMUC identifies as something sad/frustrated people would write. The second one <code>starter_encouragements</code> contains the phrases UNIMUC will answer.</p>
+<p>So by using <code>on_message(message)</code> UNIMUC looks out for those phrases. To prevent endless bot replies I included the first <code>if</code> statement. The rest is pretty straightforward.</p>
+<pre class="python"><code>sad_words = [&quot;Ich geb auf&quot;, &quot;Ich schaffe das nicht&quot;, &quot;Das ist schwer&quot;, &quot;traurig&quot;, &quot;schwer&quot;, &quot;hart&quot;, &quot;So ein Müll&quot;]
+
+starter_encouragements= [&quot;Du schaffst das!&quot;, &quot;Niemals aufgeben!&quot;, &quot;Glaub an dich!&quot;, &quot;Es ist immer ein Licht am Ende des Tunnels&quot;, &quot;Work hard, cry later!&quot;]
+
+@bot.event
+async def on_message(message):
+        if message.author == bot.user:
+            return
+
+        msg = message.content
+        if any(word in msg for word in sad_words):
+            await message.channel.send(random.choice(starter_encouragements))
+        await bot.process_commands(message)</code></pre>
+<p>Let’s have a look how it works on Discord:
+<img src="images/Bildschirmfoto%202021-02-28%20um%2020.01.09.png" width="600" height="300" alt="Output" /></p>
+<p>As you can see the message just needs to contain the one word out of the <code>sad_words</code> array for UNIMUC to reply.</p>
+</div>
+<div id="quotes" class="section level2">
+<h2>Quotes</h2>
+<p>Best comes last. This is one of my favorite features of UNIMUC. By using the <code>uni$quote</code> command, students can get an almost infinite amount of quotes from <a href="https://zenquotes.io">Zenquotes</a>. To work this out, I defined a <code>getQuote</code> function that will store the random quote from the website in a variable quote. The command <code>uni$quote</code> will just simply print the string into the channel on Discord.</p>
+<pre class="python"><code># THIS FUNCTION WILL EXTRACT A QUOTE FROM ZENQUOTES.IO
+def getQuote():
+  response = requests.get(&quot;https://zenquotes.io/api/random&quot;)
+  json_data = json.loads(response.text)
+  quote = json_data[0][&#39;q&#39;] + &quot; -&quot; + json_data[0][&#39;a&#39;]
+  return(quote)</code></pre>
+<p>The output looks like this:
+<img src="images/Bildschirmfoto%202021-02-28%20um%2020.09.37.png" width="600" height="300" /></p>
+<p>So whenver you need an inspirational quote <code>uni$quote</code> is the way to go!</p>
+</div>
+</div>
+<div id="thoughts" class="section level1">
+<h1>Thoughts</h1>
+<p>This definetly was a lot of fun and a pretty cool project. I am really excited to further improve this bot during the upcoming semesters. Especially because the deployment is done now, it is almost all programming from now on. Stay tuned! :)</p>
+</div>
