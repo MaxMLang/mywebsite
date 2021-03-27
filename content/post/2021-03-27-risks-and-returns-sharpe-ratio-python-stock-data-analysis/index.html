@@ -22,11 +22,11 @@ So let’s inspect the Sharpe ratio by calculating it for the stocks of the two 
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 # Settings to produce nice plots in a Jupyter notebook
 plt.style.use(&#39;fivethirtyeight&#39;)
 
-  
 # Reading in the data
 stock_data = pd.read_csv(&#39;/Users/max/Documents/Data Science/Project_Notebooks/Risk and Returns- The Sharpe Ratio/datasets/stock_data.csv&#39;, parse_dates= [&#39;Date&#39;], index_col= [&#39;Date&#39;]).dropna()
 benchmark_data = pd.read_csv(&#39;/Users/max/Documents/Data Science/Project_Notebooks/Risk and Returns- The Sharpe Ratio/datasets/benchmark_data.csv&#39;, parse_dates= [&#39;Date&#39;], index_col= [&#39;Date&#39;]).dropna() </code></pre>
@@ -76,10 +76,20 @@ benchmark_data = pd.read_csv(&#39;/Users/max/Documents/Data Science/Project_Note
 <h2>Daily prices for Amazon and Facebook</h2>
 <p>Before we compare an investment in either Facebook or Amazon with the index of the 500 largest companies in the US, let’s visualize the data.</p>
 <pre class="python"><code># visualize the stock_data
-stock_data.plot(kind= &quot;line&quot;,subplots= True, title= &quot;Stock Data&quot;, linewidth= 1.0, color= (&quot;darkorange&quot;, &quot;blue&quot;))</code></pre>
-<pre><code>## array([&lt;AxesSubplot:xlabel=&#39;Date&#39;&gt;, &lt;AxesSubplot:xlabel=&#39;Date&#39;&gt;],
-##       dtype=object)</code></pre>
-<pre class="python"><code>plt.tight_layout()
+fig, ax= plt.subplots(2,1)
+fig.tight_layout()
+plt.subplots_adjust(wspace=1.0, hspace= 0.75)
+plt.gcf().subplots_adjust(left=0.15, bottom= 0.15)
+fig.suptitle(&quot;Stock price of Amazon and Facebook&quot;,y= 1.92, ha= &quot;center&quot;, va= &quot;top&quot;, size= 20)
+
+
+sns.lineplot(ax= ax[0], x= stock_data.index, y= &quot;Amazon&quot;, data= stock_data, linewidth= 1.0, color= &quot;darkorange&quot;)
+ax[0].set_ylabel(&quot;Stock Price \n in US $&quot;)
+ax[0].set_title(&quot;Amazon Stock&quot;, fontsize= 15)
+
+sns.lineplot(ax= ax[1], x= stock_data.index, y= &quot;Facebook&quot;, data= stock_data, linewidth= 1.0, color= &quot;steelblue&quot;)
+ax[1].set_ylabel(&quot;Stock Price \n in US $&quot;)
+ax[1].set_title(&quot;Facebook Stock&quot;, fontsize= 15)
 plt.show()
 # summarize the stock_data</code></pre>
 <p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
@@ -98,8 +108,13 @@ plt.show()
 <h2>S&amp;P 500</h2>
 <p>Let’s also take a closer look at the value of the S&amp;P 500, our benchmark.</p>
 <pre class="python"><code># plot the benchmark_data
-benchmark_data.plot(kind= &quot;line&quot;,title= &#39;S&amp;P 500&#39;, linewidth= 1.0)
+fig, ax= plt.subplots()
+plt.gcf().subplots_adjust(left=0.13, bottom= 0.17)
+sns.lineplot(x= benchmark_data.index, y= &#39;S&amp;P 500&#39;, linewidth= 1.0, data= benchmark_data)
+ax.set_title(&quot;S&amp;P 500 Index&quot;)
+ax.set_ylabel(&quot;Index Points&quot;)
 plt.show()
+
 # summarize the benchmark_data</code></pre>
 <p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 <pre class="python"><code>benchmark_data.describe()</code></pre>
@@ -121,10 +136,23 @@ However, the data shows the historical value of each investment, not the return.
 stock_returns = stock_data.pct_change()
 
 # plot the daily returns
-stock_returns.plot(subplots= True, linewidth= 1.0, color= (&quot;darkorange&quot;, &quot;darkblue&quot;))</code></pre>
-<pre><code>## array([&lt;AxesSubplot:xlabel=&#39;Date&#39;&gt;, &lt;AxesSubplot:xlabel=&#39;Date&#39;&gt;],
-##       dtype=object)</code></pre>
-<pre class="python"><code>plt.show()
+fig, ax= plt.subplots(2, sharey= True)
+fig.tight_layout()
+plt.subplots_adjust(wspace=1.0, hspace= 0.5)
+plt.gcf().subplots_adjust(left=0.13, bottom= 0.12)
+
+sns.lineplot(ax= ax[0], x= stock_returns.index, y= &quot;Amazon&quot;, linewidth= 1.0, color= &quot;darkorange&quot;, data= stock_returns)
+sns.lineplot(ax= ax[1], x= stock_returns.index, y= &quot;Facebook&quot;, linewidth= 1.0, color= &quot;steelblue&quot;, data= stock_returns)
+
+ax[0].set_xlabel(&quot;Date&quot;, fontsize= 13)
+ax[0].set_ylabel(&quot;Change in Percent&quot;, fontsize= 13)
+ax[0].set_title(&quot;Amazon Stock&quot;, fontsize= 15)
+
+ax[1].set_xlabel(&quot;Date&quot;, fontsize= 13)
+ax[1].set_ylabel(&quot;Change in Percent&quot;, fontsize= 13)
+ax[1].set_title(&quot;Facebook Stock&quot;, fontsize= 15)
+plt.show()
+
 # summarize the daily returns</code></pre>
 <p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 <pre class="python"><code>stock_returns.describe()</code></pre>
@@ -139,37 +167,55 @@ stock_returns.plot(subplots= True, linewidth= 1.0, color= (&quot;darkorange&quot
 ## max      0.095664    0.155214</code></pre>
 <p>For the S&amp;P 500, calculating daily returns works just the same way.</p>
 <pre class="python"><code># calculate daily benchmark_data returns
-sp_returns = benchmark_data[&#39;S&amp;P 500&#39;].pct_change()
+sp_returns = benchmark_data.pct_change()
 
 # plot the daily returns
-sp_returns.plot(linewidth= 1.0)
-plt.tight_layout()
-plt.show()
+fig, ax= plt.subplots()
+plt.gcf().subplots_adjust(left=0.15, bottom= 0.15)
+sns.lineplot(x= sp_returns.index, y= &quot;S&amp;P 500&quot;, linewidth= 1.0, data= sp_returns)
+ax.set_title(&quot;S&amp;P 500 Index&quot;)
+ax.set_ylabel(&quot;Change in Percent&quot;)
 
+plt.hlines(y= 0.0, xmin= sp_returns.index.min(), xmax= sp_returns.index.max(),linestyles= &#39;dashed&#39;, color= &#39;black&#39;, linewidth= 1.5)
+
+plt.show()
 # summarize the daily returns</code></pre>
 <p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 <pre class="python"><code>sp_returns.describe()</code></pre>
-<pre><code>## count    251.000000
-## mean       0.000458
-## std        0.008205
-## min       -0.035920
-## 25%       -0.002949
-## 50%        0.000205
-## 75%        0.004497
-## max        0.024760
-## Name: S&amp;P 500, dtype: float64</code></pre>
+<pre><code>##           S&amp;P 500
+## count  251.000000
+## mean     0.000458
+## std      0.008205
+## min     -0.035920
+## 25%     -0.002949
+## 50%      0.000205
+## 75%      0.004497
+## max      0.024760</code></pre>
 </div>
 <div id="calculating-excess-returns-for-amazon-and-facebook-vs.-sp-500" class="section level2">
 <h2>Calculating Excess Returns for Amazon and Facebook vs. S&amp;P 500</h2>
-<p>Next, one needs to calculate the relative performance of stocks vs. the S&amp;P 500 benchmark. This is calculated as the difference in returns between <code>stock_returns</code> and <code>sp_returns</code> for each day.</p>
+<p>
+Next, one needs to calculate the relative performance of stocks vs. the S&amp;P 500 benchmark. This is calculated as the difference in returns between <code>stock_returns</code> and <code>sp_returns</code> for each day.
+</p>
 <pre class="python"><code># calculate the difference in daily returns
-excess_returns = stock_returns.sub(sp_returns, axis= 0)
+excess_returns = stock_returns.sub(sp_returns[&quot;S&amp;P 500&quot;], axis= 0)
 
 # plot the excess_returns
-excess_returns.plot(linewidth= 1.0, subplots= True, color= (&quot;darkorange&quot;, &quot;darkblue&quot;))</code></pre>
-<pre><code>## array([&lt;AxesSubplot:xlabel=&#39;Date&#39;&gt;, &lt;AxesSubplot:xlabel=&#39;Date&#39;&gt;],
-##       dtype=object)</code></pre>
-<pre class="python"><code>plt.tight_layout()
+fig, ax= plt.subplots(2, sharey= True)
+fig.tight_layout()
+plt.subplots_adjust(wspace=1.5, hspace= 0.75)
+plt.gcf().subplots_adjust(left=0.15, bottom= 0.15)
+
+
+sns.lineplot(ax= ax[0], x= excess_returns.index, y= &quot;Amazon&quot;, linewidth= 1.0, color= &quot;darkorange&quot;, data= excess_returns)
+sns.lineplot(ax= ax[1], x= excess_returns.index, y= &quot;Facebook&quot;, linewidth= 1.0, color= &quot;steelblue&quot;, data= excess_returns)
+
+ax[0].set_ylabel(&quot;Difference \n in returns&quot;, fontsize= 13)
+ax[0].set_title(&quot;Amazon Stock&quot;, fontsize= 15)
+
+ax[1].set_ylabel(&quot;Difference \n in returns&quot;, fontsize= 13)
+ax[1].set_title(&quot;Facebook Stock&quot;, fontsize= 15)
+
 plt.show()
 # summarize the excess_returns</code></pre>
 <p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
@@ -189,32 +235,34 @@ plt.show()
 <p>Step 1: The Average Difference in Daily Returns Stocks vs S&amp;P 500</p>
 <pre class="python"><code># calculate the mean of excess_returns 
 avg_excess_return = excess_returns.mean()
-
-# plot avg_excess_returns
-avg_excess_return.plot(linewidth= 1.0)
-plt.show()</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+print(avg_excess_return)</code></pre>
+<pre><code>## Amazon      0.000360
+## Facebook    0.000168
+## dtype: float64</code></pre>
 <p>Step 2: Standard Deviation of the Return Difference</p>
 <pre class="python"><code># calculate the standard deviations
 sd_excess_return = excess_returns.std()
-
-# plot the standard deviations
-sd_excess_return.plot.bar(linewidth= 1.0,title=&#39;Standard Deviation of the Return Difference&#39;, color=(&quot;darkorange&quot;,&quot;darkblue&quot;), width= 0.5)
-
-plt.tight_layout()
-plt.show()</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+print(sd_excess_return)</code></pre>
+<pre><code>## Amazon      0.016126
+## Facebook    0.015439
+## dtype: float64</code></pre>
 <p>Step 3: Compute the ratio</p>
 <pre class="python"><code># calculate the daily sharpe ratio
 daily_sharpe_ratio = avg_excess_return.div(sd_excess_return)
-
 # annualize the sharpe ratio
 annual_factor = np.sqrt(252)
 annual_sharpe_ratio = daily_sharpe_ratio.mul(annual_factor)
+df_annual_sharpe_ratio = pd.DataFrame(annual_sharpe_ratio, index= annual_sharpe_ratio.index, columns= [&quot;Sharpe Ratio&quot;])
 
-# plot the annualized sharpe ratio
-annual_sharpe_ratio.plot(linewidth= 1.0, title= &#39;Annualized Sharpe Ratio: Stocks vs S&amp;P 500&#39;)
+print(df_annual_sharpe_ratio)
 
+# plot the annualized sharpe ratio</code></pre>
+<pre><code>##           Sharpe Ratio
+## Amazon        0.354283
+## Facebook      0.172329</code></pre>
+<pre class="python"><code>fig, ax= plt.subplots()
+sns.barplot(x= df_annual_sharpe_ratio.index, y= &quot;Sharpe Ratio&quot;,palette= (&quot;darkorange&quot;, &quot;steelblue&quot;), data= df_annual_sharpe_ratio)
+ax.set_title(&quot;Annual Sharpe Ratio of Amazon and Facebook&quot;)
 plt.show()</code></pre>
 <p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 </div>

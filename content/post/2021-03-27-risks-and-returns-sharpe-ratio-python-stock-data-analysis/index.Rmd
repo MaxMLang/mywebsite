@@ -15,16 +15,17 @@ Enter William Sharpe. He introduced the reward-to-variability ratio in 1966 that
 The Sharpe ratio has been one of the most popular risk/return measures in finance, not least because it's so simple to use. It also helped that Professor Sharpe won a Nobel Memorial Prize in Economics in 1990 for his work on the capital asset pricing model (CAPM).
 So let's inspect the Sharpe ratio by calculating it for the stocks of the two tech giants Facebook and Amazon. As benchmark we'll use the S&P 500 that measures the performance of the 500 largest stocks in the US.
 
+
 ```{python}
 # Importing required modules
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 # Settings to produce nice plots in a Jupyter notebook
 plt.style.use('fivethirtyeight')
 
-  
 # Reading in the data
 stock_data = pd.read_csv('/Users/max/Documents/Data Science/Project_Notebooks/Risk and Returns- The Sharpe Ratio/datasets/stock_data.csv', parse_dates= ['Date'], index_col= ['Date']).dropna()
 benchmark_data = pd.read_csv('/Users/max/Documents/Data Science/Project_Notebooks/Risk and Returns- The Sharpe Ratio/datasets/benchmark_data.csv', parse_dates= ['Date'], index_col= ['Date']).dropna() 
@@ -47,12 +48,23 @@ Before we compare an investment in either Facebook or Amazon with the index of t
 
 ```{python}
 # visualize the stock_data
-stock_data.plot(kind= "line",subplots= True, title= "Stock Data", linewidth= 1.0, color= ("darkorange", "blue"))
-plt.tight_layout()
+fig, ax= plt.subplots(2,1)
+fig.tight_layout()
+plt.subplots_adjust(wspace=1.0, hspace= 0.75)
+plt.gcf().subplots_adjust(left=0.15, bottom= 0.15)
+fig.suptitle("Stock price of Amazon and Facebook",y= 1.92, ha= "center", va= "top", size= 20)
+
+
+sns.lineplot(ax= ax[0], x= stock_data.index, y= "Amazon", data= stock_data, linewidth= 1.0, color= "darkorange")
+ax[0].set_ylabel("Stock Price \n in US $")
+ax[0].set_title("Amazon Stock", fontsize= 15)
+
+sns.lineplot(ax= ax[1], x= stock_data.index, y= "Facebook", data= stock_data, linewidth= 1.0, color= "steelblue")
+ax[1].set_ylabel("Stock Price \n in US $")
+ax[1].set_title("Facebook Stock", fontsize= 15)
 plt.show()
 # summarize the stock_data
 stock_data.describe()
-
 ```
 
 ## S&P 500
@@ -60,8 +72,13 @@ Let's also take a closer look at the value of the S&P 500, our benchmark.
 
 ```{python}
 # plot the benchmark_data
-benchmark_data.plot(kind= "line",title= 'S&P 500', linewidth= 1.0)
+fig, ax= plt.subplots()
+plt.gcf().subplots_adjust(left=0.13, bottom= 0.17)
+sns.lineplot(x= benchmark_data.index, y= 'S&P 500', linewidth= 1.0, data= benchmark_data)
+ax.set_title("S&P 500 Index")
+ax.set_ylabel("Index Points")
 plt.show()
+
 # summarize the benchmark_data
 benchmark_data.describe()
 ```
@@ -75,8 +92,23 @@ However, the data shows the historical value of each investment, not the return.
 stock_returns = stock_data.pct_change()
 
 # plot the daily returns
-stock_returns.plot(subplots= True, linewidth= 1.0, color= ("darkorange", "darkblue"))
+fig, ax= plt.subplots(2, sharey= True)
+fig.tight_layout()
+plt.subplots_adjust(wspace=1.0, hspace= 0.5)
+plt.gcf().subplots_adjust(left=0.13, bottom= 0.12)
+
+sns.lineplot(ax= ax[0], x= stock_returns.index, y= "Amazon", linewidth= 1.0, color= "darkorange", data= stock_returns)
+sns.lineplot(ax= ax[1], x= stock_returns.index, y= "Facebook", linewidth= 1.0, color= "steelblue", data= stock_returns)
+
+ax[0].set_xlabel("Date", fontsize= 13)
+ax[0].set_ylabel("Change in Percent", fontsize= 13)
+ax[0].set_title("Amazon Stock", fontsize= 15)
+
+ax[1].set_xlabel("Date", fontsize= 13)
+ax[1].set_ylabel("Change in Percent", fontsize= 13)
+ax[1].set_title("Facebook Stock", fontsize= 15)
 plt.show()
+
 # summarize the daily returns
 stock_returns.describe()
 ```
@@ -85,27 +117,45 @@ For the S&P 500, calculating daily returns works just the same way.
 
 ```{python}
 # calculate daily benchmark_data returns
-sp_returns = benchmark_data['S&P 500'].pct_change()
+sp_returns = benchmark_data.pct_change()
 
 # plot the daily returns
-sp_returns.plot(linewidth= 1.0)
-plt.tight_layout()
-plt.show()
+fig, ax= plt.subplots()
+plt.gcf().subplots_adjust(left=0.15, bottom= 0.15)
+sns.lineplot(x= sp_returns.index, y= "S&P 500", linewidth= 1.0, data= sp_returns)
+ax.set_title("S&P 500 Index")
+ax.set_ylabel("Change in Percent")
 
+plt.hlines(y= 0.0, xmin= sp_returns.index.min(), xmax= sp_returns.index.max(),linestyles= 'dashed', color= 'black', linewidth= 1.5)
+
+plt.show()
 # summarize the daily returns
 sp_returns.describe()
 ```
 
 ## Calculating Excess Returns for Amazon and Facebook vs. S&P 500
-Next, one needs to calculate the relative performance of stocks vs. the S&amp;P 500 benchmark. This is calculated as the difference in returns between <code>stock_returns</code> and <code>sp_returns</code> for each day.
+<p>Next, one needs to calculate the relative performance of stocks vs. the S&amp;P 500 benchmark. This is calculated as the difference in returns between <code>stock_returns</code> and <code>sp_returns</code> for each day.</p>
 
 ```{python}
 # calculate the difference in daily returns
-excess_returns = stock_returns.sub(sp_returns, axis= 0)
+excess_returns = stock_returns.sub(sp_returns["S&P 500"], axis= 0)
 
 # plot the excess_returns
-excess_returns.plot(linewidth= 1.0, subplots= True, color= ("darkorange", "darkblue"))
-plt.tight_layout()
+fig, ax= plt.subplots(2, sharey= True)
+fig.tight_layout()
+plt.subplots_adjust(wspace=1.5, hspace= 0.75)
+plt.gcf().subplots_adjust(left=0.15, bottom= 0.15)
+
+
+sns.lineplot(ax= ax[0], x= excess_returns.index, y= "Amazon", linewidth= 1.0, color= "darkorange", data= excess_returns)
+sns.lineplot(ax= ax[1], x= excess_returns.index, y= "Facebook", linewidth= 1.0, color= "steelblue", data= excess_returns)
+
+ax[0].set_ylabel("Difference \n in returns", fontsize= 13)
+ax[0].set_title("Amazon Stock", fontsize= 15)
+
+ax[1].set_ylabel("Difference \n in returns", fontsize= 13)
+ax[1].set_title("Facebook Stock", fontsize= 15)
+
 plt.show()
 # summarize the excess_returns
 excess_returns.describe()
@@ -117,10 +167,7 @@ Step 1: The Average Difference in Daily Returns Stocks vs S&P 500
 ```{python}
 # calculate the mean of excess_returns 
 avg_excess_return = excess_returns.mean()
-
-# plot avg_excess_returns
-avg_excess_return.plot(linewidth= 1.0)
-plt.show()
+print(avg_excess_return)
 ```
 
 Step 2: Standard Deviation of the Return Difference
@@ -128,12 +175,7 @@ Step 2: Standard Deviation of the Return Difference
 ```{python}
 # calculate the standard deviations
 sd_excess_return = excess_returns.std()
-
-# plot the standard deviations
-sd_excess_return.plot.bar(linewidth= 1.0,title='Standard Deviation of the Return Difference', color=("darkorange","darkblue"), width= 0.5)
-
-plt.tight_layout()
-plt.show()
+print(sd_excess_return)
 ```
 
 Step 3: Compute the ratio
@@ -141,19 +183,22 @@ Step 3: Compute the ratio
 ```{python}
 # calculate the daily sharpe ratio
 daily_sharpe_ratio = avg_excess_return.div(sd_excess_return)
-
 # annualize the sharpe ratio
 annual_factor = np.sqrt(252)
 annual_sharpe_ratio = daily_sharpe_ratio.mul(annual_factor)
+df_annual_sharpe_ratio = pd.DataFrame(annual_sharpe_ratio, index= annual_sharpe_ratio.index, columns= ["Sharpe Ratio"])
+
+print(df_annual_sharpe_ratio)
 
 # plot the annualized sharpe ratio
-annual_sharpe_ratio.plot(linewidth= 1.0, title= 'Annualized Sharpe Ratio: Stocks vs S&P 500')
-
+fig, ax= plt.subplots()
+sns.barplot(x= df_annual_sharpe_ratio.index, y= "Sharpe Ratio",palette= ("darkorange", "steelblue"), data= df_annual_sharpe_ratio)
+ax.set_title("Annual Sharpe Ratio of Amazon and Facebook")
 plt.show()
 ```
 
 ## Conclusion
 <p>Given the two Sharpe ratios, which investment should you go for? In 2016, Amazon had a Sharpe ratio twice as high as Facebook. This means that an investment in Amazon returned twice as much compared to the S&amp;P 500 for each unit of risk an investor would have assumed. In other words, in risk-adjusted terms, the investment in Amazon would have been more attractive.</p>
 <p>This difference was mostly driven by differences in return rather than risk between Amazon and Facebook. The risk of choosing Amazon over FB (as measured by the standard deviation) was only slightly higher so that the higher Sharpe ratio for Amazon ends up higher mainly due to the higher average daily returns for Amazon. </p>
-<p>When faced with investment alternatives that offer both different returns and risks, the Sharpe Ratio helps to make a decision by adjusting the returns by the differences in risk and allows an investor to compare investment opportunities on equal terms, that is, on an 'apples-to-apples' basis.</p>
+<p>When faced with investment alternatives that offer both different returns and risks, the Sharpe Ratio helps to make a decision by adjusting the returns by the differences in risk and allows an investor to compare investment opportunities on equal terms, that is, on an 'apples-to-apples' basis.</p> 
 
