@@ -71,7 +71,7 @@ len(deaths_list)
 ```
 
 ## The Ghost Map 
-We now know how John Snow did created the famous ghost map and have his data too, so let's recreate his map using modern technology!  Unfortunately I can not display the interactive foium map here on this page. That's why there is only a picture of it. How ever if you want to take a look at the Jupyter Notebook with the interactive Map click [here](https://github.com/MaxMLang/Data_Analysis_Projects/blob/main/Recreating%20John%20Snow's%20Ghost%20Map/notebook.ipynb)
+We now know how John Snow did created the famous ghost map and have his data too, so let's recreate his map using modern technology!  Unfortunately I can not display the interactive foium map here on this page. That's why there is only a picture of it. How ever if you want to take a look at the Jupyter Notebook with the interactive Map click [here](https://nbviewer.jupyter.org/github/MaxMLang/Data_Analysis_Projects/blob/main/Recreating%20John%20Snow%27s%20Ghost%20Map/notebook.ipynb)
 
 ```{python, results= 'hide'}
 # import

@@ -68,7 +68,7 @@ len(deaths_list)</code></pre>
 </div>
 <div id="the-ghost-map" class="section level2">
 <h2>The Ghost Map</h2>
-<p>We now know how John Snow did created the famous ghost map and have his data too, so let’s recreate his map using modern technology! Unfortunately I can not display the interactive foium map here on this page. That’s why there is only a picture of it. How ever if you want to take a look at the Jupyter Notebook with the interactive Map click <a href="https://github.com/MaxMLang/Data_Analysis_Projects/blob/main/Recreating%20John%20Snow&#39;s%20Ghost%20Map/notebook.ipynb">here</a></p>
+<p>We now know how John Snow did created the famous ghost map and have his data too, so let’s recreate his map using modern technology! Unfortunately I can not display the interactive foium map here on this page. That’s why there is only a picture of it. How ever if you want to take a look at the Jupyter Notebook with the interactive Map click <a href="https://nbviewer.jupyter.org/github/MaxMLang/Data_Analysis_Projects/blob/main/Recreating%20John%20Snow%27s%20Ghost%20Map/notebook.ipynb">here</a></p>
 <pre class="python"><code># import
 import folium
 map = folium.Map(location=[51.5132119,-0.13666], tiles=&#39;Stamen Toner&#39;, zoom_start=17)
@@ -97,16 +97,16 @@ pumps_list = locations_pumps.values.tolist()
 map1 = map
 for point in range(0, len(pumps_list)):
     folium.Marker(pumps_list[point], popup=pumps[&#39;Pump Name&#39;][point]).add_to(map1)</code></pre>
-<pre><code>## &lt;folium.map.Marker object at 0x7fe168b44080&gt;
-## &lt;folium.map.Marker object at 0x7fe168b44358&gt;
-## &lt;folium.map.Marker object at 0x7fe168b444a8&gt;
-## &lt;folium.map.Marker object at 0x7fe168b445f8&gt;
-## &lt;folium.map.Marker object at 0x7fe168b44748&gt;
-## &lt;folium.map.Marker object at 0x7fe168b44898&gt;
-## &lt;folium.map.Marker object at 0x7fe168b449e8&gt;
-## &lt;folium.map.Marker object at 0x7fe168b44b38&gt;</code></pre>
+<pre><code>## &lt;folium.map.Marker object at 0x7ffd22306588&gt;
+## &lt;folium.map.Marker object at 0x7ffd22306860&gt;
+## &lt;folium.map.Marker object at 0x7ffd223069b0&gt;
+## &lt;folium.map.Marker object at 0x7ffd22306b00&gt;
+## &lt;folium.map.Marker object at 0x7ffd22306c50&gt;
+## &lt;folium.map.Marker object at 0x7ffd22306da0&gt;
+## &lt;folium.map.Marker object at 0x7ffd22306ef0&gt;
+## &lt;folium.map.Marker object at 0x7ffd22306f98&gt;</code></pre>
 <pre class="python"><code>map1</code></pre>
-<pre><code>## &lt;folium.folium.Map object at 0x7fe167df7ef0&gt;</code></pre>
+<pre><code>## &lt;folium.folium.Map object at 0x7ffd2228e438&gt;</code></pre>
 <p><img src="images/Bildschirmfoto%202021-03-27%20um%2002.31.45.png" width="480" height="350" /></p>
 <p>So, John Snow finally had his proof that there was a connection between deaths as a consequence of the cholera outbreak and the public water pump that was probably contaminated. But he didn’t just stop there and investigated further.
 He was looking for anomalies now (we would now say “outliers in data”) and found two in fact where there were no deaths. First was brewery right on the Broad Street, so he went there and learned that they drank mostly beer (in other words not the water from the local pump, which confirms his theory that the pump is the source of the outbreak). The second building without any deaths was workhouse near Poland street where he learned that their source of water was not the pump on the Broad Street (confirmation again).
