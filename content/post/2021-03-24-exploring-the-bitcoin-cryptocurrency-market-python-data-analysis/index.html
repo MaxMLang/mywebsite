@@ -1,0 +1,177 @@
+---
+title: Exploring the Bitcoin Cryptocurrency Market - Python Data Analysis
+author: Max Lang
+date: '2021-03-24'
+slug: exploring-the-bitcoin-cryptocurrency-market-python-data-analysis
+categories:
+  - Data Analysis
+  - Python
+tags: []
+---
+
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
+
+
+<div id="cryptocurrencies---python-data-analysis" class="section level2">
+<h2>Cryptocurrencies - Python Data Analysis</h2>
+<p>Bitcoin was launched in 2008 since then many similiar currencies based on blockchain technology have emerged. The so called cryptocurrencies. Many of them are already extremly valuable e.g. Bitcoin, Bitcoin Cash or Etherum.
+However, investing in cryptocurrencies is extremly risky. The market is exceptionally volatile and any money you put in might disappear. As you can see at current events (Musk investing in Bitcoin etc.) the market is extremly volatile to this date.
+This data set was published on <strong>6th December 2017</strong> using the coinmarketcap API.
+(Source: coinmarketcap.com)</p>
+<pre class="python"><code># imports
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Setting aesthetics
+plt.style.use(&#39;fivethirtyeight&#39;)
+
+# Read in Data
+filename= &quot;/Users/max/Documents/My_Website/Data_Analysis_Projects/Exploring the Bitcoin Cryptocurrency Market/datasets/coinmarketcap_06122017.csv&quot;
+dec6 = pd.read_csv(filename)
+
+# Subset &#39;id&#39;, &#39;market_cap_usd&#39; columns
+cols= [&#39;id&#39;, &#39;market_cap_usd&#39;]
+market_cap_raw = dec6[cols]
+
+# Counting the number of values
+market_cap_raw.count()</code></pre>
+<pre><code>## id                1326
+## market_cap_usd    1031
+## dtype: int64</code></pre>
+</div>
+<div id="simple-data-cleaning" class="section level2">
+<h2>Simple Data Cleaning</h2>
+<p>The counts differ because some cryptocurrencies listed in coinmarketcap.com have no known market capitalization, this is represented by <code>NaN</code> in the data. The <code>NaN</code>s are not counted by <code>count()</code>. These cryptocurrencies are of little interest in this analysis, so they are safe to remove.</p>
+<pre class="python"><code># Removing Coins withou market cap
+cap = market_cap_raw.query(&#39;market_cap_usd &gt; 0&#39;)
+
+# Counting the number of values again --&gt; match
+cap.count()</code></pre>
+<pre><code>## id                1031
+## market_cap_usd    1031
+## dtype: int64</code></pre>
+</div>
+<div id="market-capitalization-of-top-10-cryptocurrencies" class="section level2">
+<h2>Market capitalization of top 10 cryptocurrencies</h2>
+<p>Bitcoin is was and is dominant in market capitalization, but many other are competing for the No.1 spot . The following plot shows the top 10 coins as a barplot. (Data from 2017!)</p>
+<pre class="python"><code>#Variables
+title = &#39;Top 10 market capitalization&#39;
+ylabel = &#39;% of total cap&#39;
+
+# Selecting top 10
+cap10 = cap[:10].set_index(&#39;id&#39;)
+
+# Calculating market_cap_perc
+cap10 = cap10.assign(market_cap_perc = lambda x: (x.market_cap_usd / cap.market_cap_usd.sum())*100)
+
+# Plotting 
+ax = cap10.market_cap_perc.plot.bar(title=title, color= &quot;darkorange&quot;)
+
+# Annotations
+ax.set_ylabel(ylabel);
+ax.set_xlabel(&quot;&quot;)
+plt.tight_layout()
+plt.show()</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+</div>
+<div id="volatility-in-cryptocurrencies" class="section level2">
+<h2>Volatility in cryptocurrencies</h2>
+<p>The cryptocurrencies market has been spectacularly volatile to this day. The next chunk shows the 24 hours and 7 days percentage change, which we already have available.</p>
+<pre class="python"><code># Subset id, percent_change_24h and percent_change_7d columns
+cols= [&#39;id&#39;, &#39;percent_change_24h&#39;, &#39;percent_change_7d&#39;]
+volatility = dec6[cols]
+
+# Set index to &#39;id&#39; 
+volatility = volatility.set_index(&#39;id&#39;).dropna()
+
+# Sorting by percent_change_24h in ascending order
+volatility = volatility.sort_values(by= &quot;percent_change_24h&quot;, ascending= True)
+
+# Check
+print(volatility.head())</code></pre>
+<pre><code>##                percent_change_24h  percent_change_7d
+## id                                                  
+## flappycoin                 -95.85             -96.61
+## credence-coin              -94.22             -95.31
+## coupecoin                  -93.93             -61.24
+## tyrocoin                   -79.02             -87.43
+## petrodollar                -76.55             542.96</code></pre>
+<p>Well, we can already see that things are <em>a bit</em> crazy
+It seems you can lose a lot of money quickly on cryptocurrencies . The next plot shows the top 10 biggest gainers and top 10 losers in market capitalization. For that I defined a function which is shown in the enxt chunk.</p>
+<pre class="python"><code># function with 2 parameters
+
+def top10_subplot(volatility_series, title):
+    
+    # creating subplots
+    fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(10, 6))
+    
+    # Plotting barchart
+    
+    ax = volatility_series[:10].plot.bar(color=&quot;darkred&quot;, ax=axes[0],xlabel= &quot;Coins&quot;)
+    
+    # Annotations
+    fig.suptitle(title)
+    ax.set_ylabel(&#39;% change&#39;)
+    # top 10 winners 
+    ax = volatility_series[-10:].plot.bar(color=&quot;darkblue&quot;, ax=axes[1],xlabel= &quot;Coins&quot;)
+    return fig, ax
+
+TITLE = &quot;24 hours top losers and winners&quot;
+
+# Calling the function above with the volatility.percent_change_24h series
+# and title DTITLE 
+fig, ax = top10_subplot(volatility.percent_change_24h, TITLE)
+plt.tight_layout()
+plt.show()</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-5-1.png" width="960" /></p>
+<p>800% daily increase?! That is absolutely insane. Let’s check the weekly changes.</p>
+<pre class="python"><code># Sorting percent_change_7d in ascending order
+volatility7d = volatility.sort_values(&quot;percent_change_7d&quot;)
+
+TITLE = &quot;Weekly top losers and winners&quot;
+
+fig, ax = top10_subplot(volatility7d.percent_change_7d, TITLE);
+plt.tight_layout()
+plt.show()</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-6-1.png" width="960" /></p>
+</div>
+<div id="large-coins" class="section level2">
+<h2>Large Coins</h2>
+<p>The names of the cryptocurrencies above are quite unknown, and there is a considerable fluctuation between the 1 and 7 days percentage changes. As with stocks, and many other financial products, the smaller the capitalization, the bigger the risk and reward. Smaller cryptocurrencies are less stable projects in general, and therefore even riskier investments than the bigger ones.
+Cryptocurrencies are a new asset class, so they are not directly comparable to stocks. Furthermore, there are no limits set in stone for what a “small” or “large” stock is. Finally, some investors argue that bitcoin is similar to gold. I just defined the “large” as 10 billion market capitalization. In the next chunk you can see the biggest coins (2017).</p>
+<pre class="python"><code># Coins with more than 10 billion market capitalization
+largecaps = cap.query(&quot;market_cap_usd &gt; 1E+10&quot;)
+
+
+largecaps</code></pre>
+<pre><code>##              id  market_cap_usd
+## 0       bitcoin    2.130493e+11
+## 1      ethereum    4.352945e+10
+## 2  bitcoin-cash    2.529585e+10
+## 3          iota    1.475225e+10</code></pre>
+<p>Most coins are tiny. As you can see in the following bar chart most crypto-coins are small.
+The categories are like the following
+* Large is more than 300.000.000 in <code>market_cap_usd</code>
+* Medium is more or equal to 50.000.000 in <code>market_cap_usd</code>
+* Small is less than 50.000.000 in <code>market_cap_usd</code></p>
+<pre class="python"><code>
+def capcount(query_string):
+    return cap.query(query_string).count().id
+
+# Labels for the plot
+LABELS = [&quot;Large Coins&quot;, &quot;Medium Coins&quot;, &quot;Small Coins&quot;]
+
+large = capcount(&quot;market_cap_usd &gt; 3E+8&quot;)
+
+medium = capcount(&quot;market_cap_usd &gt;= 5E+7 &amp; market_cap_usd &lt; 3E+8&quot;)
+
+small =  capcount(&quot;market_cap_usd &lt; 5E+7&quot;)
+
+values = [large, medium, small]
+
+# Plotting
+plt.bar(range(len(values)), values, tick_label=LABELS, color=&quot;darkblue&quot;, width= 0.5);
+plt.tight_layout()
+plt.show()</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-8-1.png" width="960" /></p>
+</div>

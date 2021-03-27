@@ -1,0 +1,90 @@
+---
+title: Volatility of US Bond Yields
+author: Max Lang
+date: '2021-03-21'
+slug: modeling-the-volatility-of-us-bond-yields
+categories:
+  - Data Analysis
+  - R
+tags: []
+---
+
+## Volatility changes over time
+What is financial risk? 
+Financial risk has many faces, and we measure it in many ways, but for now, let's agree that it is a measure of the possible loss on an investment. In financial markets, where we measure prices frequently, volatility is an obvious choice to measure risk. But in real markets, volatility changes with the market itself.
+
+```{r}
+# Load the packages
+library(xts)
+library(readr)
+
+# Load the data
+filename= "/Users/max/Documents/Data Science/Project_Notebooks/Modeling the Volatility of US Bond Yields/datasets/FED-SVENY.csv"
+yc_raw <- read_csv(filename)
+
+# Convert the data into xts format
+yc_all <- as.xts(x = yc_raw[, -1], order.by = yc_raw$Date)
+
+# Show only the tail of the 1st, 5th, 10th, 20th and 30th columns
+yc_all_tail <- tail(yc_all[, c(1, 5, 10, 20, 30)])
+yc_all_tail
+```
+
+## Plotting the evolution of bond yields
+In the output table of the previous task, we see the yields for some maturities.
+This dataset includes the whole yield curve. The yield of a bond is the price of the money lent. The higher the yield, the more money you receive on your investment. The yield curve has many maturities; in this case, it ranges from 1 year to 30 years. Different maturities have different yields, but yields of neighboring maturities are relatively close to each other and also move together.
+Let's visualize the yields over time. We will see that the long yields (e.g. SVENY30) tend to be more stable in the long term, while the short yields (e.g. SVENY01) vary a lot. These movements are related to the monetary policy of the FED and economic cycles.
+
+```{r}
+library(viridis)
+
+# Define plot arguments
+yields  <- yc_all
+plot.type  <- "single"
+plot.palette <- viridis(30)
+asset.names <- colnames(yc_all[c(1,10,20,30)])
+
+# Plot the time series
+plot.zoo(x = yields, plot.type = plot.type, 
+         xlab = "Year", ylab = "Yield of bond", 
+         main = "US government yields over time",
+         col = plot.palette)
+
+# Add the legend
+par(xpd=TRUE, mar = c(3, 3, 3, 3))
+legend(x = "topright" ,y= c(10), legend = asset.names,
+       col = plot.palette, cex = 0.45, lwd = 3, ncol= 3)
+```
+
+In the output of the previous chunk, one sees the level of bond yields for some maturities, but to understand how volatility evolves we have to examine the changes in the time series. Currently, the data contains the yield levels; however, one needs to calculate the changes in the yield levels. This is called "differentiation" in time series analysis. Differentiation has the added benefit of making a time series independent of time.
+
+```{r}
+# Differentiate the time series  
+ycc_all <- diff.xts(yc_all)
+
+# Show the tail of the 1st, 5th, 10th, 20th and 30th columns
+ycc_all_tail <- tail(ycc_all[, c(1, 5, 10, 20, 30)])
+ycc_all_tail
+```
+
+## The US yields are no exceptions, but maturity matters
+Now that one has a time series of the changes in US government yields let's examine it visually.
+
+By taking a look at the time series from the previous plots, one sees hints that the returns following each other have some unique properties.
+
+```{r}
+# Define the plot parameters
+yield.changes <- ycc_all
+plot.type <- "multiple"
+
+
+# Plot the differentiated time series
+plot.zoo(x = yield.changes, plot.type = plot.type,
+         xlab = "Year", ylab = 1:30 , main = "Changes in US government yields",
+         ylim = c(-0.5, 0.5), cex.axis = 0.7, 
+         col = plot.palette)
+```
+
+1. The direction (positive or negative) of a return is mostly independent of the previous day's return. In other words, you don't know if the next day's return will be positive or negative just by looking at the time series.
+
+2. The magnitude of the return is similar to the previous day's return. That means, if markets are calm today, we expect the same tomorrow. However, in a volatile market (crisis), you should expect a similarly turbulent tomorrow.

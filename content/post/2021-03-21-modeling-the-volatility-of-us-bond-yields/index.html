@@ -1,0 +1,111 @@
+---
+title: Volatility of US Bond Yields
+author: Max Lang
+date: '2021-03-21'
+slug: modeling-the-volatility-of-us-bond-yields
+categories:
+  - Data Analysis
+  - R
+tags: []
+---
+
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
+
+
+<div id="volatility-changes-over-time" class="section level2">
+<h2>Volatility changes over time</h2>
+<p>What is financial risk?
+Financial risk has many faces, and we measure it in many ways, but for now, let’s agree that it is a measure of the possible loss on an investment. In financial markets, where we measure prices frequently, volatility is an obvious choice to measure risk. But in real markets, volatility changes with the market itself.</p>
+<pre class="r"><code># Load the packages
+library(xts)</code></pre>
+<pre><code>## Lade nötiges Paket: zoo</code></pre>
+<pre><code>## 
+## Attache Paket: &#39;zoo&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     as.Date, as.Date.numeric</code></pre>
+<pre class="r"><code>library(readr)
+
+# Load the data
+filename= &quot;/Users/max/Documents/Data Science/Project_Notebooks/Modeling the Volatility of US Bond Yields/datasets/FED-SVENY.csv&quot;
+yc_raw &lt;- read_csv(filename)</code></pre>
+<pre><code>## 
+## ── Column specification ────────────────────────────────────────────────────────
+## cols(
+##   .default = col_double(),
+##   Date = col_date(format = &quot;&quot;)
+## )
+## ℹ Use `spec()` for the full column specifications.</code></pre>
+<pre class="r"><code># Convert the data into xts format
+yc_all &lt;- as.xts(x = yc_raw[, -1], order.by = yc_raw$Date)
+
+# Show only the tail of the 1st, 5th, 10th, 20th and 30th columns
+yc_all_tail &lt;- tail(yc_all[, c(1, 5, 10, 20, 30)])
+yc_all_tail</code></pre>
+<pre><code>##            SVENY01 SVENY05 SVENY10 SVENY20 SVENY30
+## 2019-03-22  2.4222  2.2613  2.4553  2.7661  3.0178
+## 2019-03-25  2.3901  2.2281  2.4449  2.7610  3.0216
+## 2019-03-26  2.3811  2.2016  2.4249  2.7508  3.0138
+## 2019-03-27  2.3560  2.1931  2.4020  2.7092  2.9785
+## 2019-03-28  2.3601  2.2137  2.4058  2.6907  2.9605
+## 2019-03-29  2.3719  2.2398  2.4143  2.6939  2.9538</code></pre>
+</div>
+<div id="plotting-the-evolution-of-bond-yields" class="section level2">
+<h2>Plotting the evolution of bond yields</h2>
+<p>In the output table of the previous task, we see the yields for some maturities.
+This dataset includes the whole yield curve. The yield of a bond is the price of the money lent. The higher the yield, the more money you receive on your investment. The yield curve has many maturities; in this case, it ranges from 1 year to 30 years. Different maturities have different yields, but yields of neighboring maturities are relatively close to each other and also move together.
+Let’s visualize the yields over time. We will see that the long yields (e.g. SVENY30) tend to be more stable in the long term, while the short yields (e.g. SVENY01) vary a lot. These movements are related to the monetary policy of the FED and economic cycles.</p>
+<pre class="r"><code>library(viridis)</code></pre>
+<pre><code>## Lade nötiges Paket: viridisLite</code></pre>
+<pre class="r"><code># Define plot arguments
+yields  &lt;- yc_all
+plot.type  &lt;- &quot;single&quot;
+plot.palette &lt;- viridis(30)
+asset.names &lt;- colnames(yc_all[c(1,10,20,30)])
+
+# Plot the time series
+plot.zoo(x = yields, plot.type = plot.type, 
+         xlab = &quot;Year&quot;, ylab = &quot;Yield of bond&quot;, 
+         main = &quot;US government yields over time&quot;,
+         col = plot.palette)
+
+# Add the legend
+par(xpd=TRUE, mar = c(3, 3, 3, 3))
+legend(x = &quot;topright&quot; ,y= c(10), legend = asset.names,
+       col = plot.palette, cex = 0.45, lwd = 3, ncol= 3)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<p>In the output of the previous chunk, one sees the level of bond yields for some maturities, but to understand how volatility evolves we have to examine the changes in the time series. Currently, the data contains the yield levels; however, one needs to calculate the changes in the yield levels. This is called “differentiation” in time series analysis. Differentiation has the added benefit of making a time series independent of time.</p>
+<pre class="r"><code># Differentiate the time series  
+ycc_all &lt;- diff.xts(yc_all)
+
+# Show the tail of the 1st, 5th, 10th, 20th and 30th columns
+ycc_all_tail &lt;- tail(ycc_all[, c(1, 5, 10, 20, 30)])
+ycc_all_tail</code></pre>
+<pre><code>##            SVENY01 SVENY05 SVENY10 SVENY20 SVENY30
+## 2019-03-22 -0.0412 -0.1039 -0.0878 -0.0924 -0.0864
+## 2019-03-25 -0.0321 -0.0332 -0.0104 -0.0051  0.0038
+## 2019-03-26 -0.0090 -0.0265 -0.0200 -0.0102 -0.0078
+## 2019-03-27 -0.0251 -0.0085 -0.0229 -0.0416 -0.0353
+## 2019-03-28  0.0041  0.0206  0.0038 -0.0185 -0.0180
+## 2019-03-29  0.0118  0.0261  0.0085  0.0032 -0.0067</code></pre>
+</div>
+<div id="the-us-yields-are-no-exceptions-but-maturity-matters" class="section level2">
+<h2>The US yields are no exceptions, but maturity matters</h2>
+<p>Now that one has a time series of the changes in US government yields let’s examine it visually.</p>
+<p>By taking a look at the time series from the previous plots, one sees hints that the returns following each other have some unique properties.</p>
+<pre class="r"><code># Define the plot parameters
+yield.changes &lt;- ycc_all
+plot.type &lt;- &quot;multiple&quot;
+
+
+# Plot the differentiated time series
+plot.zoo(x = yield.changes, plot.type = plot.type,
+         xlab = &quot;Year&quot;, ylab = 1:30 , main = &quot;Changes in US government yields&quot;,
+         ylim = c(-0.5, 0.5), cex.axis = 0.7, 
+         col = plot.palette)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<ol style="list-style-type: decimal">
+<li><p>The direction (positive or negative) of a return is mostly independent of the previous day’s return. In other words, you don’t know if the next day’s return will be positive or negative just by looking at the time series.</p></li>
+<li><p>The magnitude of the return is similar to the previous day’s return. That means, if markets are calm today, we expect the same tomorrow. However, in a volatile market (crisis), you should expect a similarly turbulent tomorrow.</p></li>
+</ol>
+</div>
