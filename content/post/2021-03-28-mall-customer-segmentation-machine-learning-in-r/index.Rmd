@@ -1,5 +1,5 @@
 ---
-title: Mall Customer Segmentation - Machine Learning in R
+title: Mall Customer Segmentation - K - Means in R
 author: Max Lang
 date: '2021-03-28'
 slug: mall-customer-segmentation-machine-learning-in-r
