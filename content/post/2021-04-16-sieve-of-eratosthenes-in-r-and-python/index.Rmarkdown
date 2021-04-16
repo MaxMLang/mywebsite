@@ -13,7 +13,7 @@ runtime: shiny
 ---
 A prime number is defined as a natural number greater than 1 with no positive divisors other than 1 and itself. How would you answer if anyone asked you, "What are all prime numbers less than 10.000?" We will answer this question in a pretty cool way.
 
-There are a plethora of algorithms for locating all prime numbers up to a certain limit. In this post, I'll go through the Eratosthenes Sieve, a simple but effective algorithm. In fact it is a really old algorithm developed by [Eratosthenes of Cyrene](https://en.wikipedia.org/wiki/Eratosthenes). He is best known for being the first person to calculate the circumreference of earth.
+There are a plethora of algorithms for locating all prime numbers up to a certain limit. In this post, I'll go through the Eratosthenes Sieve, a simple but effective algorithm. In fact it is a really old algorithm developed by [Eratosthenes of Cyrene](https://en.wikipedia.org/wiki/Eratosthenes). He is best known for being the first person to calculate the circumference of earth.
 
 ##### Sieve of Eratosthenes
 
