@@ -99,7 +99,7 @@ SieveOfEratosthenes(n)
 
 #### Shiny App to answer our question
 
-<iframe src="https://maxmlang.shinyapps.io/Sieve_of_Eratosthenes/?_ga=2.157440895.475194077.1618602966-500094955.1618602966" width=1000 height=800"></iframe>
+<iframe src="https://maxmlang.shinyapps.io/Sieve_of_Eratosthenes/?_ga=2.157440895.475194077.1618602966-500094955.1618602966" width=500 height=500"></iframe>
 
 ## Thougths 
 I have encoutered this algorithm in my university course "Algorithms and Data Structures" and it caught my interest immediately. It was a lot of fun tom implement this algorithm in R and Python. However, in my opinion Python fits better for this specific purpose.
