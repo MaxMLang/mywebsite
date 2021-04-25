@@ -104,4 +104,4 @@ _Comment 2_:
 
 Let's suppose again one already got _HT_. If the next toss is _T_, one found the sequence. If it is a _H_, this is just a minor setback, because one now got _HTH_ (while seeking the _HTT_ sequence); however, now one already has the _H_ and just needs two _T_ in a row ( _TT_ ). Moreover if the next toss is an H this is not such a big setback again, because _H_ is the start of the sequence we are looking for, just like before. A _T_ would make our "situation" even better and so on... 
 
-Therefore answer _c) The average number of tosses until HTH is smaller than the average number of tosses until HTT_.
+Therefore answer _a) The average number of tosses until HTH is larger than the average number of tosses until HTT_.
