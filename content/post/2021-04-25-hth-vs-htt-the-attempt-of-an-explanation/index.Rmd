@@ -1,0 +1,107 @@
+---
+title: HTH vs. HTT - The attempt of an explanation
+author: Max Lang
+date: '2021-04-25'
+slug: hth-vs-htt-the-attempt-of-an-explanation
+categories:
+  - R
+  - R Programming
+  - Statistics
+  - Mathematics
+tags: []
+---
+# Question
+This question was asked during the really interesting [TedTalk](https://www.ted.com/talks/peter_donnelly_how_juries_are_fooled_by_statistics?language=de) about statistics by Peter Donelly.
+
+_Consider two Patterns HTH vs HTT. Which of the following is true?_
+
+_a) The average number of tosses until HTH is larger than the average number of tosses until HTT_
+
+_b) The average number of tosses until HTH is the same as the average number of tosses until HTT_
+
+_c) The average number of tosses until HTH is smaller than the average number of tosses until HTT_
+
+First one might think _b)_ is the correct answer. 
+After a second thought one notices that the sequence _HTH_ overlaps itself. Let's say one got HTHTH it is clear that one got two occurrences of _HTH_ in only five coin tosses. (**HTH**TH and HT**HTH**).
+
+Taking a look at the second sequence _HTT_ one will find out that there is not such an overlap.
+Therefore one might think that _HTH_ is more likely than _HTT_ which is not the case as shown in the code chunk below.
+
+1. One should note that we are either looking for _HTT_ or (exclusive) for _HTH_. 
+
+2. We only flip until the pattern which we are looking for got hit.
+
+```{r}
+set.seed(10)
+
+fair_coin <- c('H','T')
+
+seek <- function(seq) {
+  # Flipping the coin three times
+    result <- sample(x= fair_coin, size= 3,replace=TRUE)
+  # Defining the minimum Number of flips (three)
+    flips <- 3
+  # Setting  issed to true so while loop iterates at least one time
+    missed <- TRUE
+  
+    while (missed == TRUE) {
+      # If all our elements in the vector are the same as the sequence we seek stop the loop
+        if (all(seq == result)) {
+            missed <- FALSE
+        }
+      # Recycle last two elements and flip again once (important)
+        else {
+            result <- c(result[2],result[3], sample(x= fair_coin, size= 1, replace= TRUE))
+            flips <- flips + 1
+        }
+    }
+    return(flips)
+}
+# Setting the number of flips of t experi
+n <- 10000
+
+experiment <- data.frame("HTH"=rep(NA,n),"HTT"=rep(NA,n))
+
+HTH <- c('H','T','H')
+HTT <- c('H','T','T')
+
+for (i in 1:n) {
+    experiment[i,] <- c(seek(HTH),seek(HTT))    
+}
+# Average number of flips
+summary(experiment)
+```
+
+## The attempt of an explanation:
+
+Let's suppose the following scenarios.
+
+#### Looking for the sequence _HTH_
+
+*HTH*
+
+The simplest scenario in which we win right away.
+
+*HTT*
+
+Because of the last _T_ in the sequence one needs to start tossing until one gets another _H_ to "start" the _HTT_ sequence.
+
+_Comment 1_: 
+
+Let's suppose one already got _HT_. If the next toss is _H_ one found the sequence and is done. If it's a _T_,  one has to start all over again: since the last two tosses were _TT_ one now needs the full _HTH_.
+
+#### Looking for _HTT_
+
+*HTT*
+
+Again the simplest scenario in which we win right away.
+
+*HTH*
+
+Because we are looking for _HTT_ we did not win in this case. However, and this is the important, at this stage one does not need to toss the coin again in order to find the starting token _H_.
+
+_Comment 2_: 
+
+Let's suppose again one already got _HT_. If the next toss is _T_, one found the sequence. If it is a _H_, this is just a minor setback, because one now got _HTH_ (while seeking the _HTT_ sequence); however, now one already has the _H_ and just needs two _T_ in a row ( _TT_ ). Moreover if the next toss is an H this is not such a big setback again, because _H_ is the start of the sequence we are looking for, just like before. A _T_ would make our "situation" even better and so on... 
+
+Therefore answer _c) The average number of tosses until HTH is smaller than the average number of tosses until HTT_.

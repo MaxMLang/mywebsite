@@ -1,0 +1,100 @@
+---
+title: HTH vs. HTT - The attempt of an explanation
+author: Max Lang
+date: '2021-04-25'
+slug: hth-vs-htt-the-attempt-of-an-explanation
+categories:
+  - R
+  - R Programming
+  - Statistics
+  - Mathematics
+tags: []
+---
+
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
+
+
+<div id="question" class="section level1">
+<h1>Question</h1>
+<p>This question was asked during the really interesting <a href="https://www.ted.com/talks/peter_donnelly_how_juries_are_fooled_by_statistics?language=de">TedTalk</a> about statistics by Peter Donelly.</p>
+<p><em>Consider two Patterns HTH vs HTT. Which of the following is true?</em></p>
+<p><em>a) The average number of tosses until HTH is larger than the average number of tosses until HTT</em></p>
+<p><em>b) The average number of tosses until HTH is the same as the average number of tosses until HTT</em></p>
+<p><em>c) The average number of tosses until HTH is smaller than the average number of tosses until HTT</em></p>
+<p>First one might think <em>b)</em> is the correct answer.
+After a second thought one notices that the sequence <em>HTH</em> overlaps itself. Let’s say one got HTHTH it is clear that one got two occurrences of <em>HTH</em> in only five coin tosses. (<strong>HTH</strong>TH and HT<strong>HTH</strong>).</p>
+<p>Taking a look at the second sequence <em>HTT</em> one will find out that there is not such an overlap.
+Therefore one might think that <em>HTH</em> is more likely than <em>HTT</em> which is not the case as shown in the code chunk below.</p>
+<ol style="list-style-type: decimal">
+<li><p>One should note that we are either looking for <em>HTT</em> or (exclusive) for <em>HTH</em>.</p></li>
+<li><p>We only flip until the pattern which we are looking for got hit.</p></li>
+</ol>
+<pre class="r"><code>set.seed(10)
+
+fair_coin &lt;- c(&#39;H&#39;,&#39;T&#39;)
+
+seek &lt;- function(seq) {
+  # Flipping the coin three times
+    result &lt;- sample(x= fair_coin, size= 3,replace=TRUE)
+  # Defining the minimum Number of flips (three)
+    flips &lt;- 3
+  # Setting  issed to true so while loop iterates at least one time
+    missed &lt;- TRUE
+  
+    while (missed == TRUE) {
+      # If all our elements in the vector are the same as the sequence we seek stop the loop
+        if (all(seq == result)) {
+            missed &lt;- FALSE
+        }
+      # Recycle last two elements and flip again once (important)
+        else {
+            result &lt;- c(result[2],result[3], sample(x= fair_coin, size= 1, replace= TRUE))
+            flips &lt;- flips + 1
+        }
+    }
+    return(flips)
+}
+# Setting the number of flips of t experi
+n &lt;- 10000
+
+experiment &lt;- data.frame(&quot;HTH&quot;=rep(NA,n),&quot;HTT&quot;=rep(NA,n))
+
+HTH &lt;- c(&#39;H&#39;,&#39;T&#39;,&#39;H&#39;)
+HTT &lt;- c(&#39;H&#39;,&#39;T&#39;,&#39;T&#39;)
+
+for (i in 1:n) {
+    experiment[i,] &lt;- c(seek(HTH),seek(HTT))    
+}
+# Average number of flips
+summary(experiment)</code></pre>
+<pre><code>##       HTH             HTT        
+##  Min.   : 3.00   Min.   : 3.000  
+##  1st Qu.: 4.00   1st Qu.: 5.000  
+##  Median : 8.00   Median : 7.000  
+##  Mean   :10.04   Mean   : 8.054  
+##  3rd Qu.:13.00   3rd Qu.:10.000  
+##  Max.   :87.00   Max.   :47.000</code></pre>
+<div id="the-attempt-of-an-explanation" class="section level2">
+<h2>The attempt of an explanation:</h2>
+<p>Let’s suppose the following scenarios.</p>
+<div id="looking-for-the-sequence-hth" class="section level4">
+<h4>Looking for the sequence <em>HTH</em></h4>
+<p><em>HTH</em></p>
+<p>The simplest scenario in which we win right away.</p>
+<p><em>HTT</em></p>
+<p>Because of the last <em>T</em> in the sequence one needs to start tossing until one gets another <em>H</em> to “start” the <em>HTT</em> sequence.</p>
+<p><em>Comment 1</em>:</p>
+<p>Let’s suppose one already got <em>HT</em>. If the next toss is <em>H</em> one found the sequence and is done. If it’s a <em>T</em>, one has to start all over again: since the last two tosses were <em>TT</em> one now needs the full <em>HTH</em>.</p>
+</div>
+<div id="looking-for-htt" class="section level4">
+<h4>Looking for <em>HTT</em></h4>
+<p><em>HTT</em></p>
+<p>Again the simplest scenario in which we win right away.</p>
+<p><em>HTH</em></p>
+<p>Because we are looking for <em>HTT</em> we did not win in this case. However, and this is the important, at this stage one does not need to toss the coin again in order to find the starting token <em>H</em>.</p>
+<p><em>Comment 2</em>:</p>
+<p>Let’s suppose again one already got <em>HT</em>. If the next toss is <em>T</em>, one found the sequence. If it is a <em>H</em>, this is just a minor setback, because one now got <em>HTH</em> (while seeking the <em>HTT</em> sequence); however, now one already has the <em>H</em> and just needs two <em>T</em> in a row ( <em>TT</em> ). Moreover if the next toss is an H this is not such a big setback again, because <em>H</em> is the start of the sequence we are looking for, just like before. A <em>T</em> would make our “situation” even better and so on…</p>
+<p>Therefore answer <em>c) The average number of tosses until HTH is smaller than the average number of tosses until HTT</em>.</p>
+</div>
+</div>
+</div>
