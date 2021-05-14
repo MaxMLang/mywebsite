@@ -1,0 +1,438 @@
+---
+title: Basic Descriptive Statistics in Python (Wisconsin Breast Cancer Dataset)
+author: Max
+date: '2021-03-14'
+slug: basic-descriptive-statistics-in-python-wisconsin-breast-cancer-dataset
+categories:
+  - Statistics
+  - Python
+  - Data Analysis
+tags: []
+---
+
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
+
+
+<div id="basic-statistics" class="section level1">
+<h1>Basic statistics</h1>
+<ul>
+<li><a href="#1">Histogram</a></li>
+<li><a href="#2">Outliers</a></li>
+<li><a href="#3">Box Plot</a></li>
+<li><a href="#4">Summary Statistics</a></li>
+<li><a href="#7">Relationship Between Variables</a></li>
+<li><a href="#8">Correlation</a></li>
+<li><a href="#9">Covariance</a></li>
+<li><a href="#10">Pearson Correlation</a></li>
+<li><a href="#11">Spearman’s Rank Correlation</a></li>
+<li><a href="#12">Mean VS Median</a></li>
+<li><a href="#13">Hypothesis Testing</a></li>
+<li><a href="#14">Normal(Gaussian) Distribution and z-score</a></li>
+</ul>
+<pre class="python"><code># import libraries
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+from scipy import stats
+plt.style.use(&quot;ggplot&quot;)
+import warnings
+warnings.filterwarnings(&quot;ignore&quot;)
+from scipy import stats</code></pre>
+<pre class="python"><code># read data as pandas data frame
+data = pd.read_csv(&quot;/Users/max/Documents/Data Science/Projects/data/desc_stats_Tumor_data.csv&quot;)
+data = data.drop([&#39;Unnamed: 32&#39;,&#39;id&#39;],axis = 1)</code></pre>
+<pre class="python"><code># quick look to data
+data.head()</code></pre>
+<pre><code>##   diagnosis  radius_mean  ...  symmetry_worst  fractal_dimension_worst
+## 0         M        17.99  ...          0.4601                  0.11890
+## 1         M        20.57  ...          0.2750                  0.08902
+## 2         M        19.69  ...          0.3613                  0.08758
+## 3         M        11.42  ...          0.6638                  0.17300
+## 4         M        20.29  ...          0.2364                  0.07678
+## 
+## [5 rows x 31 columns]</code></pre>
+<pre class="python"><code>data.shape # (569, 31)</code></pre>
+<pre><code>## (569, 31)</code></pre>
+<pre class="python"><code>data.columns </code></pre>
+<pre><code>## Index([&#39;diagnosis&#39;, &#39;radius_mean&#39;, &#39;texture_mean&#39;, &#39;perimeter_mean&#39;,
+##        &#39;area_mean&#39;, &#39;smoothness_mean&#39;, &#39;compactness_mean&#39;, &#39;concavity_mean&#39;,
+##        &#39;concave points_mean&#39;, &#39;symmetry_mean&#39;, &#39;fractal_dimension_mean&#39;,
+##        &#39;radius_se&#39;, &#39;texture_se&#39;, &#39;perimeter_se&#39;, &#39;area_se&#39;, &#39;smoothness_se&#39;,
+##        &#39;compactness_se&#39;, &#39;concavity_se&#39;, &#39;concave points_se&#39;, &#39;symmetry_se&#39;,
+##        &#39;fractal_dimension_se&#39;, &#39;radius_worst&#39;, &#39;texture_worst&#39;,
+##        &#39;perimeter_worst&#39;, &#39;area_worst&#39;, &#39;smoothness_worst&#39;,
+##        &#39;compactness_worst&#39;, &#39;concavity_worst&#39;, &#39;concave points_worst&#39;,
+##        &#39;symmetry_worst&#39;, &#39;fractal_dimension_worst&#39;],
+##       dtype=&#39;object&#39;)</code></pre>
+<p><a id="1"></a> <br></p>
+<div id="histogram" class="section level2">
+<h2>Histogram</h2>
+<ul>
+<li>How many times each value appears in dataset. This description is called the distribution of variable</li>
+<li>Frequency = number of times each value appears</li>
+<li>Most common way to represent distribution of varible is histogram that is graph which shows frequency of each value.</li>
+<li>Example: [1,1,1,1,2,2,2]. Frequency of 1 is four and frequency of 2 is three.</li>
+</ul>
+<pre class="python"><code>m = plt.hist(data[data[&quot;diagnosis&quot;] == &quot;M&quot;].radius_mean,bins=30,fc = (1,0,0,0.5),label = &quot;Malignant&quot;)
+b = plt.hist(data[data[&quot;diagnosis&quot;] == &quot;B&quot;].radius_mean,bins=30,fc = (0,1,0,0.5),label = &quot;Bening&quot;)
+plt.legend()</code></pre>
+<pre><code>## &lt;matplotlib.legend.Legend object at 0x7f883ad95240&gt;</code></pre>
+<pre class="python"><code>plt.xlabel(&quot;Radius Mean Values&quot;)</code></pre>
+<pre><code>## Text(0.5, 0, &#39;Radius Mean Values&#39;)</code></pre>
+<pre class="python"><code>plt.ylabel(&quot;Frequency&quot;)</code></pre>
+<pre><code>## Text(0, 0.5, &#39;Frequency&#39;)</code></pre>
+<pre class="python"><code>plt.title(&quot;Histogram of Radius Mean for Bening and Malignant Tumors&quot;)</code></pre>
+<pre><code>## Text(0.5, 1.0, &#39;Histogram of Radius Mean for Bening and Malignant Tumors&#39;)</code></pre>
+<pre class="python"><code>plt.show()</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+</div>
+</div>
+<div id="conclusions" class="section level1">
+<h1>Conclusions</h1>
+<ul>
+<li>Radius mean of malignant tumors are bigger than radius mean of bening tumors mostly</li>
+<li>The bening distribution (green in graph) is approcimately bell-shaped that is shape of normal distribution (gaussian distribution)</li>
+</ul>
+<p><a id="2"></a> <br></p>
+<div id="outliers" class="section level2">
+<h2>Outliers</h2>
+<ul>
+<li>rare values in bening distribution (green graph)</li>
+<li>There values can be errors or rare events</li>
+<li>These errors and rare events are so called outliers</li>
+<li>Calculating outliers:
+<ul>
+<li>calculate first quartile (Q1)(25%)</li>
+<li>find IQR(inter quartile range) = Q3-Q1</li>
+<li>compute Q1 - 1.5<em>IQR and Q3 + 1.5</em>IQR</li>
+</ul></li>
+</ul>
+<pre class="python"><code>data_bening = data[data[&quot;diagnosis&quot;] == &quot;B&quot;]
+data_malignant = data[data[&quot;diagnosis&quot;] == &quot;M&quot;]
+desc = data_bening.radius_mean.describe()
+Q1 = desc[4]
+Q3 = desc[6]
+IQR = Q3-Q1
+lower_bound = Q1 - 1.5*IQR
+upper_bound = Q3 + 1.5*IQR
+print(&quot;Anything outside this range is an outlier: (&quot;, lower_bound ,&quot;,&quot;, upper_bound,&quot;)&quot;)</code></pre>
+<pre><code>## Anything outside this range is an outlier: ( 7.645000000000001 , 16.805 )</code></pre>
+<pre class="python"><code>data_bening[data_bening.radius_mean &lt; lower_bound].radius_mean</code></pre>
+<pre><code>## 101    6.981
+## Name: radius_mean, dtype: float64</code></pre>
+<pre class="python"><code>print(&quot;Outliers: &quot;,data_bening[(data_bening.radius_mean &lt; lower_bound) | (data_bening.radius_mean &gt; upper_bound)].radius_mean.values)</code></pre>
+<pre><code>## Outliers:  [ 6.981 16.84  17.85 ]</code></pre>
+<p><a id="3"></a> <br></p>
+</div>
+<div id="box-plot" class="section level2">
+<h2>Box Plot</h2>
+<ul>
+<li>You can see outliers also from box plots</li>
+<li>We found 3 outlier in bening radius mean and in box plot there are 3 outlier.</li>
+</ul>
+<pre class="python"><code>melted_data = pd.melt(data,id_vars = &quot;diagnosis&quot;,value_vars = [&#39;radius_mean&#39;, &#39;texture_mean&#39;])
+plt.figure(figsize = (15,10))</code></pre>
+
+<pre class="python"><code>sns.boxplot(x = &quot;variable&quot;, y = &quot;value&quot;, hue=&quot;diagnosis&quot;,data= melted_data)</code></pre>
+<pre><code>## &lt;AxesSubplot:xlabel=&#39;variable&#39;, ylabel=&#39;value&#39;&gt;</code></pre>
+<pre class="python"><code>plt.show()</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-1-3.png" width="1440" /></p>
+<p><a id="4"></a> <br></p>
+</div>
+<div id="summary-statistics" class="section level2">
+<h2>Summary Statistics</h2>
+<ul>
+<li>Mean</li>
+<li>Variance: spread of distribution</li>
+<li>Standart deviation square root of variance</li>
+<li>Lets look at summary statistics of bening tumor radiance mean</li>
+</ul>
+<pre class="python"><code>print(&quot;mean: &quot;,data_bening.radius_mean.mean())</code></pre>
+<pre><code>## mean:  12.146523809523808</code></pre>
+<pre class="python"><code>print(&quot;variance: &quot;,data_bening.radius_mean.var())</code></pre>
+<pre><code>## variance:  3.1702217220438738</code></pre>
+<pre class="python"><code>print(&quot;standart deviation (std): &quot;,data_bening.radius_mean.std())</code></pre>
+<pre><code>## standart deviation (std):  1.7805116461410393</code></pre>
+<pre class="python"><code>print(&quot;describe method: &quot;,data_bening.radius_mean.describe())</code></pre>
+<pre><code>## describe method:  count    357.000000
+## mean      12.146524
+## std        1.780512
+## min        6.981000
+## 25%       11.080000
+## 50%       12.200000
+## 75%       13.370000
+## max       17.850000
+## Name: radius_mean, dtype: float64</code></pre>
+<p><a id="7"></a> <br></p>
+</div>
+<div id="relationship-between-variables" class="section level2">
+<h2>Relationship Between Variables</h2>
+<ul>
+<li>We can say that two variables are related with each other, if one of them gives information about others</li>
+<li>For example, price and distance. If you go long distance with taxi you will pay more. There fore we can say that price and distance are positively related with each other.</li>
+<li>Scatter Plot</li>
+<li>Simplest way to check relationship between two variables</li>
+<li>Lets look at relationship between radius mean and area mean</li>
+<li>In scatter plot you can see that when radius mean increases, area mean also increases. Therefore, they are positively correlated with each other.</li>
+<li>There is no correlation between area mean and fractal dimension se. Because when area mean changes, fractal dimension se is not affected by chance of area mean</li>
+</ul>
+<pre class="python"><code>plt.figure(figsize = (15,10))</code></pre>
+
+<pre class="python"><code>sns.jointplot(x= data.radius_mean, y= data.area_mean,kind=&quot;reg&quot;)</code></pre>
+<pre><code>## &lt;seaborn.axisgrid.JointGrid object at 0x7f883c747780&gt;</code></pre>
+<pre class="python"><code>plt.show()</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-1-5.png" width="576" /></p>
+<pre class="python"><code># Also we can look relationship between more than 2 distribution
+sns.set(style = &quot;white&quot;)
+df = data.loc[:,[&quot;radius_mean&quot;,&quot;area_mean&quot;,&quot;fractal_dimension_se&quot;]]
+g = sns.PairGrid(df,diag_sharey = False,)
+g.map_lower(sns.kdeplot,cmap=&quot;Blues_d&quot;)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-9-7.png" width="378" /></p>
+<pre class="python"><code>g.map_upper(plt.scatter)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-9-8.png" width="374" /></p>
+<pre class="python"><code>g.map_diag(sns.kdeplot,lw =3)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-9-9.png" width="370" /></p>
+<pre class="python"><code>plt.show()</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-1-10.png" width="720" /></p>
+<p><a id="8"></a> <br></p>
+</div>
+<div id="correlation" class="section level2">
+<h2>Correlation</h2>
+<ul>
+<li>Strength of the relationship between two variables</li>
+<li>Lets look at correlation between all features.</li>
+</ul>
+<pre class="python"><code>f,ax=plt.subplots(figsize = (18,18))
+sns.heatmap(data.corr(),annot= True,linewidths=0.5,fmt = &quot;.1f&quot;,ax=ax)</code></pre>
+<pre><code>## &lt;AxesSubplot:&gt;</code></pre>
+<pre class="python"><code>plt.xticks(rotation=90)</code></pre>
+<pre><code>## (array([ 0.5,  1.5,  2.5,  3.5,  4.5,  5.5,  6.5,  7.5,  8.5,  9.5, 10.5,
+##        11.5, 12.5, 13.5, 14.5, 15.5, 16.5, 17.5, 18.5, 19.5, 20.5, 21.5,
+##        22.5, 23.5, 24.5, 25.5, 26.5, 27.5, 28.5, 29.5]), [Text(0.5, 0, &#39;radius_mean&#39;), Text(1.5, 0, &#39;texture_mean&#39;), Text(2.5, 0, &#39;perimeter_mean&#39;), Text(3.5, 0, &#39;area_mean&#39;), Text(4.5, 0, &#39;smoothness_mean&#39;), Text(5.5, 0, &#39;compactness_mean&#39;), Text(6.5, 0, &#39;concavity_mean&#39;), Text(7.5, 0, &#39;concave points_mean&#39;), Text(8.5, 0, &#39;symmetry_mean&#39;), Text(9.5, 0, &#39;fractal_dimension_mean&#39;), Text(10.5, 0, &#39;radius_se&#39;), Text(11.5, 0, &#39;texture_se&#39;), Text(12.5, 0, &#39;perimeter_se&#39;), Text(13.5, 0, &#39;area_se&#39;), Text(14.5, 0, &#39;smoothness_se&#39;), Text(15.5, 0, &#39;compactness_se&#39;), Text(16.5, 0, &#39;concavity_se&#39;), Text(17.5, 0, &#39;concave points_se&#39;), Text(18.5, 0, &#39;symmetry_se&#39;), Text(19.5, 0, &#39;fractal_dimension_se&#39;), Text(20.5, 0, &#39;radius_worst&#39;), Text(21.5, 0, &#39;texture_worst&#39;), Text(22.5, 0, &#39;perimeter_worst&#39;), Text(23.5, 0, &#39;area_worst&#39;), Text(24.5, 0, &#39;smoothness_worst&#39;), Text(25.5, 0, &#39;compactness_worst&#39;), Text(26.5, 0, &#39;concavity_worst&#39;), Text(27.5, 0, &#39;concave points_worst&#39;), Text(28.5, 0, &#39;symmetry_worst&#39;), Text(29.5, 0, &#39;fractal_dimension_worst&#39;)])</code></pre>
+<pre class="python"><code>plt.yticks(rotation=0)</code></pre>
+<pre><code>## (array([ 0.5,  1.5,  2.5,  3.5,  4.5,  5.5,  6.5,  7.5,  8.5,  9.5, 10.5,
+##        11.5, 12.5, 13.5, 14.5, 15.5, 16.5, 17.5, 18.5, 19.5, 20.5, 21.5,
+##        22.5, 23.5, 24.5, 25.5, 26.5, 27.5, 28.5, 29.5]), [Text(0, 0.5, &#39;radius_mean&#39;), Text(0, 1.5, &#39;texture_mean&#39;), Text(0, 2.5, &#39;perimeter_mean&#39;), Text(0, 3.5, &#39;area_mean&#39;), Text(0, 4.5, &#39;smoothness_mean&#39;), Text(0, 5.5, &#39;compactness_mean&#39;), Text(0, 6.5, &#39;concavity_mean&#39;), Text(0, 7.5, &#39;concave points_mean&#39;), Text(0, 8.5, &#39;symmetry_mean&#39;), Text(0, 9.5, &#39;fractal_dimension_mean&#39;), Text(0, 10.5, &#39;radius_se&#39;), Text(0, 11.5, &#39;texture_se&#39;), Text(0, 12.5, &#39;perimeter_se&#39;), Text(0, 13.5, &#39;area_se&#39;), Text(0, 14.5, &#39;smoothness_se&#39;), Text(0, 15.5, &#39;compactness_se&#39;), Text(0, 16.5, &#39;concavity_se&#39;), Text(0, 17.5, &#39;concave points_se&#39;), Text(0, 18.5, &#39;symmetry_se&#39;), Text(0, 19.5, &#39;fractal_dimension_se&#39;), Text(0, 20.5, &#39;radius_worst&#39;), Text(0, 21.5, &#39;texture_worst&#39;), Text(0, 22.5, &#39;perimeter_worst&#39;), Text(0, 23.5, &#39;area_worst&#39;), Text(0, 24.5, &#39;smoothness_worst&#39;), Text(0, 25.5, &#39;compactness_worst&#39;), Text(0, 26.5, &#39;concavity_worst&#39;), Text(0, 27.5, &#39;concave points_worst&#39;), Text(0, 28.5, &#39;symmetry_worst&#39;), Text(0, 29.5, &#39;fractal_dimension_worst&#39;)])</code></pre>
+<pre class="python"><code>plt.title(&#39;Correlation Map&#39;)</code></pre>
+<pre><code>## Text(0.5, 1.0, &#39;Correlation Map&#39;)</code></pre>
+<pre class="python"><code>plt.savefig(&#39;graph.png&#39;)
+plt.show()</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-1-15.png" width="1728" /></p>
+<ul>
+<li>Huge matrix that includes a lot of numbers</li>
+<li>The range of this numbers are -1 to 1.</li>
+<li>Meaning of 1 is two variable are positively correlated with each other like radius mean and area mean</li>
+<li>Meaning of zero is there is no correlation between variables like radius mean and fractal dimension se</li>
+<li>Meaning of -1 is two variables are negatively correlated with each other like radius mean and fractal dimension mean.Actually correlation between of them is not -1, it is -0.3 but the idea is that if sign of correlation is negative that means that there is negative correlation.</li>
+</ul>
+<p><a id="9"></a> <br></p>
+</div>
+<div id="covariance" class="section level2">
+<h2>Covariance</h2>
+<ul>
+<li>Covariance is measure of the tendency of two variables to vary together</li>
+<li>So covariance is maximized if two vectors are identical</li>
+<li>Covariance is zero if they are orthogonal.</li>
+<li>Covariance is negative if they point in opposite direction</li>
+<li>Lets look at covariance between radius mean and area mean. Then look at radius mean and fractal dimension se</li>
+</ul>
+<pre class="python"><code>np.cov(data.radius_mean,data.area_mean)</code></pre>
+<pre><code>## array([[1.24189201e+01, 1.22448341e+03],
+##        [1.22448341e+03, 1.23843554e+05]])</code></pre>
+<pre class="python"><code>print(&quot;Covariance between radius mean and area mean: &quot;,data.radius_mean.cov(data.area_mean))</code></pre>
+<pre><code>## Covariance between radius mean and area mean:  1224.4834093464567</code></pre>
+<pre class="python"><code>print(&quot;Covariance between radius mean and fractal dimension se: &quot;,data.radius_mean.cov(data.fractal_dimension_se))</code></pre>
+<pre><code>## Covariance between radius mean and fractal dimension se:  -0.00039762485764406277</code></pre>
+<p><a id="10"></a> <br></p>
+</div>
+<div id="pearson-correlation" class="section level2">
+<h2>Pearson Correlation</h2>
+<ul>
+<li>Division of covariance by standart deviation of variables</li>
+<li>Lets look at pearson correlation between radius mean and area mean</li>
+<li>First lets use .corr() method that we used actually at correlation part. In correlation part we actually used pearson correlation :)</li>
+<li>p1 and p2 is the same. In p1 we use corr() method, in p2 we apply definition of pearson correlation (cov(A,B)/(std(A)*std(B)))</li>
+<li>As we expect pearson correlation between area_mean and area_mean is 1 that means that they are same distribution</li>
+<li>Also pearson correlation between area_mean and radius_mean is 0.98 that means that they are positively correlated with each other and relationship between of the is very high.</li>
+<li>To be more clear what we did at correlation part and pearson correlation part is same.</li>
+</ul>
+<pre class="python"><code>p1 = data.loc[:,[&quot;area_mean&quot;,&quot;radius_mean&quot;]].corr(method= &quot;pearson&quot;)
+p2 = data.radius_mean.cov(data.area_mean)/(data.radius_mean.std()*data.area_mean.std())
+print(&#39;Pearson correlation: &#39;)</code></pre>
+<pre><code>## Pearson correlation:</code></pre>
+<pre class="python"><code>print(p1)</code></pre>
+<pre><code>##              area_mean  radius_mean
+## area_mean     1.000000     0.987357
+## radius_mean   0.987357     1.000000</code></pre>
+<pre class="python"><code>print(&#39;Pearson correlation: &#39;,p2)</code></pre>
+<pre><code>## Pearson correlation:  0.9873571700566125</code></pre>
+<p><a id="11"></a> <br></p>
+</div>
+<div id="spearmans-rank-correlation" class="section level2">
+<h2>Spearman’s Rank Correlation</h2>
+<ul>
+<li>Pearson correlation works well if the relationship between variables are linear and variables are roughly normal. But it is not robust, if there are outliers</li>
+<li>To compute spearman’s correlation we need to compute rank of each value</li>
+</ul>
+<pre class="python"><code>ranked_data = data.rank()
+spearman_corr = ranked_data.loc[:,[&quot;area_mean&quot;,&quot;radius_mean&quot;]].corr(method= &quot;pearson&quot;)
+print(&quot;Spearman&#39;s correlation: &quot;)</code></pre>
+<pre><code>## Spearman&#39;s correlation:</code></pre>
+<pre class="python"><code>print(spearman_corr)</code></pre>
+<pre><code>##              area_mean  radius_mean
+## area_mean     1.000000     0.999602
+## radius_mean   0.999602     1.000000</code></pre>
+<ul>
+<li>Spearman’s correlation is little higher than pearson correlation
+<ul>
+<li>If relationship between distributions are non linear, spearman’s correlation tends to better estimate the strength of relationship</li>
+<li>Pearson correlation can be affected by outliers. Spearman’s correlation is more robust.</li>
+</ul></li>
+</ul>
+<p><a id="12"></a> <br></p>
+</div>
+<div id="mean-vs-median" class="section level2">
+<h2>Mean VS Median</h2>
+<ul>
+<li>Sometimes instead of mean we need to use median. I am going to explain why we need to use median with an example</li>
+<li>Lets think that there are 10 people who work in a company. Boss of the company will make raise in their salary if their mean of salary is smaller than 5</li>
+</ul>
+<pre class="python"><code>salary = [1,4,3,2,5,4,2,3,1,500]
+print(&quot;Mean of salary: &quot;,np.mean(salary))</code></pre>
+<pre><code>## Mean of salary:  52.5</code></pre>
+<ul>
+<li>Mean of salary is 52.5 so the boss thinks that oooo I gave a lot of salary to my employees. And do not makes raise in their salaries. However as you know this is not fair and 500(salary) is outlier for this salary list.</li>
+<li>Median avoids outliers</li>
+</ul>
+<pre class="python"><code>print(&quot;Median of salary: &quot;,np.median(salary))</code></pre>
+<pre><code>## Median of salary:  3.0</code></pre>
+<ul>
+<li>Now median of the salary is 3 and it is less than 5 and employees will take raise in their sallaries and they are happy and this situation is fair :)</li>
+</ul>
+<p><a id="13"></a> <br></p>
+</div>
+<div id="hypothesis-testing" class="section level2">
+<h2>Hypothesis Testing</h2>
+<ul>
+<li>Classical Hypothesis Testing</li>
+<li>We want to answer this question: “given a sample and a apparent effecti what is the probability of seeing such an effect by chance”</li>
+<li>The first step is to quantify the size of the apparent effect by choosing a test statistic. Natural choice for the test statistic is the difference in means between two groups.</li>
+<li>The second step is to define null hypothesis that is model of the system based on the assumption that the apparent effect is not real. A null hypothesis is a type of hypothesis used in statistics that proposes that no statistical significance exists in a set of given observations. The null hypothesis is a hypothesis which people tries to disprove it. Alternative hypothesis is a hypothesis which people want to tries to prove it.</li>
+<li>Third step is compute p-value that is probablity of seeing the apparent effect if the null hypothesis is true. Suppose we have null hypothesis test. Then we calculate p value. If p value is less than or equal to a threshold, we reject null hypothesis.</li>
+<li>If the p-value is low, the effect is said to be statistacally significant that means that it is unlikely to have occured by chance. Therefore we can say that the effect is more likely to appear in the larger population.</li>
+<li>Lets have an example. Null hypothesis: world is flatten. Alternative hypothesis: world is round. Several scientists set out to disprove the null hypothesis. This eventually led to the refection of the null hypothesis and acceptance of the alternative hypothesis.</li>
+<li>Other example. “this effect is real” this is null hypothesis. Based on that assumption we compute the probability of the apparent effect. That is the p-value. If p-value is low, we conclude that null hypothesis is unlikely to be true.</li>
+<li>Now lets make our example:
+<ul>
+<li>I want to learn that are radius mean and area mean related with each other? My null hypothesis is that "relationship between radius mean and area mean is zero in tumor population’.</li>
+<li>Now we need to refute this null hypothesis in order to demonstrate that radius mean and area mean are related. (actually we know it from our previous experiences)</li>
+<li>lets find p-value (probability value)</li>
+</ul></li>
+</ul>
+<pre class="python"><code>statistic, p_value = stats.ttest_rel(data.radius_mean,data.area_mean)
+print(&#39;p-value: &#39;,p_value)</code></pre>
+<pre><code>## p-value:  1.5253492492559045e-184</code></pre>
+<ul>
+<li>P values is almost zero so we can reject null hypothesis.</li>
+</ul>
+<p><a id="14"></a> <br></p>
+</div>
+<div id="normalgaussian-distribution-and-z-score" class="section level2">
+<h2>Normal(Gaussian) Distribution and z-score</h2>
+<ul>
+<li>Also called bell shaped distribution</li>
+<li>Instead of making formal definition of gaussian distribution, I want to explain it with an example.</li>
+<li>The classic example is gaussian is IQ score.
+<ul>
+<li>In the world lets say average IQ is 110.</li>
+<li>There are few people that are super intelligent and their IQs are higher than 110. It can be 140 or 150 but it is rare.</li>
+<li>Also there are few people that have low intelligent and their IQ is lower than 110. It can be 40 or 50 but it is rare.</li>
+<li>From these information we can say that mean of IQ is 110. And lets say standart deviation is 20.</li>
+<li>Mean and standart deviation is parameters of normal distribution.</li>
+<li>Lets create 100000 sample and visualize it with histogram.</li>
+</ul></li>
+</ul>
+<pre class="python"><code># parameters of normal distribution
+mu, sigma = 110, 20  # mean and standard deviation
+s = np.random.normal(mu, sigma, 100000)
+print(&quot;mean: &quot;, np.mean(s))</code></pre>
+<pre><code>## mean:  109.99716925973718</code></pre>
+<pre class="python"><code>print(&quot;standart deviation: &quot;, np.std(s))
+# visualize with histogram</code></pre>
+<pre><code>## standart deviation:  20.039728430426035</code></pre>
+<pre class="python"><code>plt.figure(figsize = (10,7))</code></pre>
+
+<pre class="python"><code>plt.hist(s, 100)</code></pre>
+<pre><code>## (array([1.000e+00, 0.000e+00, 0.000e+00, 0.000e+00, 0.000e+00, 0.000e+00,
+##        0.000e+00, 2.000e+00, 1.000e+00, 3.000e+00, 5.000e+00, 5.000e+00,
+##        4.000e+00, 9.000e+00, 6.000e+00, 1.600e+01, 1.500e+01, 2.900e+01,
+##        3.900e+01, 4.800e+01, 6.500e+01, 7.300e+01, 9.900e+01, 1.390e+02,
+##        1.930e+02, 2.120e+02, 2.370e+02, 2.850e+02, 3.520e+02, 3.980e+02,
+##        5.270e+02, 6.010e+02, 7.340e+02, 8.600e+02, 9.280e+02, 1.063e+03,
+##        1.228e+03, 1.423e+03, 1.567e+03, 1.785e+03, 1.930e+03, 2.040e+03,
+##        2.231e+03, 2.451e+03, 2.633e+03, 2.810e+03, 2.924e+03, 3.043e+03,
+##        3.143e+03, 3.314e+03, 3.354e+03, 3.377e+03, 3.423e+03, 3.408e+03,
+##        3.542e+03, 3.271e+03, 3.526e+03, 3.181e+03, 3.112e+03, 3.012e+03,
+##        2.831e+03, 2.660e+03, 2.541e+03, 2.281e+03, 2.029e+03, 1.910e+03,
+##        1.807e+03, 1.588e+03, 1.407e+03, 1.213e+03, 1.131e+03, 9.740e+02,
+##        8.270e+02, 7.080e+02, 5.710e+02, 5.160e+02, 4.250e+02, 3.510e+02,
+##        3.060e+02, 2.360e+02, 2.120e+02, 2.040e+02, 1.550e+02, 1.030e+02,
+##        6.800e+01, 7.500e+01, 4.700e+01, 4.100e+01, 2.200e+01, 2.600e+01,
+##        1.300e+01, 9.000e+00, 6.000e+00, 1.000e+01, 4.000e+00, 6.000e+00,
+##        4.000e+00, 4.000e+00, 0.000e+00, 2.000e+00]), array([ 17.64082761,  19.38143728,  21.12204695,  22.86265662,
+##         24.60326629,  26.34387596,  28.08448563,  29.8250953 ,
+##         31.56570497,  33.30631464,  35.04692431,  36.78753398,
+##         38.52814365,  40.26875332,  42.00936299,  43.74997266,
+##         45.49058233,  47.231192  ,  48.97180167,  50.71241134,
+##         52.45302101,  54.19363068,  55.93424035,  57.67485002,
+##         59.41545969,  61.15606936,  62.89667903,  64.6372887 ,
+##         66.37789837,  68.11850804,  69.85911771,  71.59972738,
+##         73.34033705,  75.08094672,  76.82155639,  78.56216606,
+##         80.30277573,  82.0433854 ,  83.78399508,  85.52460475,
+##         87.26521442,  89.00582409,  90.74643376,  92.48704343,
+##         94.2276531 ,  95.96826277,  97.70887244,  99.44948211,
+##        101.19009178, 102.93070145, 104.67131112, 106.41192079,
+##        108.15253046, 109.89314013, 111.6337498 , 113.37435947,
+##        115.11496914, 116.85557881, 118.59618848, 120.33679815,
+##        122.07740782, 123.81801749, 125.55862716, 127.29923683,
+##        129.0398465 , 130.78045617, 132.52106584, 134.26167551,
+##        136.00228518, 137.74289485, 139.48350452, 141.22411419,
+##        142.96472386, 144.70533353, 146.4459432 , 148.18655287,
+##        149.92716254, 151.66777221, 153.40838188, 155.14899155,
+##        156.88960122, 158.63021089, 160.37082056, 162.11143023,
+##        163.8520399 , 165.59264957, 167.33325924, 169.07386891,
+##        170.81447858, 172.55508825, 174.29569792, 176.03630759,
+##        177.77691726, 179.51752693, 181.2581366 , 182.99874627,
+##        184.73935594, 186.47996562, 188.22057529, 189.96118496,
+##        191.70179463]), &lt;BarContainer object of 100 artists&gt;)</code></pre>
+<pre class="python"><code>plt.ylabel(&quot;frequency&quot;)</code></pre>
+<pre><code>## Text(0, 0.5, &#39;frequency&#39;)</code></pre>
+<pre class="python"><code>plt.xlabel(&quot;IQ&quot;)</code></pre>
+<pre><code>## Text(0.5, 0, &#39;IQ&#39;)</code></pre>
+<pre class="python"><code>plt.title(&quot;Histogram of IQ&quot;)</code></pre>
+<pre><code>## Text(0.5, 1.0, &#39;Histogram of IQ&#39;)</code></pre>
+<pre class="python"><code>plt.show()</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-1-17.png" width="960" /></p>
+<ul>
+<li><p>As it can be seen from histogram most of the people are cumulated near to 110 that is mean of our normal distribution</p></li>
+<li><p>However what is the “most” I mentioned at previous sentence? What if I want to know what percentage of people should have an IQ score between 80 and 140?</p></li>
+<li><p>We will use z-score the answer this question.
+* z = (x - mean)/std
+* z1 = (80-110)/20 = -1.5
+* z2 = (140-110)/20 = 1.5
+* Distance between mean and 80 is 1.5std and distance between mean and 140 is 1.5std.
+* If you look at z table, you will see that 1.5std correspond to 0.4332
+<a href="https://ibb.co/hys6OT"><img src="https://preview.ibb.co/fYzWq8/123.png" alt="123" border="0"></a>
+* Lets calculate it with 2 because 1 from 80 to mean and other from mean to 140
+* 0.4332 * 2 = 0.8664
+* 86.64 % of people has an IQ between 80 and 140.
+<a href="https://ibb.co/fhc6OT"><img src="https://preview.ibb.co/bUi2xo/hist.png" alt="hist" border="0"></a></p></li>
+<li><p>What percentage of people should have an IQ score less than 80?</p></li>
+<li><p>z = (110-80)/20 = 1.5</p></li>
+<li><p>Lets look at table of z score 0.4332. 43.32% of people has an IQ between 80 and mean(110).</p></li>
+<li><p>If we subtract from 50% to 43.32%, we ca n find percentage of people have an IQ score less than 80.</p></li>
+<li><p>50-43.32 = 6.68. As a result, 6.68% of people have an IQ score less than 80.</p></li>
+</ul>
+</div>
+</div>
