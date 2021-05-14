@@ -1,0 +1,100 @@
+---
+title: Bob Ross' Paintings - Data Analysis in R (Tidy Tuesday)
+author: Max Lang
+date: '2021-05-14'
+slug: bob-ross-paintings-data-analysis-in-r-tidy-tuesday
+categories:
+  - Data Analysis
+  - tidytuesdayinR
+  - R
+tags: []
+---
+
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
+
+
+<p>I recently came across Bob Ross’ famous TV Show “The Joy of Painting”, which is absolutely amazing. Let’s be honest, is there one person that does not love listening to Bob Ross?
+<img src="images/bobrosspainting.jpg" width="300" height="200" /></p>
+<p>However, as I myself am not a great painter, I thought I will paint in my own way… exactly ggplot and datasets. So here I am answering some basic questions from the Bob Ross Tidy Tuesday <a href="https://github.com/rfordatascience/tidytuesday/tree/master/data/2019/2019-08-06">dataset</a>.</p>
+<p>Have fun with the graphs and as always I am happy to receive feedback. :)</p>
+<div id="preparations-and-import" class="section level3">
+<h3>Preparations and Import</h3>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.0 ──</code></pre>
+<pre><code>## ✓ ggplot2 3.3.3     ✓ purrr   0.3.4
+## ✓ tibble  3.0.6     ✓ dplyr   1.0.4
+## ✓ tidyr   1.1.2     ✓ stringr 1.4.0
+## ✓ readr   1.4.0     ✓ forcats 0.5.0</code></pre>
+<pre><code>## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>theme_set(theme_classic())
+
+bob_ross &lt;- readr::read_csv(&quot;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-08-06/bob-ross.csv&quot;)</code></pre>
+<pre><code>## 
+## ── Column specification ────────────────────────────────────────────────────────
+## cols(
+##   .default = col_double(),
+##   EPISODE = col_character(),
+##   TITLE = col_character()
+## )
+## ℹ Use `spec()` for the full column specifications.</code></pre>
+</div>
+<div id="data-cleaning-and-wrangling" class="section level3">
+<h3>Data cleaning and wrangling</h3>
+<pre class="r"><code>b_ross_gathered &lt;- bob_ross %&gt;%
+  janitor::clean_names() %&gt;%
+  gather(element, present, -episode, -title) %&gt;%
+  filter(present == 1) %&gt;%
+  mutate(title = str_to_title(str_remove_all(title, &#39;&quot;&#39;)),
+         element = str_to_title(str_replace(element, &quot;_&quot;, &quot; &quot;))) %&gt;%
+  select(-present) %&gt;%
+  extract(episode, c(&quot;season&quot;, &quot;episode_number&quot;), &quot;S(.*)E(.*)&quot;, 
+          convert = TRUE, remove = FALSE) %&gt;%
+  arrange(season, episode_number)</code></pre>
+</div>
+<div id="what-elements-are-painted-the-most-often-in-bob-ross-tv-show" class="section level3">
+<h3>What elements are painted the most often in Bob Ross’ TV Show?</h3>
+<pre class="r"><code>b_ross_gathered %&gt;%
+  count(element, sort = TRUE) %&gt;%
+  head(20) %&gt;%
+  mutate(element = fct_reorder(element, n)) %&gt;%
+  ggplot(aes(element, n)) +
+  ggtitle(&quot;Top 20 most occuring elements\nin Bob Ross paintings&quot;)+
+  xlab(&quot;Number of occurences&quot;)+
+  ylab(&quot;Elements in the picture&quot;)+
+  scale_y_continuous(breaks = seq(0,400,50))+
+  geom_col()+
+  coord_flip()+
+  theme_bw()</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+</div>
+<div id="how-have-ross-paintings-been-changing-over-time" class="section level3">
+<h3>How have Ross’ paintings been changing over time?</h3>
+<pre class="r"><code>by_season_element &lt;- b_ross_gathered %&gt;%
+  filter(!element %in% c(&quot;Tree&quot;, &quot;Trees&quot;)) %&gt;%
+  group_by(season) %&gt;%
+  mutate(number_episodes = n_distinct(episode)) %&gt;%
+  count(season, element, number_episodes, sort = TRUE) %&gt;%
+  mutate(percent_included = n / number_episodes) %&gt;%
+  group_by(element) %&gt;%
+  mutate(element_total = sum(n)) %&gt;%
+  ungroup()
+
+by_season_element %&gt;%
+  filter(element_total &gt;= 50) %&gt;%
+  ggplot(aes(season, percent_included)) +
+  geom_line() +
+  scale_y_continuous(labels = scales::percent_format()) +
+  expand_limits(y = 0) +
+  facet_wrap(~ element)+
+  theme_light()+
+  xlab(&quot;Season&quot;)+
+  ylab(&quot;Percentage included in Painting&quot;)+
+  ggtitle(&quot;Development of Elements included in \nBob Ross&#39;s Paintings&quot;)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+</div>
+<div id="credits" class="section level3">
+<h3>Credits</h3>
+<p>Most of the Ideas and code are from David Robinson (YT, Github[<a href="https://github.com/dgrtwo" class="uri">https://github.com/dgrtwo</a>]) I mainly do the analysis on my own inspired by his videos in order to practice and learn new code pieces. Furthermore I like adding my own thoughts, so I post them here on my website.</p>
+</div>
