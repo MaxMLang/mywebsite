@@ -1,0 +1,340 @@
+---
+title: Brain Tumor MRI Image Data (EDA) - Python
+author: Max Lang
+date: '2021-05-12'
+slug: brain-tumor-mri-image-data-eda-python
+categories:
+  - Python
+  - Data Analysis
+tags: []
+---
+
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
+
+
+<pre class="python"><code>import numpy as np
+import pandas as pd </code></pre>
+<div id="about-the-dataset" class="section level1">
+<h1><strong>About The Dataset</strong></h1>
+<p>This dataset contains data and expert annotations on four types of MRI images from 2015:</p>
+<ul>
+<li>T1</li>
+<li>T1c</li>
+<li>T2</li>
+<li>FLAIR</li>
+</ul>
+<p>For each patient, there are four different types of MRIs.</p>
+<p>Given two kinds of brain gilomas in the training dataset, and each patient has four MRI and segmented tumor images.</p>
+<p>Given four MRI images in the test dataset, and our task is to find the segmented image of Tumor and predict the HGG LGG gilomas based on this segmented tumor.</p>
+</div>
+<div id="approach" class="section level1">
+<h1>Approach</h1>
+<ul>
+<li>start preprocessing the data.</li>
+<li>use windows techniques (which are used by doctors to analyze MRIs) in the preprocessing phase, and then change the pixel array according to colorspace.</li>
+<li>using masking techniques, illuminate only the parts that are needed.</li>
+<li>crop photos</li>
+<li>on Brain MRI images, use the U-Net segmentation architecture to learn the segmentation.</li>
+</ul>
+<p><strong>Image Preprocessing</strong></p>
+<ul>
+<li>For reading the .mha extension file SimpleITK library is used</li>
+<li>For visulization of the image the image is converted into 2D slices.</li>
+</ul>
+<pre class="python"><code>import os
+import numpy
+import SimpleITK
+import matplotlib.pyplot as plt</code></pre>
+<pre class="python"><code>
+
+def sitk_show(img, title=None, margin=0.0, dpi=40):
+    nda = SimpleITK.GetArrayFromImage(img)
+#     nda=numpy.transpose(nda)
+#     print(nda.shape)
+    #spacing = img.GetSpacing()
+    figsize = (1 + margin) * nda.shape[0] / dpi, (1 + margin) * nda.shape[1] / dpi
+    #extent = (0, nda.shape[1]*spacing[1], nda.shape[0]*spacing[0], 0)
+    extent = (0, nda.shape[1], nda.shape[0], 0)
+    fig = plt.figure(figsize=(10,10))
+    ax = fig.add_axes([margin, margin, 1 - 2*margin, 1 - 2*margin])
+
+    plt.set_cmap(&quot;gray&quot;)
+    ax.imshow(nda,extent=extent,interpolation=None)
+    
+    if title:
+        plt.title(title)
+    
+    plt.show()</code></pre>
+<pre class="python"><code># Paths to the .mhd files
+filenameF = &quot;/Users/max/Documents/Data Science/Projects/data/brain_tumor_pics/train/HGG/brats_2013_pat0013_1/VSD.Brain.XX.O.MR_Flair.54584.mha&quot;
+filenameT1 = &quot;/Users/max/Documents/Data Science/Projects/data/brain_tumor_pics/train/HGG/brats_2013_pat0013_1/VSD.Brain.XX.O.MR_T1.54585.mha&quot;
+filenameT2=&quot;/Users/max/Documents/Data Science/Projects/data/brain_tumor_pics/train/HGG/brats_2013_pat0013_1/VSD.Brain.XX.O.MR_T2.54587.mha&quot;
+filenameTC=&quot;/Users/max/Documents/Data Science/Projects/data/brain_tumor_pics/train/HGG/brats_2013_pat0013_1/VSD.Brain.XX.O.MR_T1c.54586.mha&quot;
+# Slice index to visualize with &#39;sitk_show&#39;
+label=&quot;/Users/max/Documents/Data Science/Projects/data/brain_tumor_pics/train/HGG/brats_2013_pat0013_1/VSD.Brain_3more.XX.O.OT.54589.mha&quot;
+
+filenameLF=&quot;/Users/max/Documents/Data Science/Projects/data/brain_tumor_pics/train/LGG/brats_2013_pat0013_1/VSD.Brain.XX.O.MR_Flair.54674.mha&quot;
+filenameLT1=&quot;/Users/max/Documents/Data Science/Projects/data/brain_tumor_pics/train/LGG/brats_2013_pat0013_1/VSD.Brain.XX.O.MR_T1.54675.mha&quot;
+filenameLT2=&quot;/Users/max/Documents/Data Science/Projects/data/brain_tumor_pics/train/LGG/brats_2013_pat0013_1/VSD.Brain.XX.O.MR_T2.54677.mha&quot;
+filenameLTC=&quot;/Users/max/Documents/Data Science/Projects/data/brain_tumor_pics/train/LGG/brats_2013_pat0013_1/VSD.Brain.XX.O.MR_T1c.54676.mha&quot;
+
+labelL=&quot;/Users/max/Documents/Data Science/Projects/data/brain_tumor_pics/train/LGG/brats_2013_pat0013_1/VSD.Brain_2more.XX.O.OT.54679.mha&quot;
+# idxSlice = 100
+idxSlice = 105
+
+
+# int label to assign to the segmented gray matter
+labelGrayMatter = 1</code></pre>
+<pre class="python"><code>imgFOriginal = SimpleITK.ReadImage(filenameF)
+imgT1Original = SimpleITK.ReadImage(filenameT1)
+imgT2Original = SimpleITK.ReadImage(filenameT2)
+imgTCOriginal = SimpleITK.ReadImage(filenameTC)
+labelOrignal=SimpleITK.ReadImage(label)
+# print(labelOrignal)
+imgLFOriginal = SimpleITK.ReadImage(filenameLF)
+imgLT1Original = SimpleITK.ReadImage(filenameLT1)
+imgLT2Original = SimpleITK.ReadImage(filenameLT2)
+imgLTCOriginal = SimpleITK.ReadImage(filenameLTC)
+labelLOrignal=SimpleITK.ReadImage(labelL)</code></pre>
+<pre class="python"><code>print(&quot;HGG&quot;)</code></pre>
+<pre><code>## HGG</code></pre>
+<pre class="python"><code>sitk_show(SimpleITK.Tile(imgFOriginal[:, :, 105],
+                         imgT2Original[:, :, 105],
+                         imgT1Original[:, :, 105],
+                         imgTCOriginal[:, :, 105],
+                         (5, 1, 0)))</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-1-1.png" width="960" /></p>
+<pre class="python"><code>print(&quot;Label&quot;)</code></pre>
+<pre><code>## Label</code></pre>
+<pre class="python"><code>sitk_show(SimpleITK.Tile(labelOrignal[:,:,105],(2,1,0)))
+
+# print(&quot;Label&quot;)
+# sitk_show(labelOrignal[:,:,105])</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-1-2.png" width="960" /></p>
+<pre class="python"><code>print(&quot;LGG&quot;)</code></pre>
+<pre><code>## LGG</code></pre>
+<pre class="python"><code>sitk_show(SimpleITK.Tile(imgLFOriginal[:, :, idxSlice],
+                         imgLT2Original[:, :, idxSlice],
+                         imgLT1Original[:, :, idxSlice],
+                         imgLTCOriginal[:, :, idxSlice],
+                         (4, 1, 0)))</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-1-5.png" width="960" /></p>
+<pre class="python"><code>print(&quot;Label&quot;)</code></pre>
+<pre><code>## Label</code></pre>
+<pre class="python"><code>sitk_show(SimpleITK.Tile(labelLOrignal[:,:,75],(2,1,0)))</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-1-6.png" width="960" /></p>
+<p><strong>Image Smoothing/Denoising</strong></p>
+<pre class="python"><code>imgFSmooth = SimpleITK.CurvatureFlow(image1=imgFOriginal,
+                                      timeStep=0.125,
+                                      numberOfIterations=5)
+
+imgT2Smooth = SimpleITK.CurvatureFlow(image1=imgT2Original,
+                                      timeStep=0.125,
+                                      numberOfIterations=5)
+imgT1Smooth = SimpleITK.CurvatureFlow(image1=imgT1Original,
+                                      timeStep=0.125,
+                                      numberOfIterations=5)
+
+imgTCSmooth = SimpleITK.CurvatureFlow(image1=imgTCOriginal,
+                                      timeStep=0.125,
+                                      numberOfIterations=5)
+# imgLSmooth=SimpleITK.CurvatureFlow(image1=labelOrignal,
+#                                       timeStep=0.125,
+#                                       numberOfIterations=5)
+sitk_show(SimpleITK.Tile(imgFSmooth[:, :, 105], 
+                         imgT2Smooth[:, :, 105], 
+                         imgT1Smooth[:, :, 105], 
+                         imgTCSmooth[:, :, 105],
+                         (5, 1, 0)))
+</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-1-9.png" width="960" /></p>
+<pre class="python"><code>print(&quot;LGG&quot;)</code></pre>
+<pre><code>## LGG</code></pre>
+<pre class="python"><code>imgLFSmooth = SimpleITK.CurvatureFlow(image1=imgLFOriginal,
+                                      timeStep=0.125,
+                                      numberOfIterations=5)
+
+imgLT2Smooth = SimpleITK.CurvatureFlow(image1=imgLT2Original,
+                                      timeStep=0.125,
+                                      numberOfIterations=5)
+imgLT1Smooth = SimpleITK.CurvatureFlow(image1=imgLT1Original,
+                                      timeStep=0.125,
+                                      numberOfIterations=5)
+
+imgLTCSmooth = SimpleITK.CurvatureFlow(image1=imgLTCOriginal,
+                                      timeStep=0.125,
+                                      numberOfIterations=5)
+sitk_show(SimpleITK.Tile(imgLFSmooth[:, :, idxSlice], 
+                         imgLT2Smooth[:, :, idxSlice], 
+                         imgLT1Smooth[:, :, idxSlice], 
+                         imgLTCSmooth[:, :, idxSlice], 
+                         (4, 1, 0)))</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-1-11.png" width="960" /></p>
+<p><strong>Seeding</strong></p>
+<pre class="python"><code>lstSeeds = [(145, 162, idxSlice),
+            (98, 155, idxSlice),
+            (175, 125, idxSlice),
+            (155, 180, idxSlice)]
+
+imgSeeds = SimpleITK.Image(imgT2Smooth)
+
+for s in lstSeeds:
+    imgSeeds[s] = 10000
+
+sitk_show(imgSeeds[:, :, idxSlice])</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-1-13.png" width="960" /></p>
+<pre class="python"><code>print(&quot;LGG&quot;)</code></pre>
+<pre><code>## LGG</code></pre>
+<pre class="python"><code>lstSeeds = [(145, 162, idxSlice),
+            (98, 155, idxSlice),
+            (175, 125, idxSlice),
+            (155, 180, idxSlice)]
+
+imgSeeds = SimpleITK.Image(imgLT2Smooth)
+
+for s in lstSeeds:
+    imgSeeds[s] = 10000
+
+sitk_show(imgSeeds[:, :, idxSlice])</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-1-15.png" width="960" /></p>
+<p><strong>Auxiliary Function: Vector-Image Tiling</strong></p>
+<pre class="python"><code>def sitk_tile_vec(lstImgs):
+    lstImgToCompose = []
+    for idxComp in range(lstImgs[0].GetNumberOfComponentsPerPixel()):
+        lstImgToTile = []
+        for img in lstImgs:
+            lstImgToTile.append(SimpleITK.VectorIndexSelectionCast(img, idxComp))
+        lstImgToCompose.append(SimpleITK.Tile(lstImgToTile, (len(lstImgs), 0, 0)))
+    sitk_show(SimpleITK.Compose(lstImgToCompose))</code></pre>
+<pre class="python"><code>imgGrayMatterF = SimpleITK.ConfidenceConnected(image1=imgFSmooth, 
+                                                seedList=lstSeeds,
+                                                numberOfIterations=3,
+                                                multiplier=0.2,
+                                                replaceValue=labelGrayMatter)
+
+imgGrayMatterT2 = SimpleITK.ConfidenceConnected(image1=imgT2Smooth, 
+                                                seedList=lstSeeds,
+                                                numberOfIterations=10,
+                                                multiplier=0.2,
+                                                replaceValue=labelGrayMatter)
+imgGrayMatterT1 = SimpleITK.ConfidenceConnected(image1=imgT1Smooth, 
+                                                seedList=lstSeeds,
+                                                numberOfIterations=3,
+                                                multiplier=0.2,
+                                                replaceValue=labelGrayMatter)
+
+imgGrayMatterTC = SimpleITK.ConfidenceConnected(image1=imgTCSmooth, 
+                                                seedList=lstSeeds,
+                                                numberOfIterations=3,
+                                                multiplier=0.2,
+                                                replaceValue=labelGrayMatter)
+
+imgGrayMatterLabel = SimpleITK.ConfidenceConnected(image1=labelOrignal, 
+                                                seedList=lstSeeds,
+                                                numberOfIterations=3,
+                                                multiplier=0.2,
+                                                replaceValue=2)
+
+
+imgFSmoothInt = SimpleITK.Cast(SimpleITK.RescaleIntensity(imgFSmooth), 
+                                imgGrayMatterF.GetPixelID())
+imgT2SmoothInt = SimpleITK.Cast(SimpleITK.RescaleIntensity(imgT2Smooth), 
+                                imgGrayMatterT2.GetPixelID())
+imgT1SmoothInt = SimpleITK.Cast(SimpleITK.RescaleIntensity(imgT1Smooth), 
+                                imgGrayMatterT1.GetPixelID())
+imgTCSmoothInt = SimpleITK.Cast(SimpleITK.RescaleIntensity(imgTCSmooth), 
+                                imgGrayMatterTC.GetPixelID())
+imgLabelInt = SimpleITK.Cast(SimpleITK.RescaleIntensity(labelOrignal), 
+                                imgGrayMatterLabel.GetPixelID())
+
+sitk_tile_vec([SimpleITK.LabelOverlay(imgFSmoothInt[:,:,idxSlice], 
+                                      imgGrayMatterF[:,:,idxSlice]),
+               SimpleITK.LabelOverlay(imgT2SmoothInt[:,:,idxSlice], 
+                                     imgGrayMatterT2[:,:,idxSlice]),
+              SimpleITK.LabelOverlay(imgT1SmoothInt[:,:,idxSlice], 
+                                     imgGrayMatterT1[:,:,idxSlice]),
+              SimpleITK.LabelOverlay(imgTCSmoothInt[:,:,idxSlice], 
+                                     imgGrayMatterTC[:,:,idxSlice]),
+              SimpleITK.LabelOverlay(imgLabelInt[:,:,idxSlice], 
+                                     imgGrayMatterLabel[:,:,idxSlice])])
+</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-1-17.png" width="960" /></p>
+<pre class="python"><code>print(&quot;LGG&quot;)</code></pre>
+<pre><code>## LGG</code></pre>
+<pre class="python"><code>imgGrayMatterLF = SimpleITK.ConfidenceConnected(image1=imgLFSmooth, 
+                                                seedList=lstSeeds,
+                                                numberOfIterations=3,
+                                                multiplier=0.01,
+                                                replaceValue=labelGrayMatter)
+
+imgGrayMatterLT2 = SimpleITK.ConfidenceConnected(image1=imgLT2Smooth, 
+                                                seedList=lstSeeds,
+                                                numberOfIterations=3,
+                                                multiplier=0.01,
+                                                replaceValue=labelGrayMatter)
+imgGrayMatterLT1 = SimpleITK.ConfidenceConnected(image1=imgLT1Smooth, 
+                                                seedList=lstSeeds,
+                                                numberOfIterations=3,
+                                                multiplier=0.01,
+                                                replaceValue=labelGrayMatter)
+
+imgGrayMatterLTC = SimpleITK.ConfidenceConnected(image1=imgLTCSmooth, 
+                                                seedList=lstSeeds,
+                                                numberOfIterations=3,
+                                                multiplier=0.01,
+                                                replaceValue=labelGrayMatter)
+
+imgGrayMatterLabelL = SimpleITK.ConfidenceConnected(image1=labelLOrignal, 
+                                                seedList=lstSeeds,
+                                                numberOfIterations=3,
+                                                multiplier=0.2,
+                                                replaceValue=labelGrayMatter)
+
+imgLFSmoothInt = SimpleITK.Cast(SimpleITK.RescaleIntensity(imgLFSmooth), 
+                                imgGrayMatterF.GetPixelID())
+imgLT2SmoothInt = SimpleITK.Cast(SimpleITK.RescaleIntensity(imgLT2Smooth), 
+                                imgGrayMatterT2.GetPixelID())
+imgLT1SmoothInt = SimpleITK.Cast(SimpleITK.RescaleIntensity(imgLT1Smooth), 
+                                imgGrayMatterT1.GetPixelID())
+imgLTCSmoothInt = SimpleITK.Cast(SimpleITK.RescaleIntensity(imgLTCSmooth), 
+                                imgGrayMatterTC.GetPixelID())
+imgLabelLInt = SimpleITK.Cast(SimpleITK.RescaleIntensity(labelLOrignal), 
+                                imgGrayMatterLabelL.GetPixelID())
+
+sitk_tile_vec([SimpleITK.LabelOverlay(imgLFSmoothInt[:,:,idxSlice], 
+                                      imgGrayMatterLF[:,:,idxSlice]),
+               SimpleITK.LabelOverlay(imgLT2SmoothInt[:,:,idxSlice], 
+                                     imgGrayMatterLT2[:,:,idxSlice]),
+              SimpleITK.LabelOverlay(imgLT1SmoothInt[:,:,idxSlice], 
+                                     imgGrayMatterLT1[:,:,idxSlice]),
+              SimpleITK.LabelOverlay(imgLTCSmoothInt[:,:,idxSlice], 
+                                     imgGrayMatterLTC[:,:,idxSlice]),
+               SimpleITK.LabelOverlay(imgLabelLInt[:,:,75], 
+                                     imgGrayMatterLabelL[:,:,75])])</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-1-19.png" width="960" /></p>
+<p><strong>Multi-Modal Segmentation</strong></p>
+<pre class="python"><code>imgComp = SimpleITK.Compose(imgFSmooth, imgT2Smooth,imgT1Smooth,imgTCSmooth)
+
+imgGrayMatterComp = SimpleITK.VectorConfidenceConnected(image1=imgComp, 
+                                               seedList=lstSeeds,
+                                               numberOfIterations=1,
+                                               multiplier=0.1,
+                                               replaceValue=labelGrayMatter)
+
+sitk_show(SimpleITK.LabelOverlay(imgLabelInt[:,:,idxSlice], 
+                                 imgGrayMatterComp[:,:,idxSlice]))</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-1-21.png" width="960" /></p>
+<pre class="python"><code>print(&quot;LGG&quot;)</code></pre>
+<pre><code>## LGG</code></pre>
+<pre class="python"><code>imgComp = SimpleITK.Compose(imgLFSmooth, imgLT2Smooth,imgLT1Smooth,imgLTCSmooth)
+
+LimgGrayMatterComp = SimpleITK.VectorConfidenceConnected(image1=imgComp, 
+                                               seedList=lstSeeds,
+                                               numberOfIterations=1,
+                                               multiplier=0.1,
+                                               replaceValue=labelGrayMatter)
+
+sitk_show(SimpleITK.LabelOverlay(imgLabelLInt[:,:,75], 
+                                 LimgGrayMatterComp[:,:,idxSlice]))</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-1-23.png" width="960" /></p>
+</div>
