@@ -105,3 +105,102 @@ _Comment 2_:
 Let's suppose again one already got _HT_. If the next toss is _T_, one found the sequence. If it is a _H_, this is just a minor setback, because one now got _HTH_ (while seeking the _HTT_ sequence); however, now one already has the _H_ and just needs two _T_ in a row ( _TT_ ). Moreover if the next toss is an H this is not such a big setback again, because _H_ is the start of the sequence we are looking for, just like before. A _T_ would make our "situation" even better and so on... 
 
 Therefore answer _a) The average number of tosses until HTH is larger than the average number of tosses until HTT_.
+
+## Experiment 2
+
+After we put in some thought, we wanted to find how the probabilities of those two sequences behave if we adjust the experiment.
+
+Now we will throw a coin 100 Times and note down each outcome. The result of each run of the experiment will therefore be a line/string looking e.g like this  one "HTHTTTHHHTHTHTHTHT...", containing in total 100 characters. After this we go through our 100 character long string and check for the following patterns. 
+
+* **HTH**
+* **HTT**
+
+Note that HTH can overlap itself. For example _HTHTH_ is counted as **HTH**TH and HT**HTH** -  two sequences for *HTH*. **HTT** does not have this characteristic. 
+
+The **Question** is which of the following statements is true:
+
+* The number of times **HTH** is in our string is more than the number of times **HTT** occurs
+* The number of times **HTH** is in our string is less than the number of times **HTT** occurs
+* The number of times **HTH** is in our string is equal to the number of times **HTT** occurs
+
+Let's make a simple simulaton in R to find out the correct answer. We first defined this function to simulate or experiment.
+```{r}
+count.pattern <- function(pattern,
+                          n_flips = 100,
+                          coins = rbinom(n_flips, 1, 0.5)) {
+  hits = 0
+  for (i in 1:(n_flips - 2)) {
+    # TRUES are counted as 1 in R, this allows the following step
+    if (sum(coins[i:(i + 2)] == pattern) == 3) {
+      hits = 1 + hits
+    }
+  }
+  hits
+}
+```
+
+
+### Run the experiment 
+```{r}
+
+# Encoded 0 = H and 1 = T
+HTH = c(0, 1, 0)
+HTT = c(0, 1, 1)
+TTT = c(1, 1, 1)
+
+n_flips =  100
+
+# Running the experiment 10000 times seeking HTH, HTT and TTT
+results = data.frame(
+  HTH = replicate(10000, count.pattern(HTH, n_flips)),
+  HTT = replicate(10000, count.pattern(HTT, n_flips)),
+  TTT = replicate(10000, count.pattern(TTT, n_flips))
+)
+summary(results)[4,]
+
+```
+The **means** at 10000 trials are close enough that we can safely assume that
+the average amount of successes **is the same**, no matter which pattern.
+
+However, their **distribution is not**:
+
+### Plotting the histograms of all three patterns
+```{r}
+ggplot(tidyr::pivot_longer(results,
+                           c("HTH", "HTT", "TTT"),
+                           names_to = "pattern",
+                           values_to = "value"),
+       aes(value)) +
+  geom_histogram(binwidth = 0.5) +
+  facet_wrap(vars(pattern)) +
+  labs(x = paste("Amount of pattern occurences.")) +
+  ggtitle(paste("Distribution of different pattern occurrences in", n_flips, "coin tosses."))
+
+```
+
+
+### Also interesting: 5 tosses
+
+The means stay the same, but at this few tosses, some patterns can only appear
+once, while othes (TTT) can appear up to three times when overlapping is allowed.
+```{r}
+n_flips =  5
+
+# Running the experiment 10000 times seeking HTH, HTT and TTT
+results = data.frame(
+  HTH = replicate(50000, count.pattern(HTH, n_flips)),
+  HTT = replicate(50000, count.pattern(HTT, n_flips)),
+  TTT = replicate(50000, count.pattern(TTT, n_flips))
+)
+print(summary(results)[4,])
+
+ggplot(tidyr::pivot_longer(results,
+                           c("HTH", "HTT", "TTT"),
+                           names_to = "pattern",
+                           values_to = "value"),
+       aes(value)) +
+  geom_histogram(binwidth = 0.5) +
+  facet_wrap(vars(pattern)) +
+  labs(x = paste("Amount of pattern occurences.")) +
+  ggtitle(paste("Distribution of different pattern occurrences in", n_flips, "coin tosses."))
+```
