@@ -125,6 +125,8 @@ The **Question** is which of the following statements is true:
 
 Let's make a simple simulaton in R to find out the correct answer. We first defined this function to simulate or experiment.
 ```{r}
+library(ggplot2)
+
 count.pattern <- function(pattern,
                           n_flips = 100,
                           coins = rbinom(n_flips, 1, 0.5)) {
@@ -164,7 +166,7 @@ the average amount of successes **is the same**, no matter which pattern.
 
 However, their **distribution is not**:
 
-### Plotting the histograms of all three patterns
+### Plotting the histograms of all three patterns  
 ```{r}
 ggplot(tidyr::pivot_longer(results,
                            c("HTH", "HTT", "TTT"),

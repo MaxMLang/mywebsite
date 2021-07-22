@@ -97,4 +97,96 @@ summary(experiment)</code></pre>
 <p>Therefore answer <em>a) The average number of tosses until HTH is larger than the average number of tosses until HTT</em>.</p>
 </div>
 </div>
+<div id="experiment-2" class="section level2">
+<h2>Experiment 2</h2>
+<p>After we put in some thought, we wanted to find how the probabilities of those two sequences behave if we adjust the experiment.</p>
+<p>Now we will throw a coin 100 Times and note down each outcome. The result of each run of the experiment will therefore be a line/string looking e.g like this one “HTHTTTHHHTHTHTHTHT…”, containing in total 100 characters. After this we go through our 100 character long string and check for the following patterns.</p>
+<ul>
+<li><strong>HTH</strong></li>
+<li><strong>HTT</strong></li>
+</ul>
+<p>Note that HTH can overlap itself. For example <em>HTHTH</em> is counted as <strong>HTH</strong>TH and HT<strong>HTH</strong> - two sequences for <em>HTH</em>. <strong>HTT</strong> does not have this characteristic.</p>
+<p>The <strong>Question</strong> is which of the following statements is true:</p>
+<ul>
+<li>The number of times <strong>HTH</strong> is in our string is more than the number of times <strong>HTT</strong> occurs</li>
+<li>The number of times <strong>HTH</strong> is in our string is less than the number of times <strong>HTT</strong> occurs</li>
+<li>The number of times <strong>HTH</strong> is in our string is equal to the number of times <strong>HTT</strong> occurs</li>
+</ul>
+<p>Let’s make a simple simulaton in R to find out the correct answer. We first defined this function to simulate or experiment.</p>
+<pre class="r"><code>library(ggplot2)
+
+count.pattern &lt;- function(pattern,
+                          n_flips = 100,
+                          coins = rbinom(n_flips, 1, 0.5)) {
+  hits = 0
+  for (i in 1:(n_flips - 2)) {
+    # TRUES are counted as 1 in R, this allows the following step
+    if (sum(coins[i:(i + 2)] == pattern) == 3) {
+      hits = 1 + hits
+    }
+  }
+  hits
+}</code></pre>
+<div id="run-the-experiment" class="section level3">
+<h3>Run the experiment</h3>
+<pre class="r"><code># Encoded 0 = H and 1 = T
+HTH = c(0, 1, 0)
+HTT = c(0, 1, 1)
+TTT = c(1, 1, 1)
+
+n_flips =  100
+
+# Running the experiment 10000 times seeking HTH, HTT and TTT
+results = data.frame(
+  HTH = replicate(10000, count.pattern(HTH, n_flips)),
+  HTT = replicate(10000, count.pattern(HTT, n_flips)),
+  TTT = replicate(10000, count.pattern(TTT, n_flips))
+)
+summary(results)[4,]</code></pre>
+<pre><code>##               HTH               HTT               TTT 
+## &quot;Mean   :12.27  &quot; &quot;Mean   :12.25  &quot;  &quot;Mean   :12.2  &quot;</code></pre>
+<p>The <strong>means</strong> at 10000 trials are close enough that we can safely assume that
+the average amount of successes <strong>is the same</strong>, no matter which pattern.</p>
+<p>However, their <strong>distribution is not</strong>:</p>
+</div>
+<div id="plotting-the-histograms-of-all-three-patterns" class="section level3">
+<h3>Plotting the histograms of all three patterns</h3>
+<pre class="r"><code>ggplot(tidyr::pivot_longer(results,
+                           c(&quot;HTH&quot;, &quot;HTT&quot;, &quot;TTT&quot;),
+                           names_to = &quot;pattern&quot;,
+                           values_to = &quot;value&quot;),
+       aes(value)) +
+  geom_histogram(binwidth = 0.5) +
+  facet_wrap(vars(pattern)) +
+  labs(x = paste(&quot;Amount of pattern occurences.&quot;)) +
+  ggtitle(paste(&quot;Distribution of different pattern occurrences in&quot;, n_flips, &quot;coin tosses.&quot;))</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+</div>
+<div id="also-interesting-5-tosses" class="section level3">
+<h3>Also interesting: 5 tosses</h3>
+<p>The means stay the same, but at this few tosses, some patterns can only appear
+once, while othes (TTT) can appear up to three times when overlapping is allowed.</p>
+<pre class="r"><code>n_flips =  5
+
+# Running the experiment 10000 times seeking HTH, HTT and TTT
+results = data.frame(
+  HTH = replicate(50000, count.pattern(HTH, n_flips)),
+  HTT = replicate(50000, count.pattern(HTT, n_flips)),
+  TTT = replicate(50000, count.pattern(TTT, n_flips))
+)
+print(summary(results)[4,])</code></pre>
+<pre><code>##                HTH                HTT                TTT 
+## &quot;Mean   :0.3701  &quot; &quot;Mean   :0.3733  &quot; &quot;Mean   :0.3724  &quot;</code></pre>
+<pre class="r"><code>ggplot(tidyr::pivot_longer(results,
+                           c(&quot;HTH&quot;, &quot;HTT&quot;, &quot;TTT&quot;),
+                           names_to = &quot;pattern&quot;,
+                           values_to = &quot;value&quot;),
+       aes(value)) +
+  geom_histogram(binwidth = 0.5) +
+  facet_wrap(vars(pattern)) +
+  labs(x = paste(&quot;Amount of pattern occurences.&quot;)) +
+  ggtitle(paste(&quot;Distribution of different pattern occurrences in&quot;, n_flips, &quot;coin tosses.&quot;))</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+</div>
+</div>
 </div>
