@@ -13,4 +13,4 @@ tags: []
 During my semester break I had a couple of extra minutes in the afternoon which I spend on building a simple crypto dashboard summarizing the most important Cryptocurrency prices in under 30 Minutes. Of course one could add more information onto the dashboard such as stocks, ETFs or specific ratios to determine whether to buy or sell. However, I just wanted to test my Shiny speedrun skills and overall I am pretty satisfied with the result.
 You can also access the dashboard [here](https://maxmlang.shinyapps.io/Stock_Dashboard/).
 
-<iframe src= "https://maxmlang.shinyapps.io/Stock_Dashboard/" width=750 height=500"></iframe>
+<iframe src= "https://maxmlang.shinyapps.io/Stock_Dashboard/" width=750 height=1000"></iframe>
