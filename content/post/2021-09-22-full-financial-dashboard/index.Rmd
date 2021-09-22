@@ -1,0 +1,15 @@
+---
+title: Full Financial Dashboard
+author: Max Lang
+date: '2021-09-22'
+slug: full-financial-dashboard
+categories:
+  - Data Analysis
+  - R
+  - Statistics
+  - Finance
+tags: []
+---
+
+In my previous post I mentioned the idea of a full financial dashboard using R shiny. You can check out the result [here](https://maxmlang.shinyapps.io/FinancialDashboard/) on my Shiny page. However, the performance is not that good, because the real time data gets importet from the Yahoo Finance API, which is fairly slow. In addition the multiple plots challenge my free shinapps.io server capacity (lol). 
+Still I am pretty satisfied with the result overall. In the future I might try building a similiar dashboard in python.
