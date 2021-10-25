@@ -1,0 +1,159 @@
+---
+title: Probabilities in Squid Game's Bridge Game- Binomial Distribution
+author: Max Lang
+date: '2021-10-25'
+slug: probabilities-in-squid-game-s-bridge-game-binomial-distribution
+categories:
+  - R
+  - Proof
+  - Statistics
+tags: []
+---
+
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
+
+
+<p>Squid Game has a huge hype recently. I also watched the show and I have to admit I really like it.</p>
+<p><strong>Spoiler alert</strong></p>
+<p>For everybody who hasn’t watched the show yet. If you haven’t seen Squid Game the best way to understand this article is to get on Netflix and watch it. Once you’re done watching Squid Game, come back and read this article! ;). Otherwise you can just read this <a href="https://screenrant.com/squid-game-episode-7-game-bridge-rules-explained/">article</a>. Those of you who have finished the series are aware of the glass bridge game, which reduced the number of participants dramatically. The game began with 16 participants and finished with just three. The glass bridge game features 16 players and an 18-step bridge (two tile options for each step). Each player must go in a certain order. The player must select between two nearly indistinguishable panes of glass at each level. Tempered glass is one of them, while the other piece is of ordinary glass. If you choose wrong you fall to the ground die and obviously get eliminated.</p>
+<div id="so-lets-get-nerdy---how-many-players-would-we-expect-to-survive" class="section level3">
+<h3>So let’s get nerdy - how many players would we expect to survive?</h3>
+<p>So let <span class="math inline">\(A:\text{Player makes one correct step}\)</span> then the probability <span class="math inline">\(P(A)= \frac{1}{2}\)</span>.</p>
+<p>So the probability of one person making 18 correct steps (<span class="math inline">\(:B\)</span>) (under the
+assumption that his/her choices are completely random) <span class="math inline">\(P(B)= (\frac{1}{2})^{18}=\frac{1}{262144}\)</span>.
+This might seem pretty low, but we did not consider the aspect of the game that the second player might have better odds. The second player should know at the very least which tile is safe (or not safe) because of first player’s step. So the second player’s probability for walking safely to the other side of the bridge <span class="math inline">\(:C\)</span> is
+<span class="math inline">\(P(C)= (\frac{1}{2})^{17}= \frac{1}{131072}\)</span>. However there is also the
+possibility that the first player crossing, so we might have to model this game differently.</p>
+<p>We now want to find out how many steps each player makes on average until he
+(sadly) dies.</p>
+<p>So let <span class="math inline">\(X: \text{Player dies (stepping on the wrong tile)}\)</span> and <span class="math inline">\(Y: \text{Number of steps the player makes until he dies}\)</span> be random variables. Hence the probability is <span class="math inline">\(P(X)= \frac{1}{2}(=p)\)</span> and we can safely assume that <span class="math inline">\(Y\)</span> follows a geometric distribution as <span class="math inline">\(Y\)</span> describes the number of steps until an event (Death) happens. <span class="math display">\[ Y \sim G(0.5)\]</span></p>
+<pre class="r"><code>plot(dgeom(1:19,0.5), xlab = &quot;Number of steps until player dies (over 18,
+passed the bridge)&quot;, ylab = &quot;Probability&quot;, main= &quot;Distribution of Y ~ G(0.5)&quot;)
+axis(1, at= seq(from= 1, to= 19, by= 1)) </code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<p>So now if we want to know how many steps one player on average “reveals” until
+he dies we can just take <span class="math inline">\(\mu\)</span> of the geometric distribution which is by
+definition <span class="math inline">\(\mu = \frac{1}{p}= \frac{1}{0.5} = 2\)</span>. So on average one player
+reveals <em>two steps</em> until he (again sadly) dies. So given that there are 18
+pairs of tiles (steps), we would expect <span class="math inline">\(\frac{\text{Number of steps to pass the bridge}}{\text{Average number of step one player reveals}}= \frac{18}{2}= 9\)</span>.</p>
+<p>So we would expect about 9 players to die and <span class="math inline">\(16-9=7\)</span> players to survive and go to the next round of <em>Squid Game</em>.</p>
+<p>Well… the Squid Game players did not leave up
+to our statistical expectations :). Why? One clearly has to remember that the
+average of the Geometric distribution will move to <span class="math inline">\(\frac{1}{2}\)</span> for a huge
+number of “tries”. This can easily be shown if we recall the geometric series
+which is: <span class="math display">\[\sum_{k=0}^\infty r^{k}= \sum_{k=0}^\infty 0.5^{k}=\frac{1}{1-0.5}=
+2\]</span></p>
+<p>Normally I would skip the proof and link to Wikipedia, but this proof is
+actually pretty cool and elegant if one uses the fact that one can rewrite it as a so called <em>telescopic series</em>.</p>
+<p>So let’s start with the “proof” using the telescopic series fact. Consider
+<span class="math display">\[f(x)= \frac{r^x}{1-r}\]</span>, after a little time of experimenting one finds out that
+<span class="math display">\[f(0)-f(1)=1\]</span>, <span class="math display">\[r= f(1)-f(2)\]</span> <span class="math display">\[r^2= f(2)-f(3)\]</span> and so on.
+So our series is <span class="math display">\[\sum_{k=0}^\infty r^{k} =(f(0)-f(1))+(f(1)-f(2))+(f(2)-f(3))+\dots\]</span> but we know that our <span class="math display">\[r=0.5&lt;1\]</span> so
+therefore <span class="math display">\[\lim_{x\to \infty} f(x) =\lim_{x\to \infty} \frac{r^x}{1-r}= 0\]</span> so
+our series converges to <span class="math display">\[f(0)= \frac{1}{1-r}\]</span>.
+(Not really a proof but the main proof idea.)
+So of course this is just one “sample” we have in the show, so the mean can be different from the (theoretical) average. Furthermore we said that every player chooses completely randomly where he might go, which is also not really the case in the show. Some players play “dirty” and do not want to give other players the right idea or fall together through one pane. That’s of course not possible in our little theoretical frame here.</p>
+</div>
+<div id="probability-of-a-certain-number-of-players-surviving" class="section level3">
+<h3>Probability of a certain number of players surviving</h3>
+<p>So now we can ask the question “What’s the probability of <span class="math inline">\(x\)</span> players surviving?”
+So in the show <span class="math inline">\(x= 3\)</span>, only three players survived. That means that from our 16 players 13 died. We can now easily calculate how many arrangements are possible for 13 broken squares amongst 18 steps.</p>
+<pre class="r"><code>choose(18,13) </code></pre>
+<pre><code>## [1] 8568</code></pre>
+<p>So there are <code>8568</code> ways to arrange 13 broken squares
+amongst 18 steps. We need 13 broken squares which is a probability of
+<span class="math inline">\((\frac{1}{2})^{13}\)</span> and the remaining 5 not to break.</p>
+<pre class="r"><code>choose(18,13)*(0.5)^13*0.5^5 </code></pre>
+<pre><code>## [1] 0.03268433</code></pre>
+<pre class="r"><code># dbinom(13,18,0.5)</code></pre>
+<p><span class="math inline">\(8568\cdot (\frac{1}{2})^{13} \cdot(\frac{1}{2})^{5}= 3.268 \%\)</span>
+Another way to go is to calculate the probability that more players would have
+survived. Let <span class="math inline">\(Z: \text{Number of tiles broken}\)</span> be a random variables then the probability of them doing better is <span class="math inline">\(P(Z=12)+ P(Z=11)+ P(Z=10)+ \dots+P(Z=0)\)</span>.
+As some of you might have already guessed from the way of calculating the probability of 3 players surving Z follows a binomial distribution. <span class="math display">\[Z\sim B(18,0.5)\]</span></p>
+<pre class="r"><code>plot(dbinom(0:18, size= 18,prob = 0.5),type=&#39;h&#39;, xlim=
+c(0,20), xlab= &quot;Number of broken glass panes&quot;, ylab= &quot;Probability&quot;, main=&quot;Distribution of Z&quot;) 
+axis(1, at= 0:19) </code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p>We want the probability that more than 5 tiles were not broken, which is basically <span class="math inline">\(P(Z\geq5)= 1-P(Z\leq5)= 95.187 \%\)</span></p>
+<pre class="r"><code>1-pbinom(5, 18,0.5)</code></pre>
+<pre><code>## [1] 0.9518738</code></pre>
+<pre class="r"><code>pbinom(5, 18,0.5)</code></pre>
+<pre><code>## [1] 0.04812622</code></pre>
+<p>So as you can see the players were unlucky or just pretty stupid to kill each other.</p>
+</div>
+<div id="how-lucky-were-our-players-guessing" class="section level1">
+<h1>How lucky were our players guessing?</h1>
+<p>I will not include the “guesses” made by the glassmaker because he clearly was not guessing, he knew what he was doing that is why the Boss switched the lights off.</p>
+<p>The players who were guessing made all together 16 guesses of which 5 were correct. (pretty unlucky.) The probability for that is easily calculable</p>
+<pre class="r"><code>dbinom(5,16,0.5)</code></pre>
+<pre><code>## [1] 0.06665039</code></pre>
+<pre class="r"><code>1-pbinom(5,16,0.5) # Probability of at least 6 right guesses</code></pre>
+<pre><code>## [1] 0.8949432</code></pre>
+<p>So a probability of <span class="math inline">\(6.665\%\)</span> and the probability of at least 6 right guessesis <span class="math inline">\(89.494 \%\)</span>, so the players really were unlucky.</p>
+<p>Furthermore one should remember that every time a player was thrown on a glass pane that pane broke. The probability for that is <span class="math inline">\(0.5^4= 6.25\%\)</span></p>
+</div>
+<div id="so-whats-the-probability-that-less-than-two-player-survive" class="section level1">
+<h1>So what’s the probability that less than two player survive?</h1>
+<p>If everybody dies or only one person finishes the game then there would be no need for the last game. The VIPs would probably not like this kind of finish so let’s see how likely this would be.
+For everybody to die or at least one person to survive we would need at least 15 broken tiles.</p>
+<pre class="r"><code>1-pbinom(15,18,0.5)</code></pre>
+<pre><code>## [1] 0.0006561279</code></pre>
+<p>So the probability for this is really really low, which the organizers probably took into account.</p>
+</div>
+<div id="does-the-number-of-players-influence-the-survivors" class="section level1">
+<h1>Does the number of players influence the survivors?</h1>
+<p>During my analysis this question came up in my mind. Because each player will reveal at least on tile for the others (in our theoretical frame), so more players might lead to more surviors.</p>
+<p>So let <span class="math inline">\(n\)</span> be the number of players, <span class="math inline">\(m\)</span> the number of broken tiles then the formula for the surving player is
+<span class="math display">\[\sum_{m=0}^{n-1}= {18 \choose m}\cdot0.5^m\cdot0.5^{18-m}\cdot (n-m)\]</span></p>
+<p>So let’s check this formula for <span class="math inline">\(n=16\)</span> players
+<span class="math display">\[\sum_{m=0}^{16-1}= {18 \choose m}\cdot0.5^m\cdot0.5^{18-m}\cdot (16-m)= 7\]</span></p>
+<pre class="r"><code>vector &lt;- vector()
+for (m in 0:(16-1)){
+  vector[m] &lt;- dbinom(m,18,0.5)*(16-m)
+}
+round(sum(vector))</code></pre>
+<pre><code>## [1] 7</code></pre>
+<p>So pretty close to what we calculated earlier.</p>
+<p>Let’s say now we only have half of the 16 players, so 8 players.</p>
+<pre class="r"><code>vector &lt;- vector()
+for (m in 0:(8-1)){
+  vector[m] &lt;- dbinom(m,18,0.5)*(8-m)
+}
+round(sum(vector))</code></pre>
+<pre><code>## [1] 0</code></pre>
+<p>As the absolute numbers are not really helpful we should consider calculating a survival rate for a respective number of players.</p>
+<pre class="r"><code>survior_calc &lt;- function(nplayers){
+  vector &lt;- vector()
+for (m in 0:(nplayers-1)){
+  vector[m] &lt;- dbinom(m,18,0.5)*(nplayers-m)
+}
+  return(round(sum(vector)))
+}</code></pre>
+<pre class="r"><code>surviors &lt;- vector
+for(i in 1:50){
+  surviors[i] &lt;- survior_calc(i)
+}
+
+squid_frame &lt;- data.frame(list(nplayers= 1:50, surviors= surviors, survival_ratio= surviors/1:50))</code></pre>
+<pre class="r"><code>squid_frame %&gt;% 
+  ggplot(aes(x= nplayers, y= surviors))+
+  geom_line()+
+  xlab(&quot;Number of players&quot;)+
+  ylab(&quot;Survivors&quot;)+
+  ggtitle(&quot;Survivors with respect to the number of players&quot;)+
+  theme_minimal()</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<pre class="r"><code>squid_frame %&gt;% 
+  ggplot(aes(x= nplayers, y= survival_ratio)) +
+  geom_line()+
+  xlab(&quot;Number of players&quot;)+
+  ylab(&quot;Survival %&quot;)+
+  ggtitle(&quot;Survival ratio with respect to the number of players&quot;)+
+  theme_minimal()</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<div id="was-this-just-a-waste-of-time" class="section level3">
+<h3>Was this just a waste of time?</h3>
+<p>Of course not! It was a great way to play with the binomial distribution and actually a lot of fun to think about this bridge game from a statistical standpoint!
+Furthermore there a lot of problems in the real world that can be modled with a binomial distribution. If you are interested you can check out this <a href="https://www.youtube-nocookie.com/embed/8idr1WZ1A7Q">video</a>.</p>
+</div>
+</div>
