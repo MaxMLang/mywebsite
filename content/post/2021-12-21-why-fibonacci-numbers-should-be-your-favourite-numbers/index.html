@@ -35,8 +35,8 @@ tags: []
 </ul>
 <div id="outline" class="section level1">
 <h1>Outline</h1>
-<p>Fibonacci numbers are actually pretty cool and show once again the beauty of mathematics. .
-In this post I want to show where Fibonacci numbers are come up in nature or even our daily lives and what makes them so fascinating. In the end we will also plot our own mathematical flowers. So let’s get started!</p>
+<p>Fibonacci numbers are actually pretty cool and show once again the beauty of mathematics.
+In this post I want to show where Fibonacci numbers often turn up in nature or even our daily lives and what makes them so fascinating. In the end we will also plot our own mathematical flowers. So let’s get started!</p>
 </div>
 <div id="which-numbers-are-fibonacci-numbers" class="section level1">
 <h1>Which numbers are Fibonacci numbers?</h1>
@@ -75,13 +75,13 @@ text(0.5,y= 0.9, label= &quot;phi= a/b = (a+b)/a&quot;)</code></pre>
 <h1>Visulizations of Fibonacci numbers</h1>
 <p>The visualization of Fibonacci numbers are often spirals like these:</p>
 <p><img src="https://www.mathsisfun.com/numbers/images/fibonacci-spiral.svg" /></p>
-<p>If you were to draw a line starting in the right bottom corner of a golden rectangle within the first square and then touch each succeeding multiple squares outside corners, you would create a Fibonacci spiral and these spirals can also be found quite often in nature, it is in my opinion really amazing how often we can find those spirals in nature or even our daily lives:</p>
+<p>If you were to draw a line starting in the right bottom corner of a golden rectangle within the first square and then touch each succeeding multiple squares outside corners, you would create a Fibonacci spiral and these spirals can also be found quite often in nature, it is in my opinion really amazing how often they turn up:</p>
 <p><img src="https://insteading.com/assets/images/Art/Fibronacci/hurricane%20spiral.jpg" />
 (and Art lol)
 <img src="https://insteading.com/assets/images/Art/Fibronacci/hokusai.jpeg" />
 <img src="https://insteading.com/assets/images/Art/Fibronacci/fibonacciSpiralALOE.jpg" /></p>
 <p><img src="https://cdn.insteading.com/wp-content/uploads/2020/12/sunflower-fibbonaci.jpg" /></p>
-<p>Cool? Amazing? I believe so. There are many more examples like these but in the following I want to focus on the plant one and use it to lay out the relationship between the Fibonacci Numbers, the golden ratio, the golden angle and how we can use it on our own.</p>
+<p>Cool? Amazing? I believe so. There are many more examples like these but in the following I want to focus on the plant example and use it to lay out the relationship between the Fibonacci Numbers, the golden ratio, the golden angle and how we can use it on our own.</p>
 </div>
 <div id="phyllotaxis-and-fibonacci-numbers" class="section level1">
 <h1>Phyllotaxis and Fibonacci numbers</h1>
@@ -143,12 +143,12 @@ ggplot(df, aes(x*theta, y*theta))+
   geom_point()+
   ggtitle(&quot;7/8 turns after each cell&quot;)</code></pre>
 <p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
-<p>The idea is the number that is a simple fraction (example: 0,25 is 1/4, and 0.75 is 3/4, etc) will, after some time, make a pattern of lines stacking up, which makes gaps. That’s exactly what we want to avoid.
+<p>The problem is that the number that is a simple fraction (example: 0,25 is 1/4, and 0.75 is 3/4, etc) will, after some time, make a pattern of lines stacking up, which makes gaps. We want to avoid that in any case.
 The answer to this problem is the <strong>golden ratio</strong>.</p>
 </div>
 <div id="golden-ratio-and-cell-allignment" class="section level2">
 <h2>Golden Ratio and cell allignment</h2>
-<p>Why? one might ask now. The golden ratio <span class="math inline">\(\varphi\)</span> is an Irrational Number (meaning we cannot write it as a simple fraction), but more than that … it is as far as we can get from being near any fraction.
+<p>Why the golden ratio ? one might ask now. The golden ratio <span class="math inline">\(\varphi\)</span> is an Irrational Number (meaning we cannot write it as a simple fraction), but more than that … it is as far as we can get from being near any fraction.
 The plot will look like this and pretty close to the sunflower picture.</p>
 <pre class="r"><code>turns &lt;- (1+sqrt(5))/2 # This is one way to approximate the golden ratio but it&#39;s not that important for now
 # Define the number of points
@@ -177,7 +177,7 @@ That is why Fibonacci is so important.</p>
 <p>We can transform 0,61803 “turns” into an angle with <span class="math inline">\(360*0.618= 222.48\)</span> degrees, or about 222,5°. If we take the 1-0,61803, so the inverse or the rest of the circle if you will so, will be called the golden angle. Keep that in mind for later.
 The golden angle in this picture is in red.</p>
 <p><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Golden_Angle.svg/220px-Golden_Angle.svg.png" /></p>
-<p>In order to understand this term “turns” and angle even better we will need to get get familiar with trigonometric functions.</p>
+<p>In order to understand this term “turns” and angle even better we will need to get familiar with trigonometric functions.</p>
 </div>
 <div id="plotting-circles-and-final-plot" class="section level2">
 <h2>Plotting circles and final plot</h2>
