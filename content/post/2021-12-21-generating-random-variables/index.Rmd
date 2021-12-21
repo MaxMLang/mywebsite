@@ -1,7 +1,7 @@
 ---
 title: Generating random variables
 author: Max Lang
-date: '2021-12-21'
+date: '2021-12-19'
 slug: generating-random-variables
 categories:
   - Proof
