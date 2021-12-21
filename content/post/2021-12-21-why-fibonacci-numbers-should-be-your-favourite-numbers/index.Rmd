@@ -1,0 +1,339 @@
+---
+title: Why Fibonacci Numbers should be your favourite numbers
+author: Max Lang
+date: '2021-12-21'
+slug: why-fibonacci-numbers-should-be-your-favourite-numbers
+categories:
+  - Mathematics
+  - R
+  - R Programming
+tags: []
+---
+**Table of contents**
+
+- [Outline](#outline)
+
+- [Which numbers are Fibonacci numbers?](#which-numbers-are-fibonacci-numbers-)
+
+- [Fibonacci numbers and the Golden Ratio $\varphi$](#fibonacci-numbers-and-the-golden-ratio---varphi-)
+
+- [Visulizations of Fibonacci numbers](#visulizations-of-fibonacci-numbers)
+
+- [Phyllotaxis and Fibonacci numbers](#phyllotaxis-and-fibonacci-numbers)
+  * [How much turns for the perfect arrangement of cells?](#how-much-turns-for-the-perfect-arrangement-of-cells-)
+  * [Golden Ratio and cell allignment](#golden-ratio-and-cell-allignment)
+  * [What does "turns" mean in this case?](#what-does--turns--mean-in-this-case-)
+  * [Plotting circles and final plot](#plotting-circles-and-final-plot)
+  
+- [Plotting (mathematical) flowers by using Fibonacci numbers and the Golden Ratio](#plotting--mathematical--flowers-by-using-fibonacci-numbers-and-the-golden-ratio)
+  * [Dandelion](#dandelion)
+  * [Sunflower](#sunflower)
+  * [Fantasy Flowers/Paterns](#fantasy-flowers-paterns)
+
+
+```{r, include=FALSE}
+library(latex2exp)
+library(ggplot2)
+flower_theme <- function(){theme(panel.background = element_rect(fill="white"),
+        panel.grid=element_blank(),
+        axis.ticks=element_blank(),
+        axis.title=element_blank(),
+        axis.text=element_blank())}
+```
+
+# Outline
+Fibonacci numbers are actually pretty cool and show once again the beauty of mathematics. .
+In this post I want to show where Fibonacci numbers are come up in nature or even our daily lives and what makes them so fascinating. In the end we will also plot our own mathematical flowers. So let's get started!
+
+# Which numbers are Fibonacci numbers?
+
+The numbers in the Fibonacci sequence are 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, and so on. These numbers follow a basic pattern: each term equals the sum of the two preceding terms, with 1+1 equaling 2 and 8+13 equaling 21.
+Mathematically written this looks like this:
+
+$$
+F_{0}:=0, \quad F_{1}:=1, \quad \forall \underset{n \in \mathbb{N}}{F_{n+1}}:=F_{n}+F_{n-1},
+$$
+Hence, $A=\mathbb{N}_{0}$ and
+$$
+f_{n}: A^{n} \longrightarrow A, \quad f_{n}\left(a_{1}, \ldots, a_{n}\right):= \begin{cases}1 & \text { für } n=1, \\ a_{n}+a_{n-1} & \text { für } n \geq 2 .\end{cases}
+$$
+
+$$
+\left(F_{n}\right)_{n \in \mathbb{N}_{0}}=(0,1,1,2,3,5,8, \ldots)
+$$
+
+# Fibonacci numbers and the Golden Ratio $\varphi$
+Let's consider this somewhat unexpected fact. Any two consecutive (one after the other) Fibonacci Numbers have a ratio that is very near to the Golden Ratio $\varphi$ of around 1,618...
+(The Golden Ratio is a really important number in geometry, e.g. when we divide a line into two parts so that: the long part divided by the short part is also equal to the whole length divided by the long part)
+
+```{r}
+plot(NULL, xlim=c(0,1), ylim=c(0,1), xlab= "x", ylab="y")
+abline(0.5, 0)
+arrows(-0.5, 0.5, 0.6, angle= 0, col= "blue", lwd=4)
+arrows(0.6, 0.5, 1.5, angle= 0, col= "red", lwd=4)
+text(0.2,y= 0.6, "a", col= "blue")
+text(0.8,y= 0.6, "b", col= "red")
+text(0.5,y= 0.9, label= "phi= a/b = (a+b)/a")
+
+```
+
+Take a look at the frame below, you can see that we can approximate the golden ratio (which is irrational) by dividing Fibonacci numbers (the higher the numbers, the better the approx.)
+$$
+\begin{array}{rrl}\text { A } & \text { B } & \text { B / A } \\ 2 & 3 & 1,5 \\ 3 & 5 & 1,666666666 \ldots \\ 5 & 8 & 1,6 \\ 8 & 13 & 1,625 \\ \ldots & \ldots & \ldots \\ 144 & 233 & 1,618055556 \ldots \\ 233 & 377 & 1,618025751 \ldots \\ \ldots & \ldots & \ldots\end{array}
+$$
+
+Ok, this might not blow your socks off but it is already pretty fascinating and should make you more curious. Especially because the golden ratio plays such an important role in geometry. So let's start visualizing these Fibonacci numbers to find out more.
+
+# Visulizations of Fibonacci numbers
+The visualization of Fibonacci numbers are often spirals like these:
+
+![](https://www.mathsisfun.com/numbers/images/fibonacci-spiral.svg)
+
+If you were to draw a line starting in the right bottom corner of a golden rectangle within the first square and then touch each succeeding multiple squares outside corners, you would create a Fibonacci spiral and these spirals can also be found quite often in nature, it is in my opinion really amazing how often we can find those spirals in nature or even our daily lives:
+
+![](https://insteading.com/assets/images/Art/Fibronacci/hurricane%20spiral.jpg)
+(and Art lol)
+![](https://insteading.com/assets/images/Art/Fibronacci/hokusai.jpeg)
+![](https://insteading.com/assets/images/Art/Fibronacci/fibonacciSpiralALOE.jpg)
+
+![](https://cdn.insteading.com/wp-content/uploads/2020/12/sunflower-fibbonaci.jpg)
+
+Cool? Amazing? I believe so. There are many more examples like these but in the following I want to focus on the plant one and use it to lay out the relationship between the Fibonacci Numbers, the golden ratio, the golden angle and how we can use it on our own.
+
+# Phyllotaxis and Fibonacci numbers
+The term phyllotaxis is used in botany and the plant world to describe the arrangement of flowers, leaves, and seeds on a plant stem, which is an organizing pattern seen in the Fibonacci spiral.  (Like you can see in the sunflower above)
+
+Plants may produce new cells in spirals, as shown in this lovely sunflower's seed pattern above.
+Because each new cell is created after a turn, the spiral occurs in the end. 
+
+## How much turns for the perfect arrangement of cells?
+So one might ask now, how much should we turn to put the next cell there? We obviously can't just put them in a straight line as this would be super inconvenient.
+So now we can try out some values for "how much we should turn". (I know this is still sort of abstract but it will soon make more sense). 
+
+```{r}
+turns <- 3/4
+# Define the number of points
+points <- 500
+
+# Define the Golden Angle
+angle <- pi * turns*360/180 # You can ignore these formulas for now I will explain them later on
+
+theta <- (1:points) * angle
+x <- sin(theta)
+y <- cos(theta)
+df <- data.frame(theta, x, y)
+
+# Make a scatter plot of points in a spiral
+ggplot(df, aes(x*theta, y*theta))+
+  geom_point()+
+  ggtitle("3/4 turns after each cell")
+```
+```{r}
+turns <- 1/7
+# Define the number of points
+points <- 500
+
+# Define the Golden Angle
+angle <- pi * turns*360/180
+
+theta <- (1:points) * angle
+x <- sin(theta)
+y <- cos(theta)
+df <- data.frame(theta, x, y)
+
+# Make a scatter plot of points in a spiral
+ggplot(df, aes(x*theta, y*theta))+
+  geom_point()+
+  ggtitle("1/7 turns after each cell")
+```
+```{r}
+turns <- 7/12
+# Define the number of points
+points <- 500
+
+# Define the Golden Angle
+angle <- pi * turns*360/180
+
+theta <- (1:points) * angle
+x <- sin(theta)
+y <- cos(theta)
+df <- data.frame(theta, x, y)
+
+# Make a scatter plot of points in a spiral
+ggplot(df, aes(x*theta, y*theta))+
+  geom_point()+
+  ggtitle("7/8 turns after each cell")
+```
+
+
+The idea is the number that is a simple fraction (example: 0,25 is 1/4, and 0.75 is 3/4, etc) will, after some time, make a pattern of lines stacking up, which makes gaps. That's exactly what we want to avoid.
+The answer to this problem is the **golden ratio**. 
+
+## Golden Ratio and cell allignment
+Why? one might ask now. The golden ratio $\varphi$ is an Irrational Number (meaning we cannot write it as a simple fraction), but more than that ... it is as far as we can get from being near any fraction.
+The plot will look like this and pretty close to the sunflower picture.
+
+```{r}
+turns <- (1+sqrt(5))/2 # This is one way to approximate the golden ratio but it's not that important for now
+# Define the number of points
+points <- 500
+
+# Define the Golden Angle
+angle <- pi * turns*360/180
+
+t <- (1:points) * angle
+x <- sin(t)
+y <- cos(t)
+df <- data.frame(theta, x, y)
+
+# Make a scatter plot of points in a spiral
+ggplot(df, aes(x*t, y*t))+
+  geom_point()+
+  ggtitle("Golden Ratio turns after each cell")
+```
+
+
+
+In reality, when a plant has spirals, the rotation tends to be a fraction formed by two consecutive (one after the other) Fibonacci numbers and as I pointed out earlier this fraction tends to be an approximation of ? Exactly - **the golden ratio** .
+
+So, just like we naturally get seven arms when we use 1/7 turns (as you can see in the plots above), we tend to get Fibonacci Numbers when we use the Golden Ratio.
+That is why Fibonacci is so important. 
+
+## What does "turns" mean in this case? 
+Now that we understood the relationship between Fibonacci, the golden ratio and flowers let's understand the term "turns" from earlier.
+
+We can transform 0,61803 "turns" into an angle with $360*0.618= 222.48$ degrees, or about 222,5°. If we take the 1-0,61803, so the inverse or the rest of the circle if you will so, will be called the golden angle. Keep that in mind for later.
+The golden angle in this picture is in red.
+
+![](https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Golden_Angle.svg/220px-Golden_Angle.svg.png)
+
+In order to understand this term "turns" and angle even better we will need to get get familiar with trigonometric functions.
+
+
+## Plotting circles and final plot
+First we'll start  drawing 50 points on a circle of radius 1 to get familiar with the concept.
+As every (x, y) point should be in the unit circle, it follows that x² + y² = 1. We can get this using the  famous Pythagorean trigonometric identity which states that $sin^2(\theta) + cos^2(\theta) = 1$ for any real number $\theta$.
+```{r}
+theta <- seq(0, 2*pi, length.out = 50)
+
+x <- sin(theta)
+y <- cos(theta)
+df <- data.frame(theta, x, y)
+
+
+ggplot(df, aes(x, y))+
+  geom_point()
+```
+
+As we have seen before we will need to arrange our points from above in a spiral and the easiest way to do so is to multiply x and y by a factor which increases for each point. 
+
+```{r}
+
+points <- 500
+golden.ratio <- (1+sqrt(5))/2 # We could also approximate with Fibonacci numbers
+# Golden angle
+angle <- (1- golden.ratio)/180 *pi * 360
+
+theta <- (1:points) * angle
+x <- sin(theta)
+y <- cos(theta)
+df <- data.frame(theta, x, y)
+
+
+ggplot(df, aes(x*theta, y*theta))+
+  geom_point()+
+  flower_theme()
+```
+
+So now we have a generated several spirals that look already pretty much like the inside of the sunflower. If you want, you can count the left-spinning spirals and you will come to the conclusion that we got _34_ . A Fibonacci number (the 9 th to be very precise) which again can be explained by the relationship between golden ratio and Fibonacci numbers.
+
+So this has been a pretty long way until here, but it was worth it. If you're still not convinced that Fibonacci Numbers are cool here it comes. We can use the previous plot to start plotting our own flowers. 
+Let's do it!
+
+# Plotting (mathematical) flowers by using Fibonacci numbers and the Golden Ratio
+#### Dandelion 
+```{r}
+points <- 500
+golden.ratio <- (1+sqrt(5))/2 # We could also approximate with Fibonacci numbers
+# Golden angle
+angle <- (1- golden.ratio)/180 *pi * 360
+
+theta <- (1:points) * angle
+x <- sin(theta)
+y <- cos(theta)
+df <- data.frame(theta, x, y)
+
+
+ggplot(df, aes(x*theta, y*theta))+
+  geom_point(aes(size=theta), alpha=0.5, shape=8, show.legend = F)+
+  flower_theme()
+```
+
+#### Sunflower
+```{r}
+points <- 1000
+golden.ratio <- (1+sqrt(5))/2 # We could also approximate with Fibonacci numbers
+# Golden angle
+angle <- (1- golden.ratio)/180 *pi * 360
+
+theta <- (1:points) * angle
+x <- sin(theta)
+y <- cos(theta)
+df <- data.frame(theta, x, y)
+
+
+ggplot(df, aes(x*theta, y*theta))+
+  geom_point(aes(size=theta), alpha=0.5, shape=17, color="brown")+
+  theme(legend.position="none",
+        panel.background = element_rect(fill="yellow"),
+        panel.grid=element_blank(),
+        axis.ticks=element_blank(),
+        axis.title=element_blank(),
+        axis.text=element_blank())
+```
+
+#### Fantasy Flowers/Paterns
+
+```{r}
+points <- 2000
+golden.ratio <- (1+sqrt(5))/2 # We could also approximate with Fibonacci numbers
+
+angle <- 13*pi/180
+
+theta <- (1:points) * angle
+x <- sin(theta)
+y <- cos(theta)
+df <- data.frame(theta, x, y)
+
+ggplot(df, aes(x*theta, y*theta))+
+  geom_point(size=80, alpha=0.1, shape = 1, color="blue4")+
+  flower_theme()
+```
+
+
+```{r}
+points <- 2000
+golden.ratio <- 63245986/102334155 # Approximation with Fibonacci numbers
+# Golden angle
+angle <- (1- golden.ratio)/180 *pi * 360
+
+theta <- (1:points) * angle
+x <- sin(theta)
+y <- cos(theta)
+df <- data.frame(theta, x, y)
+
+
+ggplot(df, aes(x*theta, y*theta))+
+  geom_point(aes(size=theta), alpha=0.8, shape=23, color="blue4")+
+  theme(legend.position="none",
+        panel.background = element_rect(fill="white"),
+        panel.grid=element_blank(),
+        axis.ticks=element_blank(),
+        axis.title=element_blank(),
+        axis.text=element_blank())+
+  geom_point(aes(size= theta/golden.ratio), alpha= 0.5, shape= 1, color= "blue")+
+  geom_point(aes(-theta*golden.ratio*0.5*pi-1000), alpha= 0.1, shape= 12, color= "black")+
+  geom_point(aes(-theta*golden.ratio*0.5*pi), alpha= 0.1, shape= 12, color= "black")+
+  geom_point(aes(theta*golden.ratio*0.5*pi+1000), alpha= 0.1, shape= 12, color= "black")+
+  geom_point(aes(theta*golden.ratio*0.5*pi, y= theta*y), alpha= 0.1, shape= 12, color= "black")
+```
