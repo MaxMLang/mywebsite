@@ -1,0 +1,133 @@
+---
+title: Generating random variables
+author: Max Lang
+date: '2021-12-21'
+slug: generating-random-variables
+categories:
+  - Proof
+  - R Programming
+  - Statistics
+tags: []
+---
+
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
+
+
+<p><em>Table of contents</em></p>
+<ul>
+<li><a href="#outline">Outline</a></li>
+<li><a href="#the-uniform-distribution">The uniform distribution</a></li>
+<li><a href="#laying-the-mathematical-foundation">Laying the mathematical foundation</a></li>
+<li><a href="#graphical-intuition">Graphical intuition</a></li>
+<li><a href="#generating-random-variables--applying-the-theory">Generating Random Variables / applying the theory</a></li>
+<li><a href="#final-thoughts">Final thoughts</a></li>
+</ul>
+<div id="outline" class="section level3">
+<h3>Outline</h3>
+<p>The goal of this post is to illustrate the mathematical beauty of generating random varibales from a simple uniform distribution. (<span class="math inline">\(U ∼ U [0, 1]\)</span>)<br />
+We will find out that it is possible to generate complicated random variables and stochastical models from this relatively boring uniform distribution by applying the golden standard: the <em>inverse transform method</em>.</p>
+</div>
+<div id="the-uniform-distribution" class="section level3">
+<h3>The uniform distribution</h3>
+<p>First, we will assume that we can generate a sequence of
+independent random variables that are uniformly
+distributed on the standard interval <span class="math inline">\([0,1]\)</span>
+In R this can simply be done with the command <code>u = runif(100)</code> which returns 100 realizations of
+a uniform random variable on (0, 1).
+The density will look like this:</p>
+<p>However, super strictly speaking, we only have access to pseudo-random
+(deterministic) numbers, because that’s just how computers work.
+Of course we have access to modern random number generators (constructed on
+number theory) and standard tests for uniformity, independence, etc. do
+not show significant deviations. So I do not want to put too much focus on that aspect (even though it is really interesting.)</p>
+<p>So let’s get started with our inversion method.</p>
+</div>
+<div id="laying-the-mathematical-foundation" class="section level3">
+<h3>Laying the mathematical foundation</h3>
+<div id="when-do-we-call-a-function-a-cumulative-distribution-function-cdf" class="section level4">
+<h4>When do we call a function a cumulative distribution function (cdf)?</h4>
+<p>From several statistics and probability theory courses you might know that any Function is a cumulative distribution function (cdf) if:
+- <span class="math inline">\(F : \mathbb R → [0, 1]\)</span></p>
+<ul>
+<li><p><span class="math inline">\(F\)</span> is increasing monotonously</p></li>
+<li><p><span class="math inline">\(F\)</span> is right continuous</p></li>
+<li><p><span class="math inline">\(F: \mathbb{R} \rightarrow[0,1] \text { with }\lim _{x \rightarrow-\infty} F(x)=0 \text { and } \lim _{x \rightarrow \infty} F(x)=1\)</span></p></li>
+</ul>
+</div>
+<div id="inverse-transform-method-and-proof-of-correctness" class="section level4">
+<h4>Inverse transform method and proof of correctness</h4>
+<p>Let <span class="math inline">\(F\)</span> be a continuous and strictly increasing <span class="math inline">\(c d f\)</span> on <span class="math inline">\(\mathbb{R}\)</span>, we can define its inverse <span class="math inline">\(F^{-1}:[0,1] \rightarrow \mathbb{R}\)</span>. Let <span class="math inline">\(U \sim \mathcal{U}[0,1]\)</span> then <span class="math inline">\(X=F^{-1}(U)\)</span> has cdf <span class="math inline">\(F\)</span>.
+Quick Proof / Verification:
+<span class="math display">\[
+\begin{aligned}
+\mathbb{P}(X \leq x) &amp;=\mathbb{P}\left(F^{-1}(U) \leq x\right) \\
+&amp;=\mathbb{P}(U \leq F(x)) \\
+&amp;=F(x)
+\end{aligned}
+\]</span></p>
+<p>So now let <span class="math inline">\(F\)</span> be a cdf on <span class="math inline">\(\mathbb{R}\)</span> and define its generalized inverse <span class="math inline">\(F^{-1}:[0,1] \rightarrow \mathbb{R}\)</span>
+<span class="math display">\[
+F^{-1}(u)=\inf \{x \in \mathbb{R} ; F(x) \geq u\}
+\]</span>
+Let <span class="math inline">\(U \sim \mathcal{U}[0,1]\)</span> then <span class="math inline">\(X=F^{-1}(U)\)</span> has cdf <span class="math inline">\(F\)</span>.</p>
+</div>
+</div>
+<div id="graphical-intuition" class="section level3">
+<h3>Graphical intuition</h3>
+<p>OK, that was a little math for the start, but what did we actually figure out above?
+We basically take advantage of the fact, that any <span class="math inline">\(cdf\)</span> functions only returns <span class="math inline">\(y\)</span>-values between <span class="math inline">\([0,1]\)</span>. (You can go back and check under “When do we call a function a cumulative distribution function (cdf)?” to check.)
+This intervall from <span class="math inline">\([0,1]\)</span> is also exactly the domain of our uniform distribution. (Check the plot).</p>
+<p><em>So what happens graphically if we take the inverse?</em></p>
+<p>Let’s take a look at this exponential density plot as well as on the plot of cdf.</p>
+<p>So what we do is to assign every value on the y axis a value on the x axis, obviously this is just how an inverse function works. The important point however is, that our returned <span class="math inline">\(x\)</span> values now follow the same distribution as the cdf did, so in this case a exponential distribution.</p>
+</div>
+<div id="generating-random-variables-applying-the-theory" class="section level3">
+<h3>Generating Random Variables / applying the theory</h3>
+<div id="example-weibull-distribution" class="section level4">
+<h4>Example: Weibull Distribution</h4>
+<p>So now that we understood the math laid out before we can apply it. Let’s try to find the inverse of a weibull distribution function which is basically a more general case of the exponential function as for <span class="math inline">\(\alpha=1\)</span> it is the exponential distribution.
+<em>Weibull distribution</em>. Let <span class="math inline">\(\alpha, \lambda&gt;0\)</span> then the Weibull cdf is given by
+<span class="math display">\[
+u= F(x)=1-\exp \left(-\lambda x^{\alpha}\right), x \geq 0
+\]</span></p>
+<p>Now let’s start solving for <span class="math inline">\(u\)</span>:
+<span class="math display">\[
+\begin{aligned}
+u &amp;=F(x) \Leftrightarrow \log (1-u)=-\lambda x^{\alpha} \\
+&amp; \Leftrightarrow x=\left(-\frac{\log (1-u)}{\lambda}\right)^{1 / \alpha}
+\end{aligned}
+\]</span>
+Because of <span class="math inline">\((1-U) \sim \mathcal{U}[0,1]\)</span> when <span class="math inline">\(U \sim \mathcal{U}[0,1]\)</span> we can now use this to define our random variable that follows a weibull distribution.
+<span class="math display">\[
+X=\left(-\frac{\log U}{\lambda}\right)^{1 / \alpha} .
+\]</span></p>
+<p>This formula basically is the mathematical way of describing what we did before. It assigns every value on the y-Axis a value on the x-Axis. Hence, it returns our wanted random variable which follows a weibull distribution. Cool!</p>
+<p>So we can check if this is actually true (of course it is because it’s mathematically correct lol).</p>
+</div>
+<div id="implementation-in-r-verification" class="section level4">
+<h4>Implementation in R / verification</h4>
+<pre class="r"><code>weibull_simulation &lt;- function(n, alpha= 1, rate= 0.5){
+  ((-log((1-runif(n)))/rate))^(1/alpha)
+}
+
+plot(weibull_simulation(100, alpha = 1, rate= 3), main= &quot;Weibull Simulation&quot;, ylab= &quot;Values&quot;)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<pre class="r"><code>hist(weibull_simulation(20000, alpha = 1, rate = 3), probability = TRUE, n=100, main= &quot;Histogram of the distribution&quot;, ylab= &quot;Density&quot;, xlab = &quot;Values&quot;)
+lines(seq(0,5,length=20000),dexp(seq(0,5,length=20000),rate = 3), col= &quot;red&quot;)
+legend(&quot;topright&quot;,legend= &quot;Density of \nexponential distribution&quot;,col = &quot;red&quot;, fill= &quot;red&quot;, cex= 0.6)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-4-2.png" width="672" />
+And indeed for a large <code>n</code>it follows an exponential distribution like it should.</p>
+<p>Of course this also works for other parameters:</p>
+<pre class="r"><code>hist(weibull_simulation(200000, alpha = 2, rate = 1), probability = TRUE, n=100, main= &quot;Histogram of the distribution&quot;, ylab= &quot;Density&quot;, xlab = &quot;Values&quot;)
+lines(seq(0,5,length=20000),dweibull(seq(0,5,length=20000), shape = 2, scale = 1), col= &quot;red&quot;)
+legend(&quot;topright&quot;,legend= &quot;Density of \nweibull distribution&quot;,col = &quot;red&quot;, fill= &quot;red&quot;, cex= 0.6)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+</div>
+</div>
+<div id="final-thoughts" class="section level3">
+<h3>Final thoughts</h3>
+<p>This is pretty awesome and fascinating in my opinion.
+This also works for other distributions like the geometric distribution or the cauchy distribution for example. The only point this method can not be used is if we do not know the cdf of the distribution like for example with the normal distribution.
+In this case we would need to take a look at a more generalized idea like transformation methods, e.g. the Box-Muller Algorithm.
+On the other hand, it is possible to approximate the quantile function of the normal distribution extremely accurately using moderate-degree polynomials, and in fact the method of doing this is fast enough that inversion sampling is now the default method for sampling from a normal distribution in the statistical package R.</p>
+</div>
