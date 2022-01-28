@@ -4,18 +4,32 @@ author: "Max Lang"
 date: "12/31/2020"
 output: html_document
 ---
----
-author: Max Lang
-title: about
-date: '2021-01-01'
----
 
-# My Story
-## Why Statistics? Asia was the reason.
+### Life so far...
+- Breathing since 2001
+- Started studying Mandarin in Shanghai 2019
+- Got bored during lockdown in Singapore and started studying R Programming
+- Started Statistics B.Sc. at LMU Munich 2020
+
+### Passionate about...
+- Coding
+- Running (Half-Marathon, Marathon)
+- Chinese and Chinese culture
+- Books 
+
+### Thinking about...
+- R and Python Projects
+- Chinese Characters 
+- Making this world a little better everyday!
+
+## My Story
+#### Why Statistics? Asia was the reason.
 
 <img src="/./about_files/Me.png"
     style="max-width:28%;min-width:50px; float:right;"
     alt = "Me at Singapore"/>
+
+
     
 Since the winter semester 2020 I have been studying statistics at the LMU in Munich.
 I caught interest in studying statistics and the related tasks during my stay in China. After graduating from high school in 2019, I spent almost 4 months in Shanghai and 5 months in Singapore to learn Chinese (Mandarin). Due to the corona pandemic, I had to leave China in advance at the end of January 2020. Hence, I flew to Singapore to continue my course.
