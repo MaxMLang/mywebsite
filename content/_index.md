@@ -1,8 +1,7 @@
 ---
 title: Home
 ---
-# Welcome
-This website is a documentation of my statistics studies at LMU Munich. I would like to share interesting assignments, programs, mathematical proofs such as calculations here on this website.
+# Welcome 
 
 My name is Max Lang and I'm a Statistics/Computer Science student at LMU Munich. I'm from Germany, living in Munich.
 
