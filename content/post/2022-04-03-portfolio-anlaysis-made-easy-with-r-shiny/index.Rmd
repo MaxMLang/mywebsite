@@ -1,0 +1,48 @@
+---
+title: Portfolio Anlaysis made easy with R Shiny
+author: Max Lang
+date: '2022-04-03'
+slug: portfolio-anlaysis-made-easy-with-r-shiny
+categories:
+  - Finance
+  - Data Analysis
+  - R
+  - R Programming
+tags: []
+---
+This R shiny App let's you analyse your Portfolio or single stocks. You can save your created portfolio into a CSV File and upload it later again. The App will create several plots on: 
+
+  - Industry / country exposure 
+  - Portfolio: 
+    -  Return
+    -  Growth
+    -  CAPM model
+    - Adjusted returns (Ra) and baseline return (rb)
+  - Single Stocks:
+    - Return
+    - CAPM Model
+    - Adjusted returns (Ra) and baseline return (Rb)
+    
+_Note_ that a CAPM model uses several assumption that often do not hold in reality. (If yo are interest on that topic i recommend this [article](https://hbr.org/1982/01/does-the-capital-asset-pricing-model-work) by David W. Mullins, Jr.)
+
+## App Link
+https://maxmlang.shinyapps.io/portfolio_analysis/
+
+## Acknowledgements
+
+ - [Tidyquant Package](https://github.com/business-science/tidyquant)
+ - [NASDAQ stock screener](https://www.nasdaq.com/market-activity/stocks/screener)
+
+
+
+[![MIT License](https://img.shields.io/apm/l/atomic-design-ui.svg?)](https://github.com/tterb/atomic-design-ui/blob/master/LICENSEs)
+
+## Contributing
+
+Contributions are always welcome!
+Link up with me or let me now about bugs or improvements.
+
+## Thoughts
+I build this app over free, chilled weekend. The main reason is that it snowed here in Munich (at this time of the year?!) and I just wanted to stay in my warm room while doing something useful.
+
+
