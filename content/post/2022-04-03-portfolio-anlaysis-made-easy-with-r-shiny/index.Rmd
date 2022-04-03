@@ -1,5 +1,5 @@
 ---
-title: Portfolio Anlaysis made easy with R Shiny
+title: Portfolio Analysis made easy with R Shiny
 author: Max Lang
 date: '2022-04-03'
 slug: portfolio-anlaysis-made-easy-with-r-shiny
