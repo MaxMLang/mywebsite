@@ -25,7 +25,7 @@ output: html_document
 ## My Story
 #### Why Statistics? Asia was the reason.
 
-<img src="/./about_files/Me.png"
+<img src="/./about_files/Me.JPG"
     style="max-width:28%;min-width:50px; float:right;"
     alt = "Me at Singapore"/>
 
