@@ -30,13 +30,13 @@ url = "/post/"
 weight = 2
 
 [[menu.main]]
-name = "Categories"
-url = "/categories/"
+name = "Notes"
+url = "/note/"
 weight = 3
 
 [[menu.main]]
-name = "Tags"
-url = "/tags/"
+name = "Categories"
+url = "/categories/"
 weight = 4
 
 [[menu.main]]
@@ -44,9 +44,7 @@ name = "About"
 url = "/info"
 weight = 5
 
-[[menu.main]]
-name = "Notes"
-url = "/note/"
+
 
 [params]
 description = "Stat Student, Data Analysis Nerd, Chinese Speaker"
