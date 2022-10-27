@@ -7,13 +7,14 @@ output: html_document
 
 ### Life so far...
 - Breathing since 2001
-- Started studying Mandarin in Shanghai 2019
-- Got bored during lockdown in Singapore and started studying R Programming
-- Started Statistics B.Sc. at LMU Munich 2020
+- 2019 Started studying Mandarin in Shanghai 
+- 2020 Spring Got bored during lockdown in Singapore and started studying R Programming
+- 2020 Fall Started Statistics B.Sc. at LMU Munich 
+- 2022 Spring Working Student at [MTU Aero Engines](https://www.mtu.de/de/) 
 
 ### Passionate about...
 - Coding
-- Running (Half-Marathon, Marathon)
+- Running (Half-Marathon, Marathon), Triathlon
 - Chinese and Chinese culture
 - Books 
 
@@ -30,7 +31,7 @@ output: html_document
     alt = "Me"/>
 
 
-     
+  
 Since the winter semester 2020 I have been studying statistics at the LMU in Munich.
 I caught interest in studying statistics and the related tasks during my stay in China. After graduating from high school in 2019, I spent almost 4 months in Shanghai and 5 months in Singapore to learn Chinese (Mandarin). Due to the corona pandemic, I had to leave China in advance at the end of January 2020. Hence, I flew to Singapore to continue my course.
 At the end of my course in Singapore I reached the HSK 5 language level, which is equivalent to a C 1 of the CEFN.
