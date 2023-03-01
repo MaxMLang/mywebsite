@@ -1,7 +1,7 @@
 ---
 title: Gradient Descent Implementation in R
 author: Max
-date: '2023-07-04'
+date: '2022-07-04'
 slug: gradient-descent-implementation-in-r
 categories:
   - Machine Learning
