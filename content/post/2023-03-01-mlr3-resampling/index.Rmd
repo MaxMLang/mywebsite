@@ -1,0 +1,101 @@
+---
+title: mlr3 Resampling
+author: Max
+date: '2022-12-11'
+slug: mlr3-resampling
+categories:
+  - Machine Learning
+  - R
+  - R Programming
+  - Statistics
+tags: []
+---
+
+```{r, include= FALSE}
+library(mlr3verse)
+library(mlbench)
+lgr::get_logger("mlr3")$set_threshold("warn")
+```
+# Data
+```{r}
+set.seed(13)
+spiral <- as.data.frame(mlbench.spirals(n = 500, sd = 0.1))
+```
+
+#  CV mlr3
+
+```{r resampling-mlr, message=FALSE}
+set.seed(1337)
+task <- TaskClassif$new(
+  id = "spirals_task",
+  backend = spiral, target = "classes"
+)
+
+rdesc_cv <- rsmp("repeated_cv", folds = 10, repeats = 10)
+mlr_cv <- resample(
+  resampling = rdesc_cv, learner = lrn("classif.kknn", k = 5),
+  task = task
+)
+
+
+mlr_cv$score()[, c("iteration", "classif.ce")]
+mlr_cv$aggregate()
+```
+
+```{r resampling-mlr_plot}
+library(ggplot2)
+ggplot(data = mlr_cv$score()[, "classif.ce"], aes(y = classif.ce, x = 1)) +
+  geom_boxplot() +
+  ggtitle(label = "Repeated CV (10-10) with mlr") +
+  xlab("") + ylab("test error") + xlim(c(0, 2))
+```
+
+# Nested Resampling
+```{r nested-mlr_impl}
+k_candidates <- seq(1,7, by = 2) # only uneven
+task <- TaskClassif$new(
+  id = "stairs",
+  backend = spiral,
+  target = "classes"
+)
+learner <- lrn("classif.kknn")
+# define the the inner cv
+resampling <- rsmp("cv", folds = 10)
+measures <- msr("classif.ce")
+# replicate the k_candidates test design
+param_set <- paradox::ParamSet$new(
+  params = list(paradox::ParamInt$new("k",
+    lower = min(k_candidates),
+    upper = max(k_candidates)
+  ))
+)
+# we can use a grid design since the candidates are uniformly spaced
+design <- paradox::generate_design_grid(param_set,
+  resolution = length(k_candidates)
+)
+dt <- mlr3tuning::tnr("design_points", design = design$data)
+
+terminator <- trm("evals", n_evals = length(k_candidates))
+at <- AutoTuner$new(
+  learner = learner,
+  resampling = resampling,
+  terminator = terminator,
+  tuner = dt,
+  measure = measures,
+  search_space = param_set
+)
+# define the outer cv
+resampling_outer <- rsmp("cv", folds = 10)
+# do nested resampling
+rr <- resample(task = task, learner = at, resampling = resampling_outer)
+```
+
+
+```{r nested-mlr_res1}
+# outer loop results
+rr$score()[, c("iteration", "classif.ce")]
+```
+
+```{r nested-mlr_res2}
+rr$aggregate()
+```

@@ -1,0 +1,134 @@
+---
+title: Random Forests
+author: Max
+date: '2023-01-18'
+slug: random-forests
+categories:
+  - Machine Learning
+  - R
+  - R Programming
+  - Statistics
+tags: []
+---
+
+# Variable Importance from mlr3
+
+```{r, include= FALSE}
+library(mlr3)
+library(mlr3learners)
+library(mlr3filters)
+library(mlr3viz)
+library(mlbench)
+library(dplyr)
+library(partykit)
+library(ggplot2)
+library(randomForest)
+```
+
+# Data prep
+```{r randforests-data, message=FALSE}
+data("Servo")
+servo <- Servo %>%
+  mutate_at(c("Pgain", "Vgain"), as.character) %>%
+  mutate_at(c("Pgain", "Vgain"), as.numeric)
+head(servo)
+train_size <- 2/3
+set.seed(1333)
+train_index <- sample(
+  x = seq(1, nrow(servo), by = 1),
+  size = ceiling(train_size * nrow(servo)), replace = FALSE
+)
+train_1 <- servo[ train_index, ]
+test_1 <- servo[ -train_index, ]
+```
+
+
+```{r randforests-var_imp, message=FALSE}
+
+task <- TaskRegr$new(id = "servo", backend = train_1, target = "Class")
+lrn1 <- lrn("regr.ranger", importance = "impurity")
+lrn1$train(task = task)
+filter <- mlr3filters::flt("importance", learner = lrn1)
+filter$calculate(task)
+var <- as.data.table(filter)
+ggplot(data = var, aes(x = feature, y = score)) + geom_bar(stat = "identity") +
+  ggtitle(label = "Variable Importance with mlr3") +
+  labs(x = "Feature", y = "Variable Importance")
+```
+
+## Decision Regions CART vs. Random Forest
+
+
+Data used:
+
+```{r }
+spiral <- mlbench::mlbench.spirals(1000, cycles = 2, sd = 0.5)
+p <- ggplot(data = as.data.frame(spiral$x), aes(
+  x = V1, y = V2,
+  colour = spiral$classes
+)) +
+  geom_point()
+p
+```
+
+# Decision regions CART
+
+```{r }
+spiral_data <- data.frame(spiral$x, y = factor(spiral$classes))
+colnames(spiral_data) <- c("x1", "x2", "y")
+
+features <- c("x1", "x2")
+spiral_task <- TaskClassif$new(
+  id = "spirals", backend = spiral_data,
+  target = "y"
+)
+plot_learner_prediction(
+  lrn("classif.rpart", predict_type = "prob"),
+  spiral_task
+)
+```
+
+# Decision regions Random Forest
+
+```{r randforests-dec_bnd_randforests}
+plot_learner_prediction(
+  lrn("classif.ranger", predict_type = "prob"),
+  spiral_task
+)
+```
+
+## Proximity measures in Random Forests
+
+```{r randforests-prox}
+set.seed(1337)
+spiral_rf <- randomForest(
+  x = spiral$x, y = spiral$classes,
+  ntree = 1000,
+  proximity = TRUE, oob.prox = TRUE,
+)
+spiral_proximity <- spiral_rf$proximity
+spiral_proximity[1:5, 1:5]
+```
+
+
+## Proximity MDS (Multidimensional Scaling)
+```{r randforests-prox_mds}
+proximity_to_dist <- function(proximity) {
+  1 - proximity
+}
+spiral_dist <- proximity_to_dist(spiral_proximity)
+spiral_dist[1:5, 1:5]
+spiral_mds <- as.data.frame(cmdscale(spiral_dist))
+spiral_mds$class <- spiral$classes
+# plot the result, sweet
+plot <- ggplot(data = spiral_mds, aes(x = V1, y = V2, colour = class)) +
+  geom_point() +
+  labs(
+    x = "1st dimension", y = "2nd dimension",
+    title = "Multidimensional scaling based on inverse proximity (spirals data)"
+  )+
+  scale_colour_viridis_d()
+plot
+```
+
+

@@ -1,0 +1,493 @@
+---
+title: mlr3 Resampling
+author: Max
+date: '2022-12-11'
+slug: mlr3-resampling
+categories:
+  - Machine Learning
+  - R
+  - R Programming
+  - Statistics
+tags: []
+---
+
+
+
+<div id="data" class="section level1">
+<h1>Data</h1>
+<pre class="r"><code>set.seed(13)
+spiral &lt;- as.data.frame(mlbench.spirals(n = 500, sd = 0.1))</code></pre>
+</div>
+<div id="cv-mlr3" class="section level1">
+<h1>CV mlr3</h1>
+<pre class="r"><code>set.seed(1337)
+task &lt;- TaskClassif$new(
+  id = &quot;spirals_task&quot;,
+  backend = spiral, target = &quot;classes&quot;
+)
+
+rdesc_cv &lt;- rsmp(&quot;repeated_cv&quot;, folds = 10, repeats = 10)
+mlr_cv &lt;- resample(
+  resampling = rdesc_cv, learner = lrn(&quot;classif.kknn&quot;, k = 5),
+  task = task
+)
+
+
+mlr_cv$score()[, c(&quot;iteration&quot;, &quot;classif.ce&quot;)]</code></pre>
+<pre><code>##      iteration classif.ce
+##   1:         1       0.10
+##   2:         2       0.10
+##   3:         3       0.02
+##   4:         4       0.08
+##   5:         5       0.08
+##   6:         6       0.06
+##   7:         7       0.04
+##   8:         8       0.02
+##   9:         9       0.10
+##  10:        10       0.08
+##  11:        11       0.14
+##  12:        12       0.04
+##  13:        13       0.10
+##  14:        14       0.04
+##  15:        15       0.08
+##  16:        16       0.04
+##  17:        17       0.04
+##  18:        18       0.08
+##  19:        19       0.04
+##  20:        20       0.08
+##  21:        21       0.10
+##  22:        22       0.04
+##  23:        23       0.02
+##  24:        24       0.10
+##  25:        25       0.06
+##  26:        26       0.06
+##  27:        27       0.04
+##  28:        28       0.08
+##  29:        29       0.12
+##  30:        30       0.10
+##  31:        31       0.10
+##  32:        32       0.02
+##  33:        33       0.08
+##  34:        34       0.10
+##  35:        35       0.08
+##  36:        36       0.04
+##  37:        37       0.08
+##  38:        38       0.10
+##  39:        39       0.06
+##  40:        40       0.04
+##  41:        41       0.08
+##  42:        42       0.04
+##  43:        43       0.08
+##  44:        44       0.10
+##  45:        45       0.06
+##  46:        46       0.04
+##  47:        47       0.04
+##  48:        48       0.12
+##  49:        49       0.08
+##  50:        50       0.04
+##  51:        51       0.06
+##  52:        52       0.08
+##  53:        53       0.04
+##  54:        54       0.08
+##  55:        55       0.08
+##  56:        56       0.08
+##  57:        57       0.14
+##  58:        58       0.00
+##  59:        59       0.08
+##  60:        60       0.06
+##  61:        61       0.08
+##  62:        62       0.08
+##  63:        63       0.04
+##  64:        64       0.08
+##  65:        65       0.04
+##  66:        66       0.02
+##  67:        67       0.06
+##  68:        68       0.06
+##  69:        69       0.12
+##  70:        70       0.08
+##  71:        71       0.06
+##  72:        72       0.04
+##  73:        73       0.02
+##  74:        74       0.08
+##  75:        75       0.14
+##  76:        76       0.06
+##  77:        77       0.04
+##  78:        78       0.02
+##  79:        79       0.16
+##  80:        80       0.06
+##  81:        81       0.12
+##  82:        82       0.02
+##  83:        83       0.02
+##  84:        84       0.04
+##  85:        85       0.10
+##  86:        86       0.04
+##  87:        87       0.06
+##  88:        88       0.10
+##  89:        89       0.10
+##  90:        90       0.06
+##  91:        91       0.12
+##  92:        92       0.12
+##  93:        93       0.04
+##  94:        94       0.08
+##  95:        95       0.08
+##  96:        96       0.06
+##  97:        97       0.02
+##  98:        98       0.06
+##  99:        99       0.02
+## 100:       100       0.08
+##      iteration classif.ce</code></pre>
+<pre class="r"><code>mlr_cv$aggregate()</code></pre>
+<pre><code>## classif.ce 
+##     0.0684</code></pre>
+<pre class="r"><code>library(ggplot2)
+ggplot(data = mlr_cv$score()[, &quot;classif.ce&quot;], aes(y = classif.ce, x = 1)) +
+  geom_boxplot() +
+  ggtitle(label = &quot;Repeated CV (10-10) with mlr&quot;) +
+  xlab(&quot;&quot;) + ylab(&quot;test error&quot;) + xlim(c(0, 2))</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/resampling-mlr_plot-1.png" width="672" /></p>
+</div>
+<div id="nested-resampling" class="section level1">
+<h1>Nested Resampling</h1>
+<pre class="r"><code>k_candidates &lt;- seq(1,7, by = 2) # only uneven
+task &lt;- TaskClassif$new(
+  id = &quot;stairs&quot;,
+  backend = spiral,
+  target = &quot;classes&quot;
+)
+learner &lt;- lrn(&quot;classif.kknn&quot;)
+# define the the inner cv
+resampling &lt;- rsmp(&quot;cv&quot;, folds = 10)
+measures &lt;- msr(&quot;classif.ce&quot;)
+# replicate the k_candidates test design
+param_set &lt;- paradox::ParamSet$new(
+  params = list(paradox::ParamInt$new(&quot;k&quot;,
+    lower = min(k_candidates),
+    upper = max(k_candidates)
+  ))
+)
+# we can use a grid design since the candidates are uniformly spaced
+design &lt;- paradox::generate_design_grid(param_set,
+  resolution = length(k_candidates)
+)
+dt &lt;- mlr3tuning::tnr(&quot;design_points&quot;, design = design$data)
+
+terminator &lt;- trm(&quot;evals&quot;, n_evals = length(k_candidates))
+at &lt;- AutoTuner$new(
+  learner = learner,
+  resampling = resampling,
+  terminator = terminator,
+  tuner = dt,
+  measure = measures,
+  search_space = param_set
+)
+# define the outer cv
+resampling_outer &lt;- rsmp(&quot;cv&quot;, folds = 10)
+# do nested resampling
+rr &lt;- resample(task = task, learner = at, resampling = resampling_outer)</code></pre>
+<pre><code>## INFO  [17:15:11.939] [bbotk] Starting to optimize 1 parameter(s) with &#39;&lt;OptimizerDesignPoints&gt;&#39; and &#39;&lt;TerminatorEvals&gt; [n_evals=4, k=0]&#39;
+## INFO  [17:15:11.970] [bbotk] Evaluating 1 configuration(s)
+## INFO  [17:15:12.305] [bbotk] Result of batch 1:
+## INFO  [17:15:12.307] [bbotk]  k classif.ce warnings errors runtime_learners
+## INFO  [17:15:12.307] [bbotk]  1        0.1        0      0            0.134
+## INFO  [17:15:12.307] [bbotk]                                 uhash
+## INFO  [17:15:12.307] [bbotk]  566d1caa-3b8f-44d8-80b4-a086c12e7cce
+## INFO  [17:15:12.309] [bbotk] Evaluating 1 configuration(s)
+## INFO  [17:15:12.711] [bbotk] Result of batch 2:
+## INFO  [17:15:12.712] [bbotk]  k classif.ce warnings errors runtime_learners
+## INFO  [17:15:12.712] [bbotk]  3        0.1        0      0            0.174
+## INFO  [17:15:12.712] [bbotk]                                 uhash
+## INFO  [17:15:12.712] [bbotk]  daa8bf06-50e7-48e2-8914-866b5b6a8d8a
+## INFO  [17:15:12.714] [bbotk] Evaluating 1 configuration(s)
+## INFO  [17:15:13.205] [bbotk] Result of batch 3:
+## INFO  [17:15:13.207] [bbotk]  k classif.ce warnings errors runtime_learners
+## INFO  [17:15:13.207] [bbotk]  5 0.07777778        0      0            0.256
+## INFO  [17:15:13.207] [bbotk]                                 uhash
+## INFO  [17:15:13.207] [bbotk]  e0e424b0-e7f2-49e8-85c3-02b6ff90fe5b
+## INFO  [17:15:13.208] [bbotk] Evaluating 1 configuration(s)
+## INFO  [17:15:13.714] [bbotk] Result of batch 4:
+## INFO  [17:15:13.716] [bbotk]  k classif.ce warnings errors runtime_learners
+## INFO  [17:15:13.716] [bbotk]  7 0.07555556        0      0            0.139
+## INFO  [17:15:13.716] [bbotk]                                 uhash
+## INFO  [17:15:13.716] [bbotk]  b4339250-2186-4656-a057-7e57b424d9d5
+## INFO  [17:15:13.722] [bbotk] Finished optimizing after 4 evaluation(s)
+## INFO  [17:15:13.723] [bbotk] Result:
+## INFO  [17:15:13.724] [bbotk]  k learner_param_vals  x_domain classif.ce
+## INFO  [17:15:13.724] [bbotk]  7          &lt;list[1]&gt; &lt;list[1]&gt; 0.07555556
+## INFO  [17:15:13.804] [bbotk] Starting to optimize 1 parameter(s) with &#39;&lt;OptimizerDesignPoints&gt;&#39; and &#39;&lt;TerminatorEvals&gt; [n_evals=4, k=0]&#39;
+## INFO  [17:15:13.805] [bbotk] Evaluating 1 configuration(s)
+## INFO  [17:15:14.426] [bbotk] Result of batch 1:
+## INFO  [17:15:14.429] [bbotk]  k classif.ce warnings errors runtime_learners
+## INFO  [17:15:14.429] [bbotk]  1 0.08444444        0      0            0.289
+## INFO  [17:15:14.429] [bbotk]                                 uhash
+## INFO  [17:15:14.429] [bbotk]  6df1adf4-2ad5-4e65-9e4f-e591a1bdcadd
+## INFO  [17:15:14.432] [bbotk] Evaluating 1 configuration(s)
+## INFO  [17:15:14.877] [bbotk] Result of batch 2:
+## INFO  [17:15:14.879] [bbotk]  k classif.ce warnings errors runtime_learners
+## INFO  [17:15:14.879] [bbotk]  3 0.08444444        0      0            0.181
+## INFO  [17:15:14.879] [bbotk]                                 uhash
+## INFO  [17:15:14.879] [bbotk]  5ed9c309-0988-40a7-a444-84abf4bbf75f
+## INFO  [17:15:14.880] [bbotk] Evaluating 1 configuration(s)
+## INFO  [17:15:15.310] [bbotk] Result of batch 3:
+## INFO  [17:15:15.312] [bbotk]  k classif.ce warnings errors runtime_learners
+## INFO  [17:15:15.312] [bbotk]  5 0.06666667        0      0            0.188
+## INFO  [17:15:15.312] [bbotk]                                 uhash
+## INFO  [17:15:15.312] [bbotk]  e1b132e2-ab3f-485b-aa91-dc4038d683df
+## INFO  [17:15:15.313] [bbotk] Evaluating 1 configuration(s)
+## INFO  [17:15:15.753] [bbotk] Result of batch 4:
+## INFO  [17:15:15.755] [bbotk]  k classif.ce warnings errors runtime_learners
+## INFO  [17:15:15.755] [bbotk]  7 0.06444444        0      0            0.193
+## INFO  [17:15:15.755] [bbotk]                                 uhash
+## INFO  [17:15:15.755] [bbotk]  6cf4de05-3302-413a-8e86-f629da0b5bd4
+## INFO  [17:15:15.761] [bbotk] Finished optimizing after 4 evaluation(s)
+## INFO  [17:15:15.762] [bbotk] Result:
+## INFO  [17:15:15.763] [bbotk]  k learner_param_vals  x_domain classif.ce
+## INFO  [17:15:15.763] [bbotk]  7          &lt;list[1]&gt; &lt;list[1]&gt; 0.06444444
+## INFO  [17:15:15.829] [bbotk] Starting to optimize 1 parameter(s) with &#39;&lt;OptimizerDesignPoints&gt;&#39; and &#39;&lt;TerminatorEvals&gt; [n_evals=4, k=0]&#39;
+## INFO  [17:15:15.832] [bbotk] Evaluating 1 configuration(s)
+## INFO  [17:15:16.274] [bbotk] Result of batch 1:
+## INFO  [17:15:16.281] [bbotk]  k classif.ce warnings errors runtime_learners
+## INFO  [17:15:16.281] [bbotk]  1  0.1022222        0      0            0.175
+## INFO  [17:15:16.281] [bbotk]                                 uhash
+## INFO  [17:15:16.281] [bbotk]  d4b7ad08-881c-470b-87e4-df774d908e16
+## INFO  [17:15:16.285] [bbotk] Evaluating 1 configuration(s)
+## INFO  [17:15:16.613] [bbotk] Result of batch 2:
+## INFO  [17:15:16.615] [bbotk]  k classif.ce warnings errors runtime_learners
+## INFO  [17:15:16.615] [bbotk]  3  0.1022222        0      0            0.126
+## INFO  [17:15:16.615] [bbotk]                                 uhash
+## INFO  [17:15:16.615] [bbotk]  dbd43319-3d9a-4562-bca9-9b53f339c8dc
+## INFO  [17:15:16.617] [bbotk] Evaluating 1 configuration(s)
+## INFO  [17:15:17.190] [bbotk] Result of batch 3:
+## INFO  [17:15:17.193] [bbotk]  k classif.ce warnings errors runtime_learners
+## INFO  [17:15:17.193] [bbotk]  5 0.06888889        0      0            0.384
+## INFO  [17:15:17.193] [bbotk]                                 uhash
+## INFO  [17:15:17.193] [bbotk]  db8408f1-e9ba-4672-aa34-726841a60114
+## INFO  [17:15:17.196] [bbotk] Evaluating 1 configuration(s)
+## INFO  [17:15:17.845] [bbotk] Result of batch 4:
+## INFO  [17:15:17.853] [bbotk]  k classif.ce warnings errors runtime_learners
+## INFO  [17:15:17.853] [bbotk]  7 0.06222222        0      0            0.224
+## INFO  [17:15:17.853] [bbotk]                                 uhash
+## INFO  [17:15:17.853] [bbotk]  48c3ee4c-ccc0-453f-b5d0-9433e2dd72d5
+## INFO  [17:15:17.875] [bbotk] Finished optimizing after 4 evaluation(s)
+## INFO  [17:15:17.877] [bbotk] Result:
+## INFO  [17:15:17.882] [bbotk]  k learner_param_vals  x_domain classif.ce
+## INFO  [17:15:17.882] [bbotk]  7          &lt;list[1]&gt; &lt;list[1]&gt; 0.06222222
+## INFO  [17:15:18.143] [bbotk] Starting to optimize 1 parameter(s) with &#39;&lt;OptimizerDesignPoints&gt;&#39; and &#39;&lt;TerminatorEvals&gt; [n_evals=4, k=0]&#39;
+## INFO  [17:15:18.148] [bbotk] Evaluating 1 configuration(s)
+## INFO  [17:15:18.742] [bbotk] Result of batch 1:
+## INFO  [17:15:18.745] [bbotk]  k classif.ce warnings errors runtime_learners
+## INFO  [17:15:18.745] [bbotk]  1 0.08444444        0      0            0.244
+## INFO  [17:15:18.745] [bbotk]                                 uhash
+## INFO  [17:15:18.745] [bbotk]  f158f12e-d4f2-4510-b720-4cbdd090856b
+## INFO  [17:15:18.747] [bbotk] Evaluating 1 configuration(s)
+## INFO  [17:15:19.210] [bbotk] Result of batch 2:
+## INFO  [17:15:19.212] [bbotk]  k classif.ce warnings errors runtime_learners
+## INFO  [17:15:19.212] [bbotk]  3 0.08444444        0      0            0.145
+## INFO  [17:15:19.212] [bbotk]                                 uhash
+## INFO  [17:15:19.212] [bbotk]  07dbc0f8-cc3b-4f92-ac04-73829386b624
+## INFO  [17:15:19.215] [bbotk] Evaluating 1 configuration(s)
+## INFO  [17:15:19.661] [bbotk] Result of batch 3:
+## INFO  [17:15:19.663] [bbotk]  k classif.ce warnings errors runtime_learners
+## INFO  [17:15:19.663] [bbotk]  5 0.06222222        0      0            0.192
+## INFO  [17:15:19.663] [bbotk]                                 uhash
+## INFO  [17:15:19.663] [bbotk]  fdb4e08f-f930-4b5f-ac4d-1a7654e351da
+## INFO  [17:15:19.666] [bbotk] Evaluating 1 configuration(s)
+## INFO  [17:15:20.187] [bbotk] Result of batch 4:
+## INFO  [17:15:20.189] [bbotk]  k classif.ce warnings errors runtime_learners
+## INFO  [17:15:20.189] [bbotk]  7       0.06        0      0            0.226
+## INFO  [17:15:20.189] [bbotk]                                 uhash
+## INFO  [17:15:20.189] [bbotk]  94a9be40-6a7f-459e-a336-4137fd343bb6
+## INFO  [17:15:20.197] [bbotk] Finished optimizing after 4 evaluation(s)
+## INFO  [17:15:20.198] [bbotk] Result:
+## INFO  [17:15:20.199] [bbotk]  k learner_param_vals  x_domain classif.ce
+## INFO  [17:15:20.199] [bbotk]  7          &lt;list[1]&gt; &lt;list[1]&gt;       0.06
+## INFO  [17:15:20.403] [bbotk] Starting to optimize 1 parameter(s) with &#39;&lt;OptimizerDesignPoints&gt;&#39; and &#39;&lt;TerminatorEvals&gt; [n_evals=4, k=0]&#39;
+## INFO  [17:15:20.409] [bbotk] Evaluating 1 configuration(s)
+## INFO  [17:15:20.965] [bbotk] Result of batch 1:
+## INFO  [17:15:20.968] [bbotk]  k classif.ce warnings errors runtime_learners
+## INFO  [17:15:20.968] [bbotk]  1 0.08888889        0      0            0.239
+## INFO  [17:15:20.968] [bbotk]                                 uhash
+## INFO  [17:15:20.968] [bbotk]  90ce2242-ec59-4863-9ec4-5e5b81099e4e
+## INFO  [17:15:20.970] [bbotk] Evaluating 1 configuration(s)
+## INFO  [17:15:21.463] [bbotk] Result of batch 2:
+## INFO  [17:15:21.465] [bbotk]  k classif.ce warnings errors runtime_learners
+## INFO  [17:15:21.465] [bbotk]  3 0.08888889        0      0             0.21
+## INFO  [17:15:21.465] [bbotk]                                 uhash
+## INFO  [17:15:21.465] [bbotk]  e8eaa32c-1065-4a5d-8713-328f9d07a5c7
+## INFO  [17:15:21.467] [bbotk] Evaluating 1 configuration(s)
+## INFO  [17:15:22.012] [bbotk] Result of batch 3:
+## INFO  [17:15:22.015] [bbotk]  k classif.ce warnings errors runtime_learners
+## INFO  [17:15:22.015] [bbotk]  5 0.07333333        0      0            0.236
+## INFO  [17:15:22.015] [bbotk]                                 uhash
+## INFO  [17:15:22.015] [bbotk]  625243b8-297f-452a-b928-2055a0422aed
+## INFO  [17:15:22.017] [bbotk] Evaluating 1 configuration(s)
+## INFO  [17:15:22.401] [bbotk] Result of batch 4:
+## INFO  [17:15:22.405] [bbotk]  k classif.ce warnings errors runtime_learners
+## INFO  [17:15:22.405] [bbotk]  7 0.07333333        0      0            0.152
+## INFO  [17:15:22.405] [bbotk]                                 uhash
+## INFO  [17:15:22.405] [bbotk]  c10e51e4-39c6-4137-a711-1c80107544f7
+## INFO  [17:15:22.430] [bbotk] Finished optimizing after 4 evaluation(s)
+## INFO  [17:15:22.433] [bbotk] Result:
+## INFO  [17:15:22.437] [bbotk]  k learner_param_vals  x_domain classif.ce
+## INFO  [17:15:22.437] [bbotk]  5          &lt;list[1]&gt; &lt;list[1]&gt; 0.07333333
+## INFO  [17:15:22.611] [bbotk] Starting to optimize 1 parameter(s) with &#39;&lt;OptimizerDesignPoints&gt;&#39; and &#39;&lt;TerminatorEvals&gt; [n_evals=4, k=0]&#39;
+## INFO  [17:15:22.613] [bbotk] Evaluating 1 configuration(s)
+## INFO  [17:15:22.975] [bbotk] Result of batch 1:
+## INFO  [17:15:22.977] [bbotk]  k classif.ce warnings errors runtime_learners
+## INFO  [17:15:22.977] [bbotk]  1 0.09333333        0      0            0.148
+## INFO  [17:15:22.977] [bbotk]                                 uhash
+## INFO  [17:15:22.977] [bbotk]  77543ffe-cec6-4e0d-bd83-0245997bbec8
+## INFO  [17:15:22.979] [bbotk] Evaluating 1 configuration(s)
+## INFO  [17:15:23.565] [bbotk] Result of batch 2:
+## INFO  [17:15:23.567] [bbotk]  k classif.ce warnings errors runtime_learners
+## INFO  [17:15:23.567] [bbotk]  3 0.09333333        0      0            0.267
+## INFO  [17:15:23.567] [bbotk]                                 uhash
+## INFO  [17:15:23.567] [bbotk]  d47ab03f-ad59-425a-9c5c-f07e7e386812
+## INFO  [17:15:23.570] [bbotk] Evaluating 1 configuration(s)
+## INFO  [17:15:24.034] [bbotk] Result of batch 3:
+## INFO  [17:15:24.036] [bbotk]  k classif.ce warnings errors runtime_learners
+## INFO  [17:15:24.036] [bbotk]  5 0.06888889        0      0            0.212
+## INFO  [17:15:24.036] [bbotk]                                 uhash
+## INFO  [17:15:24.036] [bbotk]  7fc781db-227f-4d50-a501-53b596ad1814
+## INFO  [17:15:24.038] [bbotk] Evaluating 1 configuration(s)
+## INFO  [17:15:24.376] [bbotk] Result of batch 4:
+## INFO  [17:15:24.378] [bbotk]  k classif.ce warnings errors runtime_learners
+## INFO  [17:15:24.378] [bbotk]  7 0.07111111        0      0            0.148
+## INFO  [17:15:24.378] [bbotk]                                 uhash
+## INFO  [17:15:24.378] [bbotk]  4e0f89ab-81a9-4764-96f0-8a0d290d530c
+## INFO  [17:15:24.384] [bbotk] Finished optimizing after 4 evaluation(s)
+## INFO  [17:15:24.385] [bbotk] Result:
+## INFO  [17:15:24.386] [bbotk]  k learner_param_vals  x_domain classif.ce
+## INFO  [17:15:24.386] [bbotk]  5          &lt;list[1]&gt; &lt;list[1]&gt; 0.06888889
+## INFO  [17:15:24.471] [bbotk] Starting to optimize 1 parameter(s) with &#39;&lt;OptimizerDesignPoints&gt;&#39; and &#39;&lt;TerminatorEvals&gt; [n_evals=4, k=0]&#39;
+## INFO  [17:15:24.474] [bbotk] Evaluating 1 configuration(s)
+## INFO  [17:15:24.963] [bbotk] Result of batch 1:
+## INFO  [17:15:24.965] [bbotk]  k classif.ce warnings errors runtime_learners
+## INFO  [17:15:24.965] [bbotk]  1 0.08666667        0      0            0.207
+## INFO  [17:15:24.965] [bbotk]                                 uhash
+## INFO  [17:15:24.965] [bbotk]  cada9a90-daa6-4353-b8a1-eca2cd7b660e
+## INFO  [17:15:24.967] [bbotk] Evaluating 1 configuration(s)
+## INFO  [17:15:25.454] [bbotk] Result of batch 2:
+## INFO  [17:15:25.456] [bbotk]  k classif.ce warnings errors runtime_learners
+## INFO  [17:15:25.456] [bbotk]  3 0.08666667        0      0            0.194
+## INFO  [17:15:25.456] [bbotk]                                 uhash
+## INFO  [17:15:25.456] [bbotk]  c0e97a7b-da06-4913-9ade-52e0f0f4448b
+## INFO  [17:15:25.458] [bbotk] Evaluating 1 configuration(s)
+## INFO  [17:15:25.775] [bbotk] Result of batch 3:
+## INFO  [17:15:25.777] [bbotk]  k classif.ce warnings errors runtime_learners
+## INFO  [17:15:25.777] [bbotk]  5 0.06666667        0      0            0.136
+## INFO  [17:15:25.777] [bbotk]                                 uhash
+## INFO  [17:15:25.777] [bbotk]  0f8b83bb-1b8b-4819-b651-d61f9ad88285
+## INFO  [17:15:25.778] [bbotk] Evaluating 1 configuration(s)
+## INFO  [17:15:26.355] [bbotk] Result of batch 4:
+## INFO  [17:15:26.357] [bbotk]  k classif.ce warnings errors runtime_learners
+## INFO  [17:15:26.357] [bbotk]  7 0.06888889        0      0            0.254
+## INFO  [17:15:26.357] [bbotk]                                 uhash
+## INFO  [17:15:26.357] [bbotk]  ae4a0984-70c7-4884-8b92-c77b3451e31a
+## INFO  [17:15:26.362] [bbotk] Finished optimizing after 4 evaluation(s)
+## INFO  [17:15:26.362] [bbotk] Result:
+## INFO  [17:15:26.364] [bbotk]  k learner_param_vals  x_domain classif.ce
+## INFO  [17:15:26.364] [bbotk]  5          &lt;list[1]&gt; &lt;list[1]&gt; 0.06666667
+## INFO  [17:15:26.458] [bbotk] Starting to optimize 1 parameter(s) with &#39;&lt;OptimizerDesignPoints&gt;&#39; and &#39;&lt;TerminatorEvals&gt; [n_evals=4, k=0]&#39;
+## INFO  [17:15:26.461] [bbotk] Evaluating 1 configuration(s)
+## INFO  [17:15:26.771] [bbotk] Result of batch 1:
+## INFO  [17:15:26.772] [bbotk]  k classif.ce warnings errors runtime_learners
+## INFO  [17:15:26.772] [bbotk]  1       0.08        0      0            0.135
+## INFO  [17:15:26.772] [bbotk]                                 uhash
+## INFO  [17:15:26.772] [bbotk]  1633da0a-eece-438c-911c-a648b37a0740
+## INFO  [17:15:26.774] [bbotk] Evaluating 1 configuration(s)
+## INFO  [17:15:27.354] [bbotk] Result of batch 2:
+## INFO  [17:15:27.361] [bbotk]  k classif.ce warnings errors runtime_learners
+## INFO  [17:15:27.361] [bbotk]  3       0.08        0      0            0.211
+## INFO  [17:15:27.361] [bbotk]                                 uhash
+## INFO  [17:15:27.361] [bbotk]  a24cea23-c3f5-4fed-aa02-275194f2c64f
+## INFO  [17:15:27.368] [bbotk] Evaluating 1 configuration(s)
+## INFO  [17:15:27.773] [bbotk] Result of batch 3:
+## INFO  [17:15:27.775] [bbotk]  k classif.ce warnings errors runtime_learners
+## INFO  [17:15:27.775] [bbotk]  5 0.06222222        0      0            0.157
+## INFO  [17:15:27.775] [bbotk]                                 uhash
+## INFO  [17:15:27.775] [bbotk]  ecce4f9f-8ac5-4d8a-a978-660e94fa3418
+## INFO  [17:15:27.777] [bbotk] Evaluating 1 configuration(s)
+## INFO  [17:15:28.187] [bbotk] Result of batch 4:
+## INFO  [17:15:28.189] [bbotk]  k classif.ce warnings errors runtime_learners
+## INFO  [17:15:28.189] [bbotk]  7 0.06222222        0      0            0.174
+## INFO  [17:15:28.189] [bbotk]                                 uhash
+## INFO  [17:15:28.189] [bbotk]  c5b97fd2-8975-462c-b6c4-88a5ab068b70
+## INFO  [17:15:28.195] [bbotk] Finished optimizing after 4 evaluation(s)
+## INFO  [17:15:28.195] [bbotk] Result:
+## INFO  [17:15:28.197] [bbotk]  k learner_param_vals  x_domain classif.ce
+## INFO  [17:15:28.197] [bbotk]  5          &lt;list[1]&gt; &lt;list[1]&gt; 0.06222222
+## INFO  [17:15:28.285] [bbotk] Starting to optimize 1 parameter(s) with &#39;&lt;OptimizerDesignPoints&gt;&#39; and &#39;&lt;TerminatorEvals&gt; [n_evals=4, k=0]&#39;
+## INFO  [17:15:28.288] [bbotk] Evaluating 1 configuration(s)
+## INFO  [17:15:28.767] [bbotk] Result of batch 1:
+## INFO  [17:15:28.769] [bbotk]  k classif.ce warnings errors runtime_learners
+## INFO  [17:15:28.769] [bbotk]  1       0.08        0      0            0.213
+## INFO  [17:15:28.769] [bbotk]                                 uhash
+## INFO  [17:15:28.769] [bbotk]  156bc9bb-2584-4a38-912a-c6b1c9918342
+## INFO  [17:15:28.770] [bbotk] Evaluating 1 configuration(s)
+## INFO  [17:15:29.076] [bbotk] Result of batch 2:
+## INFO  [17:15:29.077] [bbotk]  k classif.ce warnings errors runtime_learners
+## INFO  [17:15:29.077] [bbotk]  3       0.08        0      0            0.135
+## INFO  [17:15:29.077] [bbotk]                                 uhash
+## INFO  [17:15:29.077] [bbotk]  03407ece-7218-47b0-aba9-cc89b9b90812
+## INFO  [17:15:29.079] [bbotk] Evaluating 1 configuration(s)
+## INFO  [17:15:29.393] [bbotk] Result of batch 3:
+## INFO  [17:15:29.395] [bbotk]  k classif.ce warnings errors runtime_learners
+## INFO  [17:15:29.395] [bbotk]  5 0.06222222        0      0            0.135
+## INFO  [17:15:29.395] [bbotk]                                 uhash
+## INFO  [17:15:29.395] [bbotk]  badd9176-6b07-46ae-a52a-784750b8aba0
+## INFO  [17:15:29.396] [bbotk] Evaluating 1 configuration(s)
+## INFO  [17:15:30.014] [bbotk] Result of batch 4:
+## INFO  [17:15:30.019] [bbotk]  k classif.ce warnings errors runtime_learners
+## INFO  [17:15:30.019] [bbotk]  7 0.05777778        0      0            0.213
+## INFO  [17:15:30.019] [bbotk]                                 uhash
+## INFO  [17:15:30.019] [bbotk]  aff02b13-b579-4011-a47c-3af70ddc4895
+## INFO  [17:15:30.032] [bbotk] Finished optimizing after 4 evaluation(s)
+## INFO  [17:15:30.033] [bbotk] Result:
+## INFO  [17:15:30.035] [bbotk]  k learner_param_vals  x_domain classif.ce
+## INFO  [17:15:30.035] [bbotk]  7          &lt;list[1]&gt; &lt;list[1]&gt; 0.05777778
+## INFO  [17:15:30.134] [bbotk] Starting to optimize 1 parameter(s) with &#39;&lt;OptimizerDesignPoints&gt;&#39; and &#39;&lt;TerminatorEvals&gt; [n_evals=4, k=0]&#39;
+## INFO  [17:15:30.139] [bbotk] Evaluating 1 configuration(s)
+## INFO  [17:15:30.734] [bbotk] Result of batch 1:
+## INFO  [17:15:30.736] [bbotk]  k classif.ce warnings errors runtime_learners
+## INFO  [17:15:30.736] [bbotk]  1 0.09111111        0      0            0.253
+## INFO  [17:15:30.736] [bbotk]                                 uhash
+## INFO  [17:15:30.736] [bbotk]  3f73a650-22bf-463e-b332-7c2aef5a1343
+## INFO  [17:15:30.739] [bbotk] Evaluating 1 configuration(s)
+## INFO  [17:15:31.097] [bbotk] Result of batch 2:
+## INFO  [17:15:31.099] [bbotk]  k classif.ce warnings errors runtime_learners
+## INFO  [17:15:31.099] [bbotk]  3 0.09111111        0      0            0.137
+## INFO  [17:15:31.099] [bbotk]                                 uhash
+## INFO  [17:15:31.099] [bbotk]  3290f462-40e9-48e6-bb8e-41b9a1b3a44c
+## INFO  [17:15:31.102] [bbotk] Evaluating 1 configuration(s)
+## INFO  [17:15:31.455] [bbotk] Result of batch 3:
+## INFO  [17:15:31.457] [bbotk]  k classif.ce warnings errors runtime_learners
+## INFO  [17:15:31.457] [bbotk]  5 0.06888889        0      0            0.138
+## INFO  [17:15:31.457] [bbotk]                                 uhash
+## INFO  [17:15:31.457] [bbotk]  a7c6f13a-57cc-43d9-9689-60fab287d353
+## INFO  [17:15:31.459] [bbotk] Evaluating 1 configuration(s)
+## INFO  [17:15:32.176] [bbotk] Result of batch 4:
+## INFO  [17:15:32.180] [bbotk]  k classif.ce warnings errors runtime_learners
+## INFO  [17:15:32.180] [bbotk]  7 0.06666667        0      0            0.311
+## INFO  [17:15:32.180] [bbotk]                                 uhash
+## INFO  [17:15:32.180] [bbotk]  8ece0086-c6eb-43dd-8ed0-bddaa78deb73
+## INFO  [17:15:32.189] [bbotk] Finished optimizing after 4 evaluation(s)
+## INFO  [17:15:32.191] [bbotk] Result:
+## INFO  [17:15:32.194] [bbotk]  k learner_param_vals  x_domain classif.ce
+## INFO  [17:15:32.194] [bbotk]  7          &lt;list[1]&gt; &lt;list[1]&gt; 0.06666667</code></pre>
+<pre class="r"><code># outer loop results
+rr$score()[, c(&quot;iteration&quot;, &quot;classif.ce&quot;)]</code></pre>
+<pre><code>##     iteration classif.ce
+##  1:         1       0.02
+##  2:         2       0.08
+##  3:         3       0.04
+##  4:         4       0.12
+##  5:         5       0.06
+##  6:         6       0.10
+##  7:         7       0.04
+##  8:         8       0.06
+##  9:         9       0.14
+## 10:        10       0.02</code></pre>
+<pre class="r"><code>rr$aggregate()</code></pre>
+<pre><code>## classif.ce 
+##      0.068</code></pre>
+</div>

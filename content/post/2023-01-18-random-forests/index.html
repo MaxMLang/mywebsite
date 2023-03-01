@@ -1,0 +1,132 @@
+---
+title: Random Forests
+author: Max
+date: '2023-01-18'
+slug: random-forests
+categories:
+  - Machine Learning
+  - R
+  - R Programming
+  - Statistics
+tags: []
+---
+
+
+
+<div id="variable-importance-from-mlr3" class="section level1">
+<h1>Variable Importance from mlr3</h1>
+</div>
+<div id="data-prep" class="section level1">
+<h1>Data prep</h1>
+<pre class="r"><code>data(&quot;Servo&quot;)
+servo &lt;- Servo %&gt;%
+  mutate_at(c(&quot;Pgain&quot;, &quot;Vgain&quot;), as.character) %&gt;%
+  mutate_at(c(&quot;Pgain&quot;, &quot;Vgain&quot;), as.numeric)
+head(servo)</code></pre>
+<pre><code>##   Motor Screw Pgain Vgain Class
+## 1     E     E     5     4     4
+## 2     B     D     6     5    11
+## 3     D     D     4     3     6
+## 4     B     A     3     2    48
+## 5     D     B     6     5     6
+## 6     E     C     4     3    20</code></pre>
+<pre class="r"><code>train_size &lt;- 2/3
+set.seed(1333)
+train_index &lt;- sample(
+  x = seq(1, nrow(servo), by = 1),
+  size = ceiling(train_size * nrow(servo)), replace = FALSE
+)
+train_1 &lt;- servo[ train_index, ]
+test_1 &lt;- servo[ -train_index, ]</code></pre>
+<pre class="r"><code>task &lt;- TaskRegr$new(id = &quot;servo&quot;, backend = train_1, target = &quot;Class&quot;)
+lrn1 &lt;- lrn(&quot;regr.ranger&quot;, importance = &quot;impurity&quot;)
+lrn1$train(task = task)
+filter &lt;- mlr3filters::flt(&quot;importance&quot;, learner = lrn1)
+filter$calculate(task)
+var &lt;- as.data.table(filter)
+ggplot(data = var, aes(x = feature, y = score)) + geom_bar(stat = &quot;identity&quot;) +
+  ggtitle(label = &quot;Variable Importance with mlr3&quot;) +
+  labs(x = &quot;Feature&quot;, y = &quot;Variable Importance&quot;)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/randforests-var_imp-1.png" width="672" /></p>
+<div id="decision-regions-cart-vs.-random-forest" class="section level2">
+<h2>Decision Regions CART vs. Random Forest</h2>
+<p>Data used:</p>
+<pre class="r"><code>spiral &lt;- mlbench::mlbench.spirals(1000, cycles = 2, sd = 0.5)
+p &lt;- ggplot(data = as.data.frame(spiral$x), aes(
+  x = V1, y = V2,
+  colour = spiral$classes
+)) +
+  geom_point()
+p</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+</div>
+</div>
+<div id="decision-regions-cart" class="section level1">
+<h1>Decision regions CART</h1>
+<pre class="r"><code>spiral_data &lt;- data.frame(spiral$x, y = factor(spiral$classes))
+colnames(spiral_data) &lt;- c(&quot;x1&quot;, &quot;x2&quot;, &quot;y&quot;)
+
+features &lt;- c(&quot;x1&quot;, &quot;x2&quot;)
+spiral_task &lt;- TaskClassif$new(
+  id = &quot;spirals&quot;, backend = spiral_data,
+  target = &quot;y&quot;
+)
+plot_learner_prediction(
+  lrn(&quot;classif.rpart&quot;, predict_type = &quot;prob&quot;),
+  spiral_task
+)</code></pre>
+<pre><code>## INFO  [17:14:32.188] [mlr3] Applying learner &#39;classif.rpart&#39; on task &#39;spirals&#39; (iter 1/1)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+</div>
+<div id="decision-regions-random-forest" class="section level1">
+<h1>Decision regions Random Forest</h1>
+<pre class="r"><code>plot_learner_prediction(
+  lrn(&quot;classif.ranger&quot;, predict_type = &quot;prob&quot;),
+  spiral_task
+)</code></pre>
+<pre><code>## INFO  [17:14:33.402] [mlr3] Applying learner &#39;classif.ranger&#39; on task &#39;spirals&#39; (iter 1/1)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/randforests-dec_bnd_randforests-1.png" width="672" /></p>
+<div id="proximity-measures-in-random-forests" class="section level2">
+<h2>Proximity measures in Random Forests</h2>
+<pre class="r"><code>set.seed(1337)
+spiral_rf &lt;- randomForest(
+  x = spiral$x, y = spiral$classes,
+  ntree = 1000,
+  proximity = TRUE, oob.prox = TRUE,
+)
+spiral_proximity &lt;- spiral_rf$proximity
+spiral_proximity[1:5, 1:5]</code></pre>
+<pre><code>##           [,1]      [,2] [,3] [,4] [,5]
+## [1,] 1.0000000 0.0078125    0    0    0
+## [2,] 0.0078125 1.0000000    0    0    0
+## [3,] 0.0000000 0.0000000    1    0    0
+## [4,] 0.0000000 0.0000000    0    1    0
+## [5,] 0.0000000 0.0000000    0    0    1</code></pre>
+</div>
+<div id="proximity-mds-multidimensional-scaling" class="section level2">
+<h2>Proximity MDS (Multidimensional Scaling)</h2>
+<pre class="r"><code>proximity_to_dist &lt;- function(proximity) {
+  1 - proximity
+}
+spiral_dist &lt;- proximity_to_dist(spiral_proximity)
+spiral_dist[1:5, 1:5]</code></pre>
+<pre><code>##           [,1]      [,2] [,3] [,4] [,5]
+## [1,] 0.0000000 0.9921875    1    1    1
+## [2,] 0.9921875 0.0000000    1    1    1
+## [3,] 1.0000000 1.0000000    0    1    1
+## [4,] 1.0000000 1.0000000    1    0    1
+## [5,] 1.0000000 1.0000000    1    1    0</code></pre>
+<pre class="r"><code>spiral_mds &lt;- as.data.frame(cmdscale(spiral_dist))
+spiral_mds$class &lt;- spiral$classes
+# plot the result, sweet
+plot &lt;- ggplot(data = spiral_mds, aes(x = V1, y = V2, colour = class)) +
+  geom_point() +
+  labs(
+    x = &quot;1st dimension&quot;, y = &quot;2nd dimension&quot;,
+    title = &quot;Multidimensional scaling based on inverse proximity (spirals data)&quot;
+  )+
+  scale_colour_viridis_d()
+plot</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/randforests-prox_mds-1.png" width="672" /></p>
+</div>
+</div>
