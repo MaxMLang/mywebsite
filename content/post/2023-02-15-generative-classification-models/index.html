@@ -1,0 +1,228 @@
+---
+title: Generative Classification Models
+author: R package build
+date: '2023-02-15'
+slug: generative-classification-models
+categories:
+  - Machine Learning
+  - R
+  - R Programming
+  - Statistics
+tags: []
+---
+
+
+
+<div id="generative-classification-methods" class="section level1">
+<h1>Generative Classification methods</h1>
+<div id="theory" class="section level2">
+<h2>Theory</h2>
+<p>When we are using a generative approach to classification, we are not modeling
+the conditional density <span class="math inline">\(\pi_k(x) = P(y = k | x)\)</span>, i.e., the class membership probability given a certain feature vector, directly.
+Instead, we are modeling the “other” conditional density <span class="math inline">\(f(x | y = k)\)</span>
+(“probability” of a feature vector given a certain class membership, i.e. the <strong>likelihood</strong> of observing <span class="math inline">\(x\)</span> under the assumption that the class is <span class="math inline">\(k\)</span>). Following the
+<a href="https://en.wikipedia.org/wiki/Bayes%27_theorem">Bayes’ rule</a> one gets that</p>
+<p><span class="math display">\[
+\pi_k(x) \propto \pi_k \cdot f(x | y = k).
+\]</span>
+The distribution defined by the parameters <span class="math inline">\(\pi_k\)</span> is called the <strong>prior</strong> and can be interpreted as the representation of our <em>a priori</em> knowledge about the frequencies of the target classes. In our setting we can use a straightforward approach to deriving this prior, s.t.</p>
+<p><span class="math display">\[
+\hat{\pi}_k = \frac{n_k}{n}.
+\]</span>
+With prior and likelihood specified, we can use the fact that all posterior class probabilities need to sum to one to get:
+<span class="math display">\[
+1 = \sum^{g}_{j=1} \pi_j(x) = \sum^{g}_{j=1}\alpha \pi_j \cdot p(x | y = j) \iff \alpha = \frac{1}{\sum^{g}_{j=1}\pi_j \cdot p (x | y = j)}.
+\]</span>
+From this, we see that <span class="math inline">\(\pi_k(x)\)</span> can be expressed as
+<span class="math display">\[
+\pi_k(x) = \frac{\pi_k \cdot p(x | y = k)}{\sum^{g}_{j=1}\pi_j \cdot p(x | y = j)}.
+\]</span></p>
+</div>
+<div id="data" class="section level2">
+<h2>Data</h2>
+<p>In this code demo we’re looking at the iris data set again:</p>
+<pre class="r"><code>library(ggplot2)
+data(iris)
+target &lt;- &quot;Species&quot;
+features &lt;- c(&quot;Sepal.Width&quot;, &quot;Sepal.Length&quot;)
+iris_train &lt;- iris[, c(target, features)]
+target_levels &lt;- levels(iris_train[, target])
+ggplot(iris_train, aes(x = Sepal.Width, y = Sepal.Length)) +
+  geom_point(aes(color = Species))</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/genclass-plot_data-1.png" width="672" /></p>
+<p>For the estimation of the models we will mostly use the <code>mlr3</code>-package, s.t.
+we firstly have to define a <em>task</em>:</p>
+<pre class="r"><code>library(mlr3)
+library(mlr3learners)
+iris_task &lt;- TaskClassif$new(id = &quot;iris_train&quot;, backend = iris_train, 
+                             target = target)</code></pre>
+</div>
+<div id="models-more-theory" class="section level2">
+<h2>Models (&amp; More Theory)</h2>
+<div id="linear-discriminant-analysis-lda" class="section level3">
+<h3>Linear discriminant analysis (LDA)</h3>
+<p>In LDA, we model the likelihood as a multivariate normal distribution s.t.
+<span class="math display">\[
+p(x | y = k) = \frac{1}{\pi^{\frac{p}{2}} |\Sigma|^{\frac{1}{2}}}\exp\left(- \frac{1}{2} (x-\mu_k)^T\Sigma^{-1}(x-\mu_k)\right).
+\]</span>
+With:</p>
+<ul>
+<li><span class="math inline">\(\hat{\mu}_k = \frac{1}{n_k}\sum_{i: y^{(i)} = k} x^{(i)},\)</span><br />
+</li>
+<li><span class="math inline">\(\hat{\Sigma} = \frac{1}{n - g} \sum_{k=1}^g\sum_{i: y^{(i)} = k} (x^{(i)} - \hat{\mu}_k)(x^{(i)} - \hat{\mu}_k)^T.\)</span></li>
+</ul>
+<p>For every class, it is assumed that data is normally distributed with the same covariance matrix <span class="math inline">\(\Sigma\)</span> for all classes but different mean vectors <span class="math inline">\(\mu_k\)</span>.</p>
+<p>We train the model:</p>
+<pre class="r"><code>iris_lda_learner &lt;- lrn(&quot;classif.lda&quot;, predict_type = &quot;prob&quot;)
+iris_lda_learner$train(task = iris_task)</code></pre>
+<p>We create a general framework for likelihoods, s.t. the we are able to visualize
+them:</p>
+<pre class="r"><code>library(mvtnorm)
+
+get_mvgaussian_lda &lt;- function(data, target, level, features) {
+  classif_task &lt;- TaskClassif$new(id = &quot;mvg_task&quot;,
+    backend = data[, c(features, target)], 
+    target = target
+  )
+  lda_learner &lt;- lrn(&quot;classif.lda&quot;)
+  lda_learner$train(task = classif_task)
+   
+  list(
+    mean = lda_learner$model$means[level, features],
+    sigma = solve(tcrossprod(lda_learner$model$scaling[features, ])),
+    type = &quot;mv_gaussian&quot;,
+    features = features
+  )
+}
+
+
+
+likelihood &lt;- function(likelihood_def, data) {
+  switch(likelihood_def$type,
+    mvgaussian_lda = get_mvgaussian_lda(
+      data, likelihood_def$target,
+      likelihood_def$level,
+      likelihood_def$features
+    )
+  )
+}
+predict_likelihood &lt;- function(likelihood, x) {
+  switch(likelihood$type,
+    mv_gaussian = dmvnorm(x,
+      mean = likelihood$mean,
+      sigma = likelihood$sigma
+    )
+  )
+}</code></pre>
+<p>We write a plot function for multivariate likelihood functions with two
+features:</p>
+<pre class="r"><code>library(reshape2)
+
+plot_2D_likelihood &lt;- function(likelihoods, data, X1, X2, target, lengthX1 = 100,
+                               lengthX2 = 100) {
+  gridX1 &lt;- seq(
+    min(data[, X1]),
+    max(data[, X1]),
+    length.out = lengthX1
+  )
+  gridX2 &lt;- seq(
+    min(data[, X2]),
+    max(data[, X2]),
+    length.out = lengthX2
+  )
+  grid_data &lt;- expand.grid(gridX1, gridX2)
+  features &lt;- c(X1, X2)
+  target_levels &lt;- names(likelihoods)
+  names(grid_data) &lt;- features
+  lik &lt;- sapply(target_levels, function(level) {
+    likelihood &lt;- likelihoods[[level]]
+    predict_likelihood(likelihood, grid_data[, likelihood$features])
+  })
+  grid_data &lt;- cbind(grid_data, lik)
+  to_plot &lt;- melt(grid_data, id.vars = features)
+  ggplot() +
+    geom_contour(
+      data = to_plot,
+      aes_string(x = X1, y = X2, z = &quot;value&quot;, color = &quot;variable&quot;)
+    ) +
+    geom_point(data = data, aes_string(x = X1, y = X2, color = target))
+}</code></pre>
+<pre class="r"><code>lda_liks &lt;- sapply(target_levels, function(level)
+  likelihood(
+    likelihood_def = list(
+      type = &quot;mvgaussian_lda&quot;, target = target,
+      level = level, features = features
+    ),
+    iris_train
+  ),
+simplify = FALSE
+)
+plot_2D_likelihood(lda_liks, iris_train, &quot;Sepal.Width&quot;, &quot;Sepal.Length&quot;, target)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/genclass-plot_lda_lik-1.png" width="672" /></p>
+<p>We clearly see that all class distributions are modeled with the same
+covariance matrix - the shape and orientation of the contour lines of all 3 class distributions is the same.</p>
+<pre class="r"><code>library(mlr3viz)
+plot_learner_prediction(iris_lda_learner, iris_task) +
+  guides(alpha = &quot;none&quot;, shape = &quot;none&quot;)</code></pre>
+<pre><code>## INFO  [17:09:47.081] [mlr3] Applying learner &#39;classif.lda&#39; on task &#39;iris_train&#39; (iter 1/1)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/genclass-plot_lda-1.png" width="672" />
+The resulting decision boundaries are linear – even though we can’t really clearly see that in the contour plot above.</p>
+</div>
+<div id="quadratic-discriminant-analysis-qda" class="section level3">
+<h3>Quadratic discriminant analysis (QDA)</h3>
+<p>In QDA, we model the likelihood as a multivariate normal distribution s.t.
+<span class="math display">\[
+p(x | y = k) = \frac{1}{\pi^{\frac{p}{2}} |\Sigma_k|^{\frac{1}{2}}}\exp\left(- \frac{1}{2} (x-\mu_k)^T\Sigma_k^{-1}(x-\mu_k)\right)
+\]</span>
+With:</p>
+<ul>
+<li><span class="math inline">\(\hat{\mu}_k = \frac{1}{n_k}\sum_{i: y^{(i)} = k} x^{(i)},\)</span><br />
+</li>
+<li><span class="math inline">\(\hat{\Sigma}_k = \frac{1}{n_k - 1} \sum_{i: y^{(i)} = k} (x^{(i)} - \hat{\mu}_k)(x^{(i)} - \hat{\mu}_k)^T.\)</span></li>
+</ul>
+<p>This means we estimate a different mean vector and covariance matrix for
+for every class.</p>
+<pre class="r"><code>iris_qda_learner &lt;- lrn(&quot;classif.qda&quot;, predict_type = &quot;prob&quot;)
+iris_qda_learner$train(task = iris_task)</code></pre>
+<p>We define all we need for our likelihood framework and plot them:</p>
+<pre class="r"><code>get_mvgaussian_qda &lt;- function(data, target, level, features) {
+  classif_task &lt;- TaskClassif$new(id = &quot;mvg_task&quot;,
+    backend = data[, c(features, target)], 
+    target = target
+  )
+  qda_learner &lt;- lrn(&quot;classif.qda&quot;)
+  qda_learner$train(task = classif_task)
+  
+  list(
+    mean = qda_learner$model$means[level, features],
+    sigma = solve(tcrossprod(qda_learner$model$scaling[features, ,
+                                                             level])),
+    type = &quot;mv_gaussian&quot;,
+    features = features
+  )
+}
+likelihood &lt;- function(likelihood_def, data) {
+  switch(likelihood_def$type,
+    mvgaussian_lda = get_mvgaussian_lda(
+      data, likelihood_def$target,
+      likelihood_def$level,
+      likelihood_def$features
+    ),
+    mvgaussian_qda = get_mvgaussian_qda(
+      data, likelihood_def$target,
+      likelihood_def$level,
+      likelihood_def$features
+    )
+  )
+}
+liks &lt;- sapply(target_levels, function(level)
+  likelihood(list(
+    type = &quot;mvgaussian_qda&quot;, target = target,
+    level = level, features = features
+  ), iris_train), simplify = FALSE)
+plot_2D_likelihood(liks, iris_train, &quot;Sepal.Width&quot;, &quot;Sepal.Length&quot;, target)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/genclass-qda_likelihood-1.png" width="672" /></p>
+<p>As we can see, the covariance is now different in each class.</p>
+</div>
+</div>
+</div>
