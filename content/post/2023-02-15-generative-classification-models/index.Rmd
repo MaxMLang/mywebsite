@@ -1,6 +1,6 @@
 ---
 title: Generative Classification Models
-author: R package build
+author: Max
 date: '2023-02-15'
 slug: generative-classification-models
 categories:
