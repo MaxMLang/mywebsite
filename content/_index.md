@@ -12,8 +12,8 @@ The nerdy/technical pieces are posted under [posts](/post/), while my thoughts o
 
 I eagerly await comments through Disqus or Github.
 
-[<img src="https://simpleicons.org/icons/github.svg" style="max-width:8%;min-width:40px;" alt="Github repo" />](https://github.com/MaxMLang)
-
+[<img src="https://simpleicons.org/icons/github.svg" style="max-width:8%;min-width:40px;" alt="Github" />](https://github.com/MaxMLang)
+[<img src="https://simpleicons.org/icons/linkedin.svg" style="max-width:8%;min-width:40px;" alt="LinkedIn" />](https://www.linkedin.com/in/maxmlang/)
 
 
 The website is built with a simple Hugo Theme, because I would like to improve my R Blogdown Skills by keeping this website up to date.
