@@ -9,17 +9,17 @@ output: html_document
 - Breathing since 2001
 - 2019 - Started studying Mandarin in Shanghai 
 - 2020 - Spring Got bored during lockdown in Singapore and started studying R Programming
-- 2020 - Fall Started Statistics B.Sc. at LMU Munich 
-- 2022 - Spring Working Student at [MTU Aero Engines](https://www.mtu.de/de/) 
-- 2023 - Graduated from LMU Munich (Statistics B.Sc.)
-- 2023 - Fall Started Statistical Science. M.Sc. at University of Oxford.
+- 2020 Fall   -  Started Statistics B.Sc. at LMU Munich 
+- 2022 Spring - Working Student at [MTU Aero Engines](https://www.mtu.de/de/) 
+- 2023 Spring - Graduated from LMU Munich (Statistics B.Sc.)
+- 2023 Fall   - Started Statistical Science. M.Sc. at University of Oxford.
 
 ### Passionate about...
 - Coding 
 - Running (Half-Marathon, Marathon), Triathlon
 - Chinese and Chinese culture
 - Books 
-
+s
 ### Thinking about...
 - R and Python Projects
 - Chinese Characters 
@@ -27,12 +27,6 @@ output: html_document
 
 ## My Story
 #### Why Statistics? Asia was the reason.
-
-<img src="/./static/img/Me.png"
-    style="max-width:28%;min-width:50px; float:right;"
-    alt = "Me"/>
-
-
   
 Since 2020 I have been following my passion for using data for real world impact by studying statistics at  LMU Munich and the University of Oxford.
 
