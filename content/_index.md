@@ -10,7 +10,7 @@ I like reading a lot of books and studying Chinese/Mandarin on a regular basis, 
 
 The nerdy/technical pieces are posted under [posts](/post/), while my thoughts on current events, book reviews, and Chinese cultural information are listed under [notes](/note/).
 
-I eagerly await comments through Disqus or Github.
+I eagerly await comments through Disqus, Github or LinkeIn.
 
 [<img src="https://simpleicons.org/icons/github.svg" style="max-width:8%;min-width:40px;" alt="Github" />](https://github.com/MaxMLang)
 [<img src="https://simpleicons.org/icons/linkedin.svg" style="max-width:8%;min-width:40px;" alt="LinkedIn" />](https://www.linkedin.com/in/maxmlang/)
