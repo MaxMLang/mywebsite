@@ -15,7 +15,7 @@ output: html_document
 - 2023 - Fall Started Statistical Science. M.Sc. at University of Oxford.
 
 ### Passionate about...
-- Coding
+- Coding 
 - Running (Half-Marathon, Marathon), Triathlon
 - Chinese and Chinese culture
 - Books 
