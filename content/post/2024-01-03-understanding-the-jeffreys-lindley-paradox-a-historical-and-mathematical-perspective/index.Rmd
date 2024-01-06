@@ -1,0 +1,72 @@
+---
+title: 'Understanding the Jeffreys-Lindley Paradox: A Historical and Mathematical
+  Perspective'
+author: Max
+date: '2024-01-03'
+slug: understanding-the-jeffreys-lindley-paradox-a-historical-and-mathematical-perspective
+categories:
+  - Machine Learning
+  - Mathematics
+  - Bayesian Statistics
+tags: []
+---
+
+## Introduction to Jeffreys-Lindley Paradox
+
+The Jeffreys-Lindley paradox highlights a fundamental difference between two schools of statistical inference: Bayesian and frequentist. It specifically arises in the context of hypothesis testing and can lead to situations where these two approaches give seemingly contradictory results.
+
+## Frequentist vs Bayesian Approach
+
+### Frequentist Approach:
+1. **Fixed Threshold**: In frequentist statistics, you typically set a threshold for significance (like a p-value of 0.05) before the experiment. If the observed data produces a p-value less than this threshold, you reject the null hypothesis.
+2. **Data-Driven**: Decisions are based solely on the observed data relative to this threshold.
+
+### Bayesian Approach:
+
+1. **Prior Beliefs**: Bayesian statistics incorporates prior beliefs or knowledge before observing the data (the prior) along with the observed data (the likelihood) to update beliefs (the posterior).
+2. **Evidence Weight**: In Bayesian hypothesis testing, the strength of evidence is often measured by the Bayes Factor. As more data is collected, the Bayes Factor might strongly favor the null hypothesis, even if the p-value is small, especially if the prior is skeptical of large effects.
+
+## The Paradox Explained
+Now, imagine you are testing a hypothesis — perhaps you're trying to detect a very small effect in a large dataset. Here's where the paradox kicks in:
+
+1. **Frequentist Outcome**: With enough data, even a tiny effect can become statistically significant in a frequentist view. You might end up rejecting the null hypothesis because your p-value falls below the threshold due to the large sample size, suggesting the effect is real.
+
+2. **Bayesian Outcome**: From a Bayesian perspective, if the prior belief is that the effect is likely to be zero or near-zero, observing a small effect, even if statistically significant, might not be enough to sway the belief. The prior may heavily weigh against the alternative hypothesis, especially if the expected effect size is tiny. Thus, the Bayes Factor might favor the null hypothesis, leading you to maintain it.
+
+
+## Intuitive Scenario:
+Think of it like hearing a faint noise at night and trying to decide if it's just the wind or something more significant:
+
+**Frequentist**: If you're set on proving it's not the wind, you might focus on every little sound, and with enough "data" of tiny creaks and groans, conclude it must be something else. You're looking for evidence to reject the "null hypothesis" (it's just the wind).
+
+**Bayesian**: However, if you historically know that these sounds are usually just the wind (prior belief), and the noise isn't much louder than usual, you might conclude it's probably still just the wind, despite the new "data" of noises.
+
+## Why It Is a Paradox
+
+It's paradoxical because the same set of data can lead a Bayesian to accept the null hypothesis while leading a frequentist to reject it. This isn't necessarily an error in either method but a fundamental difference in approach. The paradox becomes more pronounced with large sample sizes. As you collect more data, frequentist methods might suggest increasingly that small effects are significant, while Bayesian methods, anchored by a prior skeptical of large effects, might not be swayed.
+
+Here is an enhanced version of the provided section on the historical background of the Jeffreys-Lindley paradox, incorporating insights from the provided document:
+
+## Historical Background
+
+The paradox, often attributed to Dennis Lindley's 1957 paper, was deeply rooted in Harold Jeffreys' work from the 1930s. Jeffreys developed a comprehensive Bayesian framework for hypothesis testing, contrasting with the prevalent frequentist methods, and laid the groundwork for what would become known as the Jeffreys-Lindley paradox. Lindley's contribution articulated scenarios where Bayesian and frequentist methods diverge, especially regarding significance and evidence interpretation.
+
+The paradox illuminates the conflict that arises as sample size increases indefinitely while the p-value remains constant at any non-zero value. Under these conditions, a point of contention surfaces between p-values and Bayes factors: p-values may suggest rejecting the point-null hypothesis \(H_0\), while Bayes factors might decisively favor it over the alternative hypothesis \(H_1\). This conflict occurs irrespective of the considered p-value and the prior distribution on the test-relevant parameter in \(H_1\) under regularity conditions. Thus, the paradox presents a situation where a frequentist might reject \(H_0\), but a Bayesian, using the same data, might accept it.
+
+Jeffreys' early work from the mid-1930s already contained the seeds of this paradox, indicating his interest in developing Bayesian significance tests. His approach differed notably from the "usual thing" of relying on arbitrary multiples of standard errors. Jeffreys' Bayes factor was not proportional to a constant multiple of the standard error but also involved the sample size, indicating an early understanding of the paradox's nature. This fundamental aspect was not just a passing comment in his work but a critical component of his Bayes factor hypothesis tests, underscoring the difference in significance criteria between his tests and the classical method.
+
+Jeffreys presented his Bayes factors in a form that included a term with the sample size \(n\) outside an exponential term and a multiple-of-the-standard-error factor inside the exponential term. This formulation clearly demonstrated the conflict between large sample sizes' Bayes factors and p-values. Through his published work and extensive tables, Jeffreys highlighted the effect of sample size on his tests, discussing the appearance of the \(n\) term and explicitly stating its inclusion was both desirable and dictated by applying Bayesian probability theory to hypothesis testing. He argued that no sensible measure of evidence could be based on a constant multiple of the standard error independent of sample size, emphasizing that the paradox was an inevitable consequence of any reasonable definition of evidence.
+
+The paradox's essence, contrary to some beliefs, does not rely on assigning prior mass to a sharp null hypothesis \(H_0\) with a point mass at zero. Instead, it manifests itself in any Bayes factor where the prior distribution for effect size under the skeptic's \(H_0\) is more heavily concentrated around zero than the prior distribution for effect size under the proponent's \(H_1\), a condition so mild as to be almost tautological.
+
+In summary, the historical development of the Jeffreys-Lindley paradox underscores a fundamental rift between Bayesian and frequentist hypothesis testing, a rift that was apparent to Harold Jeffreys decades before Lindley formally articulated it. Jeffreys' work laid a foundation that would inspire and challenge statisticians and philosophers, demonstrating the profound implications of adopting different statistical paradigms and the importance of understanding the nature of evidence in scientific inquiry.
+
+## Conclusion
+
+The Jeffreys-Lindley paradox is essentially about how statistical evidence is interpreted under different paradigms. It's a crucial consideration in fields where deciding between hypotheses is based on statistical evidence, and it highlights the importance of understanding the underlying assumptions and implications of whichever statistical approach one uses.
+
+## References
+
+1. Jeffreys, Harold. "Theory of Probability." Oxford: Clarendon Press, various editions.
+2. Lindley, D.V. "A Statistical Paradox." Biometrika, 1957.
+3. Wagenmakers, EJ., Ly, A. History and nature of the Jeffreys–Lindley paradox. Arch. Hist. Exact Sci. 77, 25–72 (2023). https://doi.org/10.1007/s00407-022-00298-3
