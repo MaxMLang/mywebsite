@@ -48,7 +48,7 @@ weight = 5
 
 [params]
 description = "Stat Student, Data Analysis Nerd, Chinese Speaker"
-footer = "&copy; [Max Lang](https://maxstatdocumentation.netlify.app/) 2020 | [Github](https://github.com/MaxMLang)"
+footer = "&copy; [Max Lang](https://maxstatdocumentation.netlify.app/) 2024 | [Github](https://github.com/MaxMLang)"
 highlightjsCDN = "//cdn.bootcss.com"
 highlightjsLang = [ "r", "yaml", "tex" ]
 highlightjsTheme = "github"
