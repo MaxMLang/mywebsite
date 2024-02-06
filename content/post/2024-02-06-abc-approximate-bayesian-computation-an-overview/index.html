@@ -1,0 +1,163 @@
+---
+title: ABC, Approximate Bayesian Computation, An Overview
+author: Max
+date: '2024-02-06'
+slug: abc-approximate-bayesian-computation-an-overview
+categories:
+  - Bayesian Statistics
+  - Data Analysis
+  - Machine Learning
+  - Python
+  - Python Programming
+  - R
+  - R Programming
+  - Statistics
+tags: []
+---
+
+
+
+<p>ABC is particularly useful when dealing with complex models where the likelihood function is difficult or impossible to calculate. To understand its significance, let’s delve into a worked example where normal methods do not suffice, and the application of ABC becomes invaluable.</p>
+This commonly arises in two main settings.
+<p>Consider a scenario in data analysis where we need to estimate parameters of a statistical model, but the likelihood function, which is central to Bayesian inference, is either too complex or unknown. Traditional methods like Maximum Likelihood Estimation (MLE) or standard Bayesian approaches hinge on the ability to calculate this likelihood, which might be unfeasible in many real-world situations.</p>
+Denote by <span class="math inline">\(\mathcal{Y}=\{0,1\}^{m^2}\)</span> the set of all binary <span class="math inline">\(m \times m\)</span> “images” <span class="math inline">\(Y=\)</span> <span class="math inline">\(\left(Y_1, Y_2, \ldots, Y_{m^2}\right), Y_i \in\{0,1\}\)</span>, where <span class="math inline">\(i=1,2, \ldots, m^2\)</span> is the cell or “pixel” index in the square lattice of image cells. We say two cells <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span> are neighbors and write <span class="math inline">\(i \sim j\)</span> if the cells share an edge in
+<p>For example <span class="math inline">\(5 \sim 6\)</span> in Table <span class="math inline">\(\ref{tab:ising-1}\)</span> and the neighbors of cell 9 are <span class="math inline">\(\{8,6\}\)</span>. Let
+<span class="math display">\[
+\# y=\frac{1}{2} \sum_{i=1}^{m^2} \sum_{j \sim i} \mathbb{I}_{Y_j \neq Y_i}
+\]</span>
+where <span class="math inline">\(\sum_{j \sim i}\)</span> sums over all <span class="math inline">\(j\)</span> such that <span class="math inline">\(j\)</span> is a neighbor of <span class="math inline">\(i\)</span>. Here #y counts the number of “disagreeing neighbors” in the binary image <span class="math inline">\(Y=y\)</span>. In the example in Table <span class="math inline">\(\ref{tab:ising-1}\)</span> we have #y=4.</p>
+<p>
+<span class="math display">\[
+p(y \mid \theta)=\exp (-\theta \# y) / c(\theta) .
+\]</span></p>
+<p>It has a free boundary because cells on the edge have no neighbors beyond the edge. Here <span class="math inline">\(\theta \geq 0\)</span> is a positive smoothing parameter and
+<span class="math display">\[
+c(\theta)=\sum_{y \in \mathcal{Y}} \exp (-\theta \# y)
+\]</span>
+is . There are <span class="math inline">\(2^{m^2}\)</span> terms in the sum, and no one can solve it (it is an important model in physics, so many have looked at this).</p>
+<p>Suppose we have image data <span class="math inline">\(Y=y_{o b s}\)</span> with <span class="math inline">\(y_{o b s} \in\{0,1\}^{m^2}\)</span> and we want to estimate <span class="math inline">\(\theta\)</span>. Consider doing MCMC targeting <span class="math inline">\(\pi\left(\theta \mid y_{o b s}\right)\)</span> with some prior <span class="math inline">\(\pi(\theta)\)</span>. Choose a simple proposal for the scalar parameter <span class="math inline">\(\theta\)</span>, say <span class="math inline">\(\theta^{\prime} \sim U(\theta-a, \theta+a), a&gt;0\)</span>. The acceptance probability is
+<span class="math display">\[
+\begin{aligned}
+\alpha\left(\theta^{\prime} \mid \theta\right) &amp; =\min \left\{1, \frac{p\left(y \mid \theta^{\prime}\right) \pi\left(\theta^{\prime}\right)}{p(y \mid \theta) \pi(\theta)}\right\} \\
+&amp; =\min \left\{1, \frac{c(\theta)}{c\left(\theta^{\prime}\right)} \times \exp \left(\left(\theta-\theta^{\prime}\right) \# y\right) \times \frac{\pi\left(\theta^{\prime}\right)}{\pi(\theta)}\right\}
+\end{aligned}
+\]</span>
+and although <span class="math inline">\(p(y)\)</span> cancels, This leads us to the following definition.</p>
+<p>Doubly intractable distributions present a significant challenge in statistical computing, primarily encountered in Bayesian analysis. These distributions are characterized by a likelihood function that includes an intractable normalizing constant, which itself depends on the parameters of interest. This dependency creates a ‘double’ intractability: not only is the likelihood intractable, but so is its normalization.
+(doubly intractable problems) If for <span class="math inline">\(y_{o b s} \in \mathcal{Y}\)</span> and <span class="math inline">\(\theta, \theta^{\prime} \in \Omega\)</span> either of the ratios <span class="math inline">\(p\left(y_{o b s} \mid \theta\right) / p\left(y_{o b s} \mid \theta^{\prime}\right)\)</span> or <span class="math inline">\(\pi(\theta) / \pi\left(\theta^{\prime}\right)\)</span> cannot be evaluated then the posterior is said to be doubly intractable.</p>
+<p>ABC provides a pathway to handle these doubly intractable problems. By comparing simulated and observed data without the need to directly calculate the likelihood or its normalizing constant.</p>
+The cornerstone of ABC is its departure from the conventional reliance on the likelihood function in Bayesian inference. In many statistical models, especially those arising in biological, ecological, and physical sciences, the likelihood function can be so complex or computationally demanding that it becomes a bottleneck. ABC circumvents this by not requiring the explicit calculation of the likelihood. Instead, it , using this comparison to infer model parameters.
+<p>In ABC, the goal is to approximate the posterior distribution of the parameters, which in traditional Bayesian analysis would be derived using Bayes’ theorem and the likelihood function. ABC does this indirectly. It and . . This process results in an approximation of the posterior distribution, which is why it’s often referred to as approximating the approximated posterior.</p>
+<p>The ABC methodology can be broken down into a stepwise process:</p>
+The step-wise process of ABC probably seems fairly familiar if you ever took a course on Monte Carlo and simulation methods. Basically what we applied here is a algorithm with
+<p>We would not make an approximation unless it helped us somehow, here we approximate our target <span class="math inline">\(p\left(\theta \mid y_{o b s}\right)\)</span>. The point is that, if <span class="math inline">\(\delta\)</span> is not too small, <span class="math inline">\(\pi\left(\theta \mid Y \in \Delta_\delta\left(y_{o b s}\right)\right)\)</span> is often very easy to sample, and we can do it “perfectly” using rejection, even in cases where the observation model is very complex. Rejection-samples are iid and distributed according to the target, so there are no issues with burn-in or mixing as in MCMC.</p>
+We can then deduce the following algorithm:
+<ol style="list-style-type: decimal">
+<li><span class="math inline">\(\operatorname{Set} n=0\)</span></li>
+<li>Set <span class="math inline">\(n \leftarrow n+1\)</span>. Simulate <span class="math inline">\(\theta_n \sim \pi(\cdot)\)</span> and <span class="math inline">\(y_n \sim p\left(\cdot \mid \theta_n\right)\)</span></li>
+<li>If <span class="math inline">\(y_n \in \Delta_\delta\left(y_{o b s}\right)\)</span> stop and return <span class="math inline">\(\Theta_{A B C}=\theta_n, Y_{A B C}=y_n\)</span> and <span class="math inline">\(N=n\)</span> else go to step 2.</li>
+</ol>
+<p>The ABC-Rejection Algorithm returns samples <span class="math inline">\(\left(\Theta_{A B C}, Y_{A B C}, N\right)\)</span> with <span class="math inline">\(\Theta_{A B C} \sim \pi\left(\cdot \mid Y \in \Delta_\delta\left(y_{o b s}\right)\right)\)</span>.</p>
+Here is a very simple example in which the data are five samples from a Poisson with mean <span class="math inline">\(\lambda\)</span> and we have a Gamma-prior for <span class="math inline">\(\lambda\)</span>.
+Then the ABC algorithm: here is the algorithm of Proposition 3.15 for this case:
+<p>Run this algorithm <span class="math inline">\(T\)</span> times returning <span class="math inline">\(\lambda^{(1)}, \lambda^{(2)}, \ldots, \lambda^{(T)}\)</span>. These are samples from <span class="math inline">\(\pi_{A B C}\left(\lambda \mid y_{o b s}\right)\)</span>.</p>
+<p>When Approximate Bayesian Computation (ABC) is applied, it often yields samples that approximate the posterior distribution of interest. However, due to the approximate nature of ABC, these samples may not be as close to the true posterior as desired, particularly when the tolerance level δ is not small enough. Regression adjustment is a post-processing step that aims to improve the approximation by aligning the sampled parameters more closely with the true posterior distribution.</p>
+<p>The intuitive idea behind regression adjustment is to “correct” the sampled parameters by accounting for the discrepancy between the simulated summary statistics and the observed summary statistics. Essentially, it involves fitting a regression model where the sampled parameters are the response variable, and the discrepancy is the predictor. The fitted regression model is then used to adjust the ABC samples towards the region where the simulated data is more similar to the observed data.</p>
+<p>Consider the pairs <span class="math inline">\((\theta, y) \sim \pi(\theta) p(y \mid \theta)\)</span> generated by ABC. Conditional on <span class="math inline">\(y\)</span> we have <span class="math inline">\(\theta \sim \pi(\theta \mid y)\)</span>. We will adjust this distribution by making a transformation <span class="math inline">\(\theta^{(a d j)}=f(\theta)\)</span> so that <span class="math inline">\(\theta^{(a d j)} \sim \pi\left(\cdot \mid y_{o b s}\right)\)</span>. This is not achievable in general. We will set out some assumptions under which this operation is exact and straightforward, and use this to motivate the method when the assumptions do not hold but are satisfied to a good approximation. We consider scalar <span class="math inline">\(\theta \in \mathbb{R}\)</span> to simplify notation (in regression with a multivariate response, <span class="math inline">\(\beta\)</span> below is a matrix). The idea extends easily to <span class="math inline">\(\theta \in \mathcal{R}^p\)</span>.</p>
+<p>Let <span class="math inline">\(\theta \sim \pi(\cdot \mid y)\)</span> and <span class="math inline">\(\theta^{\prime} \sim \pi\left(\cdot \mid y_{o b s}\right)\)</span>. Let <span class="math inline">\(s=S(y)\)</span> and <span class="math inline">\(s_{o b s}=S\left(y_{o b s}\right)\)</span>.</p>
+<p>One of the main reasons for doing regression adjustment is that it allows us to take <span class="math inline">\(\delta\)</span> quite large and fix the poor approximation using the regression adjustment. Some experimentation is usually necessary (to choose <span class="math inline">\(\delta\)</span> small enough so the approximation doesnt change significantly when we make it smaller). We like to take <span class="math inline">\(\delta\)</span> large as more samples are retained (in Proposition 3.15 in the ABC-rejection algorithm we throw out samples if <span class="math inline">\(D\left(S(y), S\left(y_{o b s}\right)\right)&gt;\delta\)</span> ), or alternatively, shorter runtimes at a fixed sample size.</p>
+<pre class="r"><code># Load necessary libraries
+library(coda)
+library(lattice)
+set.seed(42)
+# Estimating Poisson Mean using ABC
+
+# Set true lambda and sample size
+trueLambda &lt;- 2
+sampleSize &lt;- 5
+
+# Example data
+dataY &lt;- c(1, 1, 2, 2, 3)
+priorAlpha &lt;- 1
+priorBeta &lt;- 1
+
+numSimulations &lt;- 100000
+acceptedLambdas &lt;- numeric(0)
+tolerance &lt;- 1  # Define a tolerance level for accepting lambda
+
+for (i in 1:numSimulations) {
+  sampledLambda &lt;- rgamma(1, shape = priorAlpha, rate = priorBeta)
+  simulatedData &lt;- sort(rpois(sampleSize, lambda = sampledLambda))
+  if (sum((simulatedData - dataY)^2) &lt;= tolerance) {  # Less strict condition
+    acceptedLambdas &lt;- c(acceptedLambdas, sampledLambda)
+  }
+}
+
+# Plotting the results
+histogramObject &lt;- hist(acceptedLambdas, 20, plot = FALSE)
+plot(histogramObject$mids, histogramObject$density, ylim = c(0, 1.1), type = &#39;l&#39;, col = 2, xlab = &#39;Lambda&#39;, ylab = &#39;Posterior&#39;, lwd = 2)
+lines(histogramObject$mids, dgamma(histogramObject$mids, shape = priorAlpha + sum(dataY), rate = priorBeta + sampleSize), lwd = 2)
+
+# ABC with mean as statistic
+numABC &lt;- 10000
+lambdaABC &lt;- meanABC &lt;- numeric(0)
+meanDataY &lt;- mean(dataY)
+toleranceDelta &lt;- 0.5
+for (i in 1:numABC) {
+  sampledLambda &lt;- rgamma(1, shape = priorAlpha, rate = priorBeta)
+  simulatedData &lt;- sort(rpois(sampleSize, lambda = sampledLambda))
+  if (abs(mean(simulatedData) - meanDataY) &lt; toleranceDelta) {
+    lambdaABC &lt;- c(lambdaABC, sampledLambda)
+    meanABC &lt;- c(meanABC, mean(simulatedData))
+  }
+}
+histogramABC &lt;- hist(lambdaABC, 50, plot = FALSE)
+lines(histogramABC$mids, histogramABC$density, type = &#39;l&#39;, col = 3, lwd = 2)
+
+# Regression correction for ABC
+adjustLambda &lt;- function(lambda, simMeans, dataMean) {
+  regressionCoef &lt;- coef(lm(lambda ~ simMeans))[2]
+  adjustedLambda &lt;- lambda + regressionCoef * (dataMean - simMeans)
+  return(adjustedLambda)
+}
+
+lambdaAdjusted &lt;- adjustLambda(lambdaABC, meanABC, meanDataY)
+histogramAdjusted &lt;- hist(lambdaAdjusted, 50, plot = FALSE)
+lines(histogramAdjusted$mids, histogramAdjusted$density, type = &#39;l&#39;, col = 3, lwd = 2, lty = 2)
+legend(&quot;topright&quot;, 
+       legend = c(&quot;Rejection Sampling&quot;, &quot;True Posterior&quot;, &quot;ABC Result&quot;, &quot;ABC Adjusted&quot;),
+       col = c(2, 1, 3, 3),
+       lwd = 2,
+       lty = c(1, 1, 1, 2))</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<pre class="python"><code>import numpy as np
+import matplotlib.pyplot as plt
+
+# Parameters for the Gaussian distributions
+std_dev = np.sqrt(2)  # Standard deviation set to sqrt(2) to get variance 2
+y_selected_values = [2, 4, 6]  # Selected y values
+modes = [0, 2, 4]  # Modes for the Gaussian distributions at each y value (identical to the means for a Gaussian)
+
+# Create a figure and axis
+fig, ax = plt.subplots(figsize=(10, 6))
+
+# Plot each Gaussian distribution vertically for the selected y values
+for y, mode in zip(y_selected_values, modes):
+    x = np.linspace(mode - 4 * std_dev, mode + 4 * std_dev, 300)
+    y_gaussian = np.exp(-(x - mode)**2 / (2 * std_dev**2)) / (std_dev * np.sqrt(2 * np.pi))
+    ax.plot(y_gaussian + y, x, color=&#39;blue&#39;)  # Shift the Gaussian to the y position
+
+    # Add a point for the mean of the distribution
+    ax.plot(y, mode, &#39;ro&#39;)  # &#39;ro&#39; is the matplotlib code for a red circle
+
+# Plot a linear dashed line through the red dots (means of the distributions)
+ax.plot(y_selected_values, modes, &#39;k--&#39;)
+
+# Set titles and labels
+ax.set_title(&#39;Vertical Gaussian Distributions with Linear Trend through Means&#39;)
+ax.set_xlabel(&#39;$y$&#39;)
+ax.set_ylabel(&#39;Density&#39;)
+
+# Show the plot
+plt.show()</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-2-1.png" width="960" /></p>
