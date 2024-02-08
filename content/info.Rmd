@@ -17,7 +17,7 @@ author: "Max Lang"
 - Running (Half-Marathon, Marathon), Triathlon
 - Chinese and Chinese culture
 - Books 
-s
+
 ### Thinking about...
 - R and Python Projects
 - Chinese Characters 
