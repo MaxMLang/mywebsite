@@ -17,6 +17,7 @@ tags: []
 The realm of finance is rife with complexities, chief among them being the understanding of dependencies between financial assets. Copulas, a statistical marvel, have emerged as a pivotal tool in deciphering these dependencies, offering a nuanced view beyond the capabilities of traditional correlation measures. This post delves into the mathematical foundations of copulas, their pivotal role in finance, and their practical application through an advanced Shiny application, inspired by seminal works like "An Introduction to Copulas" by Roger B. Nelsen.
 
 ## 1. The Essence of Copulas
+With the use of copulas, we may break down a joint probability distribution into its marginals, which are by definition uncorrelated, and a **function** that links (hence the name) the two, enabling us to describe the correlation independently. That coupling function is called the copula.
 
 ### 1.1 Defining Copulas
 A copula is a mathematical construct that enables the modeling of dependencies between random variables. It uniquely represents the joint distribution of a multivariate random variable, allowing the separation of marginal distributions from their dependency structure. Formally, if \(F\) is a joint distribution function of random variables \(X\) and \(Y\) with marginal distribution functions \(F_X\) and \(F_Y\), then there exists a copula \(C\) such that:
@@ -48,6 +49,10 @@ Sklar's Theorem provides the mathematical foundation for copulas, establishing t
 **Example**: Consider a portfolio of two assets with returns \(X\) and \(Y\). Sklar's Theorem allows us to model the joint distribution of \(X\) and \(Y\) using their individual distributions and a copula that captures their dependence, regardless of whether \(X\) and \(Y\) follow normal distributions, exponential distributions, or any other.
 
 ## 2. Copulas in Finance: Applications and Implications
+Gaussian copulas are thought to have played an important role in the 2007-2008 financial crisis because tail correlations were drastically overestimated. If you've read The Big Short, you'll see that the failure rates of individual mortgages (among other things) inside CDOs are interrelated - if one fails, the probability of another failing increases. In the early 2000s, banks only understood how to forecast default rate margins. The controversial [study by Li](https://www.ressources-actuarielles.net/EXT/ISFA/1226.nsf/9c8e3fd4d8874d60c1257052003eced6/34e84cb615c8b4eac12575fe006a9759/$FILE/li.defaultcorrelation.pdf) then proposed using copulas to represent the relationships between such marginals. Rating agencies mainly depended on this approach, which significantly underestimated risk and provided erroneous ratings. The rest, as they say, was history.
+
+This [study](http://samueldwatts.com/wp-content/uploads/2016/08/Watts-Gaussian-Copula_Financial_Crisis.pdf) provides a good discussion of Gaussian copulas and the Financial Crisis, arguing that various copula selections would not have made a difference since the expected correlation was much too low.
+
 
 ### 2.1 Risk Management
 
