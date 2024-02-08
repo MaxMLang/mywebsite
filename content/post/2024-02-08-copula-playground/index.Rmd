@@ -1,6 +1,6 @@
 ---
 title: Copula Playground
-author: R package build
+author: Max
 date: '2024-02-08'
 slug: copula-playground
 categories:

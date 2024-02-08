@@ -1,6 +1,6 @@
 ---
 title: Copula Playground
-author: R package build
+author: Max
 date: '2024-02-08'
 slug: copula-playground
 categories:
@@ -21,6 +21,7 @@ tags: []
 </div>
 <div id="the-essence-of-copulas" class="section level2">
 <h2>1. The Essence of Copulas</h2>
+<p>With the use of copulas, we may break down a joint probability distribution into its marginals, which are by definition uncorrelated, and a <strong>function</strong> that links (hence the name) the two, enabling us to describe the correlation independently. That coupling function is called the copula.</p>
 <div id="defining-copulas" class="section level3">
 <h3>1.1 Defining Copulas</h3>
 <p>A copula is a mathematical construct that enables the modeling of dependencies between random variables. It uniquely represents the joint distribution of a multivariate random variable, allowing the separation of marginal distributions from their dependency structure. Formally, if <span class="math inline">\(F\)</span> is a joint distribution function of random variables <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> with marginal distribution functions <span class="math inline">\(F_X\)</span> and <span class="math inline">\(F_Y\)</span>, then there exists a copula <span class="math inline">\(C\)</span> such that:</p>
@@ -47,6 +48,8 @@ tags: []
 </div>
 <div id="copulas-in-finance-applications-and-implications" class="section level2">
 <h2>2. Copulas in Finance: Applications and Implications</h2>
+<p>Gaussian copulas are thought to have played an important role in the 2007-2008 financial crisis because tail correlations were drastically overestimated. If you’ve read The Big Short, you’ll see that the failure rates of individual mortgages (among other things) inside CDOs are interrelated - if one fails, the probability of another failing increases. In the early 2000s, banks only understood how to forecast default rate margins. The controversial <a href="https://www.ressources-actuarielles.net/EXT/ISFA/1226.nsf/9c8e3fd4d8874d60c1257052003eced6/34e84cb615c8b4eac12575fe006a9759/$FILE/li.defaultcorrelation.pdf">study by Li</a> then proposed using copulas to represent the relationships between such marginals. Rating agencies mainly depended on this approach, which significantly underestimated risk and provided erroneous ratings. The rest, as they say, was history.</p>
+<p>This <a href="http://samueldwatts.com/wp-content/uploads/2016/08/Watts-Gaussian-Copula_Financial_Crisis.pdf">study</a> provides a good discussion of Gaussian copulas and the Financial Crisis, arguing that various copula selections would not have made a difference since the expected correlation was much too low.</p>
 <div id="risk-management" class="section level3">
 <h3>2.1 Risk Management</h3>
 <p>In risk management, copulas allow for a detailed analysis of how extreme market movements in one asset can affect others in a portfolio, aiding in the calculation of Value at Risk (VaR) and Expected Shortfall (ES). These measures are critical in determining the potential losses in a portfolio over a specified period under normal and extreme market conditions.</p>
