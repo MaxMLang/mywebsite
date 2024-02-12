@@ -1,0 +1,64 @@
+---
+title: How a Bayesian Statistician Plays Wordle
+author: Max
+date: '2024-02-12'
+slug: how-a-bayesian-statistician-plays-wordle
+categories:
+  - Bayesian Statistics
+  - Statistics
+  - R Programming
+tags: []
+---
+
+
+
+<p>Wordle, a word puzzle game that has captivated millions, is not just a test of vocabulary but a playground for statistical strategies. Among these strategies, Bayesian statistics stands out for its elegance and effectiveness. This approach, far from being confined to academic circles, demonstrates its utility in everyday life, particularly in solving Wordle puzzles. In this post, we’ll explore how a Bayesian statistician tackles Wordle, using not just words but the power of updated beliefs to crack the code.</p>
+<div id="the-essence-of-bayesian-statistics" class="section level2">
+<h2>The Essence of Bayesian Statistics</h2>
+<p>At its core, Bayesian statistics is about updating our beliefs based on new evidence. It starts with a prior belief (a prior probability), incorporates new data (likelihood), and results in an updated belief (a posterior probability). The formula that underpins this process is Bayes’ Theorem:</p>
+<p><span class="math display">\[ P(A|B) = \frac{P(B|A) \cdot P(A)}{P(B)} \]</span></p>
+<ul>
+<li><span class="math inline">\(P(A|B)\)</span> is the posterior probability: the probability of event A occurring given that B is true.</li>
+<li><span class="math inline">\(P(B|A)\)</span> is the likelihood: the probability of observing B given A.</li>
+<li><span class="math inline">\(P(A)\)</span> is the prior probability: the initial probability of A before observing B.</li>
+<li><span class="math inline">\(P(B)\)</span> is the marginal probability: the total probability of observing B.</li>
+</ul>
+</div>
+<div id="applying-bayesian-statistics-to-wordle" class="section level2">
+<h2>Applying Bayesian Statistics to Wordle</h2>
+<p>In Wordle, the challenge is to guess a secret five-letter word within six attempts. After each guess, feedback is provided in the form of colored tiles, indicating correct letters in the right position (green), correct letters in the wrong position (yellow), and incorrect letters (gray).</p>
+<div id="the-prior-letter-frequencies" class="section level3">
+<h3>The Prior: Letter Frequencies</h3>
+<p>The Bayesian approach begins with establishing a prior probability distribution. This is done by calculating the frequency of each letter in the set of valid Wordle words, assuming all words are equally likely. This frequency serves as our initial belief about the importance of each letter in the puzzle.</p>
+</div>
+<div id="the-update-adjusting-beliefs-with-feedback" class="section level3">
+<h3>The Update: Adjusting Beliefs with Feedback</h3>
+<p>With each guess and the subsequent feedback, we update our beliefs. This involves adjusting the probabilities of each word being the correct answer based on how well the guess aligns with the feedback received. This Bayesian update is a crucial step, refining our guess strategy with each attempt.</p>
+</div>
+<div id="the-code-a-bayesian-wordle-solver-in-r" class="section level3">
+<h3>The Code: A Bayesian Wordle Solver in R</h3>
+<p>The <a href="https://github.com/MaxMLang/bayesian-wordle/">R code</a> provided outlines a Wordle solver based on Bayesian statistics. It starts by creating a prior probability distribution based on letter frequencies. Then, for each guess, it simulates the feedback and updates the probabilities of each word being the correct answer. The guess with the highest updated probability becomes the next attempt, iteratively refining the guesses until the puzzle is solved.</p>
+<div id="key-functions" class="section level4">
+<h4>Key Functions:</h4>
+<ul>
+<li><strong><code>simulate_guess</code></strong>: Simulates the feedback for a guess against the true word.</li>
+<li><strong><code>find_best_guess</code></strong>: Identifies the best guess based on updated probabilities.</li>
+<li><strong><code>generate_feedback</code></strong>: Generates feedback for a guess compared to the true word.</li>
+<li><strong><code>bayesian_update</code></strong>: Updates the probabilities based on the feedback, refining our belief in which word is correct.</li>
+</ul>
+</div>
+</div>
+<div id="why-bayesian-statistics-excels-in-wordle" class="section level3">
+<h3>Why Bayesian Statistics Excels in Wordle</h3>
+<p>This approach is particularly suited to Wordle for several reasons:</p>
+<ol style="list-style-type: decimal">
+<li><strong>Adaptability</strong>: It continuously refines the probability of each word being correct based on the feedback received, making it highly adaptive.</li>
+<li><strong>Efficiency</strong>: By focusing on the most probable words at each step, it narrows down the possibilities faster.</li>
+<li><strong>Informative</strong>: It utilizes all available information (letter frequencies and feedback) to inform the guessing strategy.</li>
+</ol>
+</div>
+</div>
+<div id="conclusion" class="section level2">
+<h2>Conclusion</h2>
+<p>Bayesian statistics, through its process of updating beliefs with evidence, offers a powerful and strategic method for tackling puzzles like Wordle. This not only illustrates the practical applications of Bayesian methods in everyday life but also demystifies the concept, showing that behind every guess and green tile, there’s a statistician’s wisdom at play. Whether you’re a word puzzle enthusiast or a statistics aficionado, the Bayesian approach to Wordle is a testament to the beauty and utility of statistical thinking in deciphering the world around us.</p>
+</div>
